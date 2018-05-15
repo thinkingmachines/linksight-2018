@@ -1,3 +1,4 @@
 from django.contrib import admin
+from project_record_matching.api import models
 
-# Register your models here.
+admin.site.register(models.Dataset)

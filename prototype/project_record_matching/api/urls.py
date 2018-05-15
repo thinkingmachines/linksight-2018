@@ -1,8 +1,6 @@
-from django.urls import include, path
-from rest_framework import routers
-
-router = routers.DefaultRouter()
+from django.urls import path
+from project_record_matching.api import views
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('datasets/', views.dataset_list),
 ]
