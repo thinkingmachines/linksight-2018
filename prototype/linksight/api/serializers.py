@@ -1,6 +1,6 @@
 import os.path
 
-from project_record_matching.api.models import Dataset
+from linksight.api.models import Dataset
 from rest_framework import serializers
 
 

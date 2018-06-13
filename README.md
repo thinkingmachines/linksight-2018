@@ -1,4 +1,4 @@
-# Algorithmic Record Matching (ARM)
+# Linksight
 
 http://unicefstories.org/2018/04/04/venturefundthinkingmachines/
 

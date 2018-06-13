@@ -1,4 +1,4 @@
-from project_record_matching.api.serializers import DatasetSerializer
+from linksight.api.serializers import DatasetSerializer
 from rest_framework.decorators import api_view, parser_classes
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
