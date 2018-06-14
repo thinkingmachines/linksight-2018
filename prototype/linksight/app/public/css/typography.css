@@ -1,0 +1,47 @@
+html, body, input, textarea, button, select {
+  font-size: 15px;
+  font-family: Barlow, sans-serif;
+  font-weight: 400;
+}
+
+/* Heading */
+
+h1 {
+  font-size: 30px;
+  line-height: 40px;
+  font-weight: 700;
+}
+
+h2, .subtitle {
+  font-size: 20px;
+  line-height: 26px;
+  font-weight: 400;
+}
+
+h1, h2 {
+  margin: 0;
+}
+
+/* Paragraph */
+
+p {
+  line-height: 20px;
+}
+
+p.-small {
+  font-size: 12px;
+  line-height: 15px;
+}
+
+/* Colors */
+
+h1.-light,
+h2.-light,
+.subtitle.-light {
+  color: white;
+}
+
+.-muted {
+  color: #b4b4b4;
+}
+
