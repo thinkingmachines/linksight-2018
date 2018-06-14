@@ -2,39 +2,33 @@
 
 ```color
 name: Purple
-value: '#3f50b0'
+value: !import purple
 span: 1
 ```
 
 ```color
-name: Yellow
-value: '#f7bb09'
+value: !import yellow
 span: 1
 ```
 
 ```color
-value: '#009999'
+value: !import teal
 span: 1
 ```
 
 ```color
-value: '#2bb673'
+value: !import green
 span: 1
 ```
 
 ```color
-value: '#de4f41'
+value: !import red
 span: 1
 ```
 
 ## Monochrome Colors
 
 ```color-palette
-colors:
- - value: '#ffffff'
- - value: '#d4e8e7'
- - value: '#b4b4b4'
- - value: '#5d5d5d'
- - value: '#000000'
+colors: !import monochrome
 span: 5
  ```

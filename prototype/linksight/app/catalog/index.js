@@ -9,6 +9,9 @@ import logo from '../public/images/linksight-logo.png'
 import typographyStyles from '../public/css/typography.css'
 import toggleStyles from '../public/css/react-toggle.css'
 
+// Colors
+import * as colors from '../src/colors.js'
+
 // Elements
 import {
   Title,
@@ -51,6 +54,8 @@ const styles = [
 ]
 
 const imports = {
+  ...colors,
+  monochrome: colors.monochrome.map((c) => ({value: c})),
   Title,
   Button,
   PrimaryButton,
