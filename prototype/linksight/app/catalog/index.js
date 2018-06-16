@@ -2,23 +2,24 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Catalog, pageLoader } from 'catalog'
 
-// Images
-import logo from '../public/images/linksight-logo.png'
-
 // Stylesheets
-import typographyStyles from '../public/css/typography.css'
-import toggleStyles from '../public/css/react-toggle.css'
+import typographyStyles from '../src/css/typography.css'
+import toggleStyles from '../src/css/react-toggle.css'
+import filepondStyles from 'filepond/dist/filepond.min.css'
+
+// Images
+import logo from '../src/images/linksight-logo.png'
+import datasetCardIconUrl from '../src/images/public-datasets/public-dataset-icon-population.svg'
 
 // Colors
 import * as colors from '../src/colors.js'
 
 // Elements
-import {
-  Title,
-  Button,
-  PrimaryButton,
-  Toggle
-} from '../src/elements'
+import * as elements from '../src/elements'
+
+// Components
+import DatasetCard from '../src/components/dataset-card'
+import UploadWidget from '../src/components/upload-widget'
 
 const pages = [
   {
@@ -45,21 +46,37 @@ const pages = [
     path: '/elements',
     title: 'Elements',
     content: pageLoader(() => import('./elements.md'))
+  },
+  {
+    title: 'Components',
+    pages: [
+      {
+        path: '/components',
+        title: 'UploadWidget',
+        content: pageLoader(() => import('./components/upload-widget.md'))
+      },
+      {
+        path: '/components/dataset-card',
+        title: 'DatasetCard',
+        content: pageLoader(() => import('./components/dataset-card.md'))
+      }
+    ]
   }
 ]
 
 const styles = [
   typographyStyles,
-  toggleStyles
+  toggleStyles,
+  filepondStyles
 ]
 
 const imports = {
   ...colors,
   monochrome: colors.monochrome.map((c) => ({value: c})),
-  Title,
-  Button,
-  PrimaryButton,
-  Toggle
+  ...elements,
+  DatasetCard,
+  datasetCardIconUrl,
+  UploadWidget
 }
 
 ReactDOM.render(

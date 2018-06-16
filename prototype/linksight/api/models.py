@@ -1,3 +1,4 @@
+import json
 import uuid
 
 import pandas as pd
@@ -15,7 +16,15 @@ class Dataset(models.Model):
     def __str__(self):
         return self.name or self.file.name
 
-    def preview(self):
+    def preview(self, n=10):
         with self.file.open() as f:
             df = pd.read_csv(f)
-            return df.head().to_dict()
+            preview = json.loads(
+                df.head(n).to_json(orient='table')
+            )
+            preview['schema'].pop('pandas_version')
+        preview['file'] = {
+            'size': f.size,
+            'rows': len(df),
+        }
+        return preview

@@ -13,3 +13,10 @@ class DatasetSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         name = os.path.basename(validated_data['file'].name)
         return super().create(dict(name=name, **validated_data))
+
+
+class DatasetPreviewSerializer(serializers.BaseSerializer):
+
+    def to_representation(self, obj):
+        return obj.preview()
+

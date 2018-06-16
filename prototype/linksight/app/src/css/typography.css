@@ -18,7 +18,12 @@ h2, .subtitle {
   font-weight: 400;
 }
 
-h1, h2 {
+h3 {
+  font-size: 15px;
+  line-height: 20px;
+}
+
+h1, h2, h3, p {
   margin: 0;
 }
 
@@ -28,16 +33,16 @@ p {
   line-height: 20px;
 }
 
-p.-small {
+.-small,
+small {
   font-size: 12px;
   line-height: 15px;
 }
 
 /* Colors */
 
-h1.-light,
-h2.-light,
-.subtitle.-light {
+.-light,
+.-light a {
   color: white;
 }
 
