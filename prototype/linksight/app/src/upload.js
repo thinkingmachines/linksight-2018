@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import {Grid, Cell} from 'styled-css-grid'
-import axios from 'axios'
 import {Redirect} from 'react-router-dom'
 
 // Images

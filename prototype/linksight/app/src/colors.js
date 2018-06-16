@@ -6,6 +6,7 @@ export const green = '#2bb673'
 export const orange = '#ff6633'
 export const monochrome = [
   '#ffffff',
+  '#fafafa',
   '#dbdbdb',
   '#b4b4b4',
   '#5d5d5d',

@@ -24,17 +24,17 @@ export const PrimaryButton = Button.extend`
 
 export const Toggle = styled(ReactToggle)`
   .react-toggle-thumb {
-    border-color: ${colors.monochrome[2]};
+    border-color: ${colors.monochrome[3]};
   }
   &.react-toggle--checked .react-toggle-track,
   &.react-toggle--checked:hover:not(.react-toggle--disabled) .react-toggle-track {
     background-color: ${colors.yellow};
   }
   .react-toggle-track {
-    background-color: ${colors.monochrome[2]};
+    background-color: ${colors.monochrome[4]};
   }
   &:hover:not(.react-toggle--disabled) .react-toggle-track {
-    background-color: ${colors.monochrome[3]} !important;
+    background-color: ${colors.monochrome[4]} !important;
   }
   &.react-toggle--focus .react-toggle-thumb,
   &:active:not(.react-toggle--disabled) .react-toggle-thumb {

@@ -50,11 +50,11 @@ export default styled(DatasetCard)`
     padding: 0 20px;
   }
   .actions a {
-    color: ${colors.monochrome[2]};
+    color: ${colors.monochrome[3]};
     text-decoration: none;
   }
   .bull {
-    color: ${colors.monochrome[2]};
+    color: ${colors.monochrome[3]};
     font-size: 24px;
     margin: 0 5px;
     vertical-align: -2px;

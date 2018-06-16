@@ -24,6 +24,7 @@ class Dataset(models.Model):
             )
             preview['schema'].pop('pandas_version')
         preview['file'] = {
+            'name': self.name,
             'size': f.size,
             'rows': len(df),
         }

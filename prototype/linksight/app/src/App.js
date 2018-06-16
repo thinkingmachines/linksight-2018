@@ -1,7 +1,7 @@
 import React from 'react'
 import {Route, Switch} from 'react-router-dom'
 import styled from 'styled-components'
-import { Grid, Cell } from 'styled-css-grid'
+import {Grid, Cell} from 'styled-css-grid'
 
 // Stylesheets
 import './css/app.css'
@@ -17,6 +17,7 @@ import * as colors from './colors'
 
 // Pages
 import Upload from './upload'
+import Preview from './preview'
 
 class App extends React.Component {
   render () {
@@ -42,6 +43,7 @@ class App extends React.Component {
         </Grid>
         <Switch>
           <Route exact path='/' component={Upload} />
+          <Route exact path='/:id/preview' component={Preview} />
         </Switch>
       </div>
     )
