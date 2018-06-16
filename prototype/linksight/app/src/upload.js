@@ -1,6 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Grid, Cell } from 'styled-css-grid'
+import {Grid, Cell} from 'styled-css-grid'
+import axios from 'axios'
+import {Redirect} from 'react-router-dom'
 
 // Images
 import tablemap from './images/tablemap.svg'
@@ -43,7 +45,8 @@ class Upload extends React.Component {
       window.alert(err)
       return
     }
-    window.alert(JSON.parse(file.serverId).id)
+    let datasetId = JSON.parse(file.serverId).id
+    this.setState({datasetId})
   }
   renderDatasetCards () {
     return (
@@ -57,6 +60,9 @@ class Upload extends React.Component {
     )
   }
   render () {
+    if (this.state.datasetId) {
+      return <Redirect push to={`/${this.state.datasetId}/preview`} />
+    }
     return (
       <div className={this.props.className}>
         <Grid columns={12} gap='15px' className='page'>
@@ -66,7 +72,7 @@ class Upload extends React.Component {
               name='file'
               server='http://localhost:8000/api/datasets/'
               allowRevert={false}
-              onprocessfile={this.handleProcessFile}
+              onprocessfile={this.handleProcessFile.bind(this)}
             />
           </Cell>
           <Cell width={4} left={7}>

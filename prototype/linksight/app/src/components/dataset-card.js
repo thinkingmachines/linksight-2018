@@ -18,9 +18,9 @@ class DatasetCard extends React.Component {
         <p className='description -small'>{this.props.description}</p>
         <div className='actions -small'>
           <a href='#'>About</a>
-          &bull;
+          <span className='bull'>&bull;</span>
           <a href='#'>Preview</a>
-          &bull;
+          <span className='bull'>&bull;</span>
           <a href='#'>Download</a>
         </div>
       </div>
@@ -48,5 +48,15 @@ export default styled(DatasetCard)`
   }
   .info, .toggle {
     padding: 0 20px;
+  }
+  .actions a {
+    color: ${colors.monochrome[2]};
+    text-decoration: none;
+  }
+  .bull {
+    color: ${colors.monochrome[2]};
+    font-size: 24px;
+    margin: 0 5px;
+    vertical-align: -2px;
   }
 `

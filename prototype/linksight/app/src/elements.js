@@ -1,6 +1,8 @@
 import styled from 'styled-components'
 import ReactToggle from 'react-toggle'
 
+import * as colors from './colors'
+
 export const Title = styled.h1`
   font-size: 52px;
   line-height: 60px;
@@ -8,32 +10,37 @@ export const Title = styled.h1`
 
 export const Button = styled.button`
   border: 0;
-  background: white;
+  background: ${colors.yellow};
   padding: 0 1em;
   line-height: 3;
   &:hover {
-    background: magenta;
+    background: ${colors.yellow};
   }
 `
 
 export const PrimaryButton = Button.extend`
-  background: pink;
+  background: ${colors.purple};
 `
 
 export const Toggle = styled(ReactToggle)`
   .react-toggle-thumb {
-    border-color: #b4b4b4;
+    border-color: ${colors.monochrome[2]};
   }
   &.react-toggle--checked .react-toggle-track,
   &.react-toggle--checked:hover:not(.react-toggle--disabled) .react-toggle-track {
-    background-color: pink;
+    background-color: ${colors.yellow};
   }
-  .react-toggle-track,
+  .react-toggle-track {
+    background-color: ${colors.monochrome[2]};
+  }
   &:hover:not(.react-toggle--disabled) .react-toggle-track {
-    background-color: #b4b4b4;
+    background-color: ${colors.monochrome[3]} !important;
   }
   &.react-toggle--focus .react-toggle-thumb,
   &:active:not(.react-toggle--disabled) .react-toggle-thumb {
     box-shadow: none;
+  }
+  &.react-toggle--checked .react-toggle-thumb {
+    border-color: ${colors.yellow};
   }
 `

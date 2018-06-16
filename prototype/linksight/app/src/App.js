@@ -1,4 +1,5 @@
 import React from 'react'
+import {Route, Switch} from 'react-router-dom'
 import styled from 'styled-components'
 import { Grid, Cell } from 'styled-css-grid'
 
@@ -39,7 +40,9 @@ class App extends React.Component {
             </Grid>
           </Cell>
         </Grid>
-        <Upload />
+        <Switch>
+          <Route exact path='/' component={Upload} />
+        </Switch>
       </div>
     )
   }
