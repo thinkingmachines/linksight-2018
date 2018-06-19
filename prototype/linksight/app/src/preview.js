@@ -8,10 +8,18 @@ import {fileSize} from 'humanize-plus'
 import * as colors from './colors'
 
 // Components
+import PreviewTable from './components/preview-table'
 import LocationColumn from './components/location-column'
 
 // Elements
 import {Button} from './elements'
+
+// Constants
+const highlightColors = {
+  'barangay': colors.indigo,
+  'city_municipality': colors.teal,
+  'province': colors.orange,
+}
 
 class Preview extends React.Component {
   constructor (props) {
@@ -28,9 +36,6 @@ class Preview extends React.Component {
         this.setState({preview: resp.data})
       })
   }
-  componentDidUpdate (prevProps, prevState) {
-    console.log(prevState, this.state)
-  }
   getFields () {
     const {fields} = this.state.preview.schema
     return fields.filter(field => field.name !== 'index')
@@ -40,6 +45,17 @@ class Preview extends React.Component {
       label: field.name,
       value: field.name
     }))
+  }
+  getColumnHighlights () {
+    const {selectedLocationColumns} = this.state
+    const highlights = {}
+    for (let locationType in selectedLocationColumns) {
+      let column = selectedLocationColumns[locationType]
+      if (column) {
+        highlights[column] = highlightColors[locationType]
+      }
+    }
+    return highlights
   }
   selectLocationColumn (locationType, column) {
     const {selectedLocationColumns} = this.state
@@ -56,34 +72,6 @@ class Preview extends React.Component {
       selectedLocationColumns.barangay &&
       selectedLocationColumns.city_municipality &&
       selectedLocationColumns.province
-    )
-  }
-  renderTable () {
-    const data = {}
-    const fields = this.getFields()
-    this.state.preview.data.forEach(row => {
-      fields.forEach(field => {
-        if (!data[field.name]) {
-          data[field.name] = []
-        }
-        data[field.name].push(row[field.name])
-      })
-    })
-    return (
-      <div className='table'>
-        {fields.map((field, i) => (
-          <div key={i} className='table-column'>
-            <div className='table-header table-cell'>
-              {field.name}
-            </div>
-            {data[field.name].map((value, i) => (
-              <div key={i} className='table-cell'>
-                {value || ' '}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
     )
   }
   render () {
@@ -103,7 +91,10 @@ class Preview extends React.Component {
                   {file.rows} rows ({fileSize(file.size)})
                 </p>
                 <br />
-                {this.renderTable()}
+                <PreviewTable
+                  preview={this.state.preview}
+                  columnHighlights={this.getColumnHighlights()}
+                />
               </Cell>
               <Cell width={2} className='location-columns'>
                 Select the following<br />
@@ -174,32 +165,6 @@ export default styled(Preview)`
   }
   .file-info {
     color: ${colors.monochrome[4]};
-  }
-  .table {
-    display: flex;
-    overflow: auto;
-  }
-  .table-column {
-    border: 1px solid ${colors.monochrome[2]};
-    margin: 0 2px;
-  }
-  .table-column:first-child {
-    margin-left: 0;
-  }
-  .table-column:last-child {
-    margin-right: 0;
-  }
-  .table-header {
-    background: ${colors.monochrome[1]};
-  }
-  .table-cell {
-    box-sizing: border-box;
-    white-space: pre;
-    padding: 10px 15px;
-    border-bottom: 1px solid ${colors.monochrome[2]};
-  }
-  .table-cell:last-child {
-    border-bottom: 0;
   }
   .location-columns {
     padding: 40px 30px;
