@@ -20,6 +20,8 @@ import * as elements from '../src/elements'
 // Components
 import DatasetCard from '../src/components/dataset-card'
 import UploadWidget from '../src/components/upload-widget'
+import PreviewTable from '../src/components/preview-table'
+import LocationColumn from '../src/components/location-column'
 
 const pages = [
   {
@@ -59,6 +61,16 @@ const pages = [
         path: '/components/dataset-card',
         title: 'DatasetCard',
         content: pageLoader(() => import('./components/dataset-card.md'))
+      },
+      {
+        path: '/components/preview-table',
+        title: 'PreviewTable',
+        content: pageLoader(() => import('./components/preview-table.md'))
+      },
+      {
+        path: '/components/location-column',
+        title: 'LocationColumn',
+        content: pageLoader(() => import('./components/location-column.md'))
       }
     ]
   }
@@ -76,7 +88,9 @@ const imports = {
   ...elements,
   DatasetCard,
   datasetCardIconUrl,
-  UploadWidget
+  UploadWidget,
+  PreviewTable,
+  LocationColumn
 }
 
 ReactDOM.render(

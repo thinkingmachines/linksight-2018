@@ -28,11 +28,8 @@ const TableColumn = styled(props => (
   .table-column:last-child {
     margin-right: 0;
   }
-  .table-header {
-    background: ${colors.monochrome[1]};
-    box-shadow: inset 0 4px 0 0 ${props => props.highlight || 'transparent'};
-  }
   .table-cell {
+    background: ${colors.monochrome[0]};
     box-sizing: border-box;
     white-space: pre;
     padding: 10px 15px;
@@ -40,6 +37,10 @@ const TableColumn = styled(props => (
   }
   .table-cell:last-child {
     border-bottom: 0;
+  }
+  .table-header {
+    background: ${colors.monochrome[1]};
+    box-shadow: inset 0 4px 0 0 ${props => props.highlight || 'transparent'};
   }
 `
 
