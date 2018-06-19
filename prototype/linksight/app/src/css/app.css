@@ -1,7 +1,12 @@
 body, html, #root {
   height: 100%;
 }
+body, html {
+  overflow: hidden;
+}
 body {
   margin: 0;
-  overflow: hidden;
+}
+#root {
+  overflow-y: scroll;
 }

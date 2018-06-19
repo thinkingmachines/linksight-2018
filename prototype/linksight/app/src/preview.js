@@ -7,10 +7,19 @@ import {fileSize} from 'humanize-plus'
 // Colors
 import * as colors from './colors'
 
+// Components
+import LocationColumn from './components/location-column'
+
+// Elements
+import {Button} from './elements'
+
 class Preview extends React.Component {
   constructor (props) {
     super(props)
-    this.state = {preview: null}
+    this.state = {
+      preview: null,
+      selectedLocationColumns: {}
+    }
   }
   componentDidMount () {
     let {id} = this.props.match.params
@@ -19,9 +28,39 @@ class Preview extends React.Component {
         this.setState({preview: resp.data})
       })
   }
-  renderTable () {
+  componentDidUpdate (prevProps, prevState) {
+    console.log(prevState, this.state)
+  }
+  getFields () {
     const {fields} = this.state.preview.schema
+    return fields.filter(field => field.name !== 'index')
+  }
+  getColumnOptions () {
+    return this.getFields().map(field => ({
+      label: field.name,
+      value: field.name
+    }))
+  }
+  selectLocationColumn (locationType, column) {
+    const {selectedLocationColumns} = this.state
+    this.setState({
+      selectedLocationColumns: {
+        ...selectedLocationColumns,
+        [`${locationType}`]: column
+      }
+    })
+  }
+  hasLocationColumnsSelected () {
+    const {selectedLocationColumns} = this.state
+    return (
+      selectedLocationColumns.barangay &&
+      selectedLocationColumns.city_municipality &&
+      selectedLocationColumns.province
+    )
+  }
+  renderTable () {
     const data = {}
+    const fields = this.getFields()
     this.state.preview.data.forEach(row => {
       fields.forEach(field => {
         if (!data[field.name]) {
@@ -32,7 +71,7 @@ class Preview extends React.Component {
     })
     return (
       <div className='table'>
-        {fields.filter(field => field.name !== 'index').map((field, i) => (
+        {fields.map((field, i) => (
           <div key={i} className='table-column'>
             <div className='table-header table-cell'>
               {field.name}
@@ -55,10 +94,10 @@ class Preview extends React.Component {
     return (
       <div className={this.props.className}>
         <div className='overlay' />
-        <Grid columns={12} gap='0' alignContent='center' className='modal'>
+        <Grid columns={12} gap='0' alignContent='center' className='page'>
           <Cell width={10} left={2} className='box'>
-            <Grid columns={10} gap='0' alignContent='stretch'>
-              <Cell width={7} className='preview'>
+            <Grid columns={10} gap='0' alignContent='space-between'>
+              <Cell width={8} className='preview'>
                 <h1>{file.name}</h1>
                 <p className='file-info -small'>
                   {file.rows} rows ({fileSize(file.size)})
@@ -66,8 +105,35 @@ class Preview extends React.Component {
                 <br />
                 {this.renderTable()}
               </Cell>
-              <Cell width={3} className='location-columns'>
-                Columns
+              <Cell width={2} className='location-columns'>
+                Select the following<br />
+                location columns:
+                <br />
+                <br />
+                <br />
+                <LocationColumn
+                  name='Barangay'
+                  color={colors.indigo}
+                  columnOptions={this.getColumnOptions()}
+                  onChange={this.selectLocationColumn.bind(this, 'barangay')}
+                />
+                <br />
+                <LocationColumn
+                  name='City/Municipality'
+                  color={colors.teal}
+                  columnOptions={this.getColumnOptions()}
+                  onChange={this.selectLocationColumn.bind(this, 'city_municipality')}
+                />
+                <br />
+                <LocationColumn
+                  name='Province'
+                  color={colors.orange}
+                  columnOptions={this.getColumnOptions()}
+                  onChange={this.selectLocationColumn.bind(this, 'province')}
+                />
+                {this.hasLocationColumnsSelected() && (
+                  <Button className='proceed'>Proceed</Button>
+                )}
               </Cell>
             </Grid>
           </Cell>
@@ -91,8 +157,7 @@ export default styled(Preview)`
     height: 100%;
     width: 100%;
   }
-  .modal {
-    position: relative;
+  .page {
     height: 100%;
     .box {
       background: ${colors.monochrome[0]};
@@ -140,5 +205,10 @@ export default styled(Preview)`
     padding: 40px 30px;
     background: ${colors.monochrome[1]};
     border-left: 1px solid ${colors.monochrome[2]};
+    position: relative;
+  }
+  .proceed {
+    position: absolute;
+    bottom: 40px;
   }
 `

@@ -28,17 +28,17 @@ export const Toggle = styled(ReactToggle)`
   }
   &.react-toggle--checked .react-toggle-track,
   &.react-toggle--checked:hover:not(.react-toggle--disabled) .react-toggle-track {
-    background-color: ${colors.yellow};
+    background-color: ${colors.yellow} !important;
   }
   .react-toggle-track {
-    background-color: ${colors.monochrome[4]};
+    background-color: ${colors.monochrome[3]};
   }
-  &:hover:not(.react-toggle--disabled) .react-toggle-track {
+  &:hover:not(.react-toggle--disabled) > .react-toggle-track {
     background-color: ${colors.monochrome[4]} !important;
   }
   &.react-toggle--focus .react-toggle-thumb,
   &:active:not(.react-toggle--disabled) .react-toggle-thumb {
-    box-shadow: none;
+    box-shadow: none !important;
   }
   &.react-toggle--checked .react-toggle-thumb {
     border-color: ${colors.yellow};

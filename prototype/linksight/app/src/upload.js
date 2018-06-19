@@ -88,6 +88,9 @@ class Upload extends React.Component {
 }
 
 export default styled(Upload)`
+  .page {
+    padding-bottom: 50px;
+  }
   .dot {
     position: relative;
   }

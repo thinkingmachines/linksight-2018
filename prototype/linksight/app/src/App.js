@@ -52,7 +52,7 @@ class App extends React.Component {
 
 export default styled(App)`
   background: ${colors.indigo};
-  height: 100%;
+  min-height: 100%;
   &:before {
     content: ' ';
     width: 100%;
