@@ -1,13 +1,13 @@
 # Python
 __pycache__/
-/venv/
+venv/
 
 # Django
 /media/
 /static/
 
 # Node
-/node_modules/
+node_modules/
 
 # Config
 .env
