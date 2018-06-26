@@ -1,6 +1,12 @@
 ## Brand Colors
 
 ```color
+name: Indigo
+value: !import indigo
+span: 1
+```
+
+```color
 name: Purple
 value: !import purple
 span: 1
@@ -22,7 +28,7 @@ span: 1
 ```
 
 ```color
-value: !import red
+value: !import orange
 span: 1
 ```
 
