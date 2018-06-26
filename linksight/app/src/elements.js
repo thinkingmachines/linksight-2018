@@ -11,8 +11,10 @@ export const Title = styled.h1`
 export const Button = styled.button`
   border: 0;
   background: ${colors.yellow};
+  color: ${colors.monochrome[0]};
   padding: 0 1em;
-  line-height: 3;
+  line-height: 35px;
+  border-radius: 10px;
   &:hover {
     background: ${colors.yellow};
   }
