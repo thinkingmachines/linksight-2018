@@ -7,6 +7,9 @@ import {fileSize} from 'humanize-plus'
 // Colors
 import * as colors from './colors'
 
+// Layouts
+import Page from './layouts/page'
+
 // Components
 import PreviewTable from './components/preview-table'
 import LocationColumn from './components/location-column'
@@ -18,7 +21,7 @@ import {Button} from './elements'
 const highlightColors = {
   'barangay': colors.indigo,
   'city_municipality': colors.teal,
-  'province': colors.orange,
+  'province': colors.orange
 }
 
 class Preview extends React.Component {
@@ -80,56 +83,58 @@ class Preview extends React.Component {
     }
     const {file} = this.state.preview
     return (
-      <div className={this.props.className}>
-        <div className='overlay' />
-        <Grid columns={12} gap='0' alignContent='center' className='page'>
-          <Cell width={10} left={2} className='box'>
-            <Grid columns={10} gap='0' alignContent='space-between'>
-              <Cell width={8} className='preview'>
-                <h1>{file.name}</h1>
-                <p className='file-info -small'>
-                  {file.rows} rows ({fileSize(file.size)})
-                </p>
-                <br />
-                <PreviewTable
-                  preview={this.state.preview}
-                  columnHighlights={this.getColumnHighlights()}
-                />
-              </Cell>
-              <Cell width={2} className='location-columns'>
-                Select the following<br />
-                location columns:
-                <br />
-                <br />
-                <br />
-                <LocationColumn
-                  name='Barangay'
-                  color={colors.indigo}
-                  columnOptions={this.getColumnOptions()}
-                  onChange={this.selectLocationColumn.bind(this, 'barangay')}
-                />
-                <br />
-                <LocationColumn
-                  name='City/Municipality'
-                  color={colors.teal}
-                  columnOptions={this.getColumnOptions()}
-                  onChange={this.selectLocationColumn.bind(this, 'city_municipality')}
-                />
-                <br />
-                <LocationColumn
-                  name='Province'
-                  color={colors.orange}
-                  columnOptions={this.getColumnOptions()}
-                  onChange={this.selectLocationColumn.bind(this, 'province')}
-                />
-                {this.hasLocationColumnsSelected() && (
-                  <Button className='proceed'>Proceed</Button>
-                )}
-              </Cell>
-            </Grid>
-          </Cell>
-        </Grid>
-      </div>
+      <Page {...this.props}>
+        <div className={this.props.className}>
+          <div className='overlay' />
+          <Grid columns={12} gap='0' alignContent='center' className='page'>
+            <Cell width={10} left={2} className='box'>
+              <Grid columns={10} gap='0' alignContent='space-between'>
+                <Cell width={8} className='preview'>
+                  <h1>{file.name}</h1>
+                  <p className='file-info -small'>
+                    {file.rows} rows ({fileSize(file.size)})
+                  </p>
+                  <br />
+                  <PreviewTable
+                    preview={this.state.preview}
+                    columnHighlights={this.getColumnHighlights()}
+                  />
+                </Cell>
+                <Cell width={2} className='location-columns'>
+                  Select the following<br />
+                  location columns:
+                  <br />
+                  <br />
+                  <br />
+                  <LocationColumn
+                    name='Barangay'
+                    color={colors.indigo}
+                    columnOptions={this.getColumnOptions()}
+                    onChange={this.selectLocationColumn.bind(this, 'barangay')}
+                  />
+                  <br />
+                  <LocationColumn
+                    name='City/Municipality'
+                    color={colors.teal}
+                    columnOptions={this.getColumnOptions()}
+                    onChange={this.selectLocationColumn.bind(this, 'city_municipality')}
+                  />
+                  <br />
+                  <LocationColumn
+                    name='Province'
+                    color={colors.orange}
+                    columnOptions={this.getColumnOptions()}
+                    onChange={this.selectLocationColumn.bind(this, 'province')}
+                  />
+                  {this.hasLocationColumnsSelected() && (
+                    <Button className='proceed'>Proceed</Button>
+                  )}
+                </Cell>
+              </Grid>
+            </Cell>
+          </Grid>
+        </div>
+      </Page>
     )
   }
 }

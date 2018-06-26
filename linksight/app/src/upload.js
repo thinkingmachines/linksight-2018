@@ -12,6 +12,9 @@ import * as colors from './colors'
 // Elements
 import {Title} from './elements'
 
+// Layouts
+import Page from './layouts/page'
+
 // Components
 import DatasetCard from './components/dataset-card'
 import UploadWidget from './components/upload-widget'
@@ -63,26 +66,28 @@ class Upload extends React.Component {
       return <Redirect push to={`/${this.state.datasetId}/preview`} />
     }
     return (
-      <div className={this.props.className}>
-        <Grid columns={12} gap='15px' className='page'>
-          <Cell width={4} left={2} center middle>
-            <img width='100%' src={tablemap} />
-            <UploadWidget
-              name='file'
-              server='http://localhost:8000/api/datasets/'
-              allowRevert={false}
-              onprocessfile={this.handleProcessFile.bind(this)}
-            />
-          </Cell>
-          <Cell width={4} left={7}>
-            <Title className='-light'>Expand your<br />data po<span className='dot'>i</span>nt of v<span className='dot'>i</span>ew</Title>
-            <br />
-            <p className='subtitle -light'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua connect to public datasets:</p>
-            <br />
-            {this.renderDatasetCards()}
-          </Cell>
-        </Grid>
-      </div>
+      <Page {...this.props}>
+        <div className={this.props.className}>
+          <Grid columns={12} gap='15px' className='page'>
+            <Cell width={4} left={2} center middle>
+              <img width='100%' src={tablemap} />
+              <UploadWidget
+                name='file'
+                server='http://localhost:8000/api/datasets/'
+                allowRevert={false}
+                onprocessfile={this.handleProcessFile.bind(this)}
+              />
+            </Cell>
+            <Cell width={4} left={7}>
+              <Title className='-light'>Expand your<br />data po<span className='dot'>i</span>nt of v<span className='dot'>i</span>ew</Title>
+              <br />
+              <p className='subtitle -light'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua connect to public datasets:</p>
+              <br />
+              {this.renderDatasetCards()}
+            </Cell>
+          </Grid>
+        </div>
+      </Page>
     )
   }
 }
