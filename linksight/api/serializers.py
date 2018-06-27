@@ -19,4 +19,3 @@ class DatasetPreviewSerializer(serializers.BaseSerializer):
 
     def to_representation(self, obj):
         return obj.preview()
-
