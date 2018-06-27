@@ -8,7 +8,7 @@ import toggleStyles from '../src/css/react-toggle.css'
 import filepondStyles from 'filepond/dist/filepond.min.css'
 
 // Images
-import logo from '../src/images/linksight-logo.png'
+import logo from '../src/images/logo.svg'
 import datasetCardIconUrl from '../src/images/public-datasets/public-dataset-icon-population.svg'
 
 // Colors

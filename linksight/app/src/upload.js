@@ -66,9 +66,9 @@ class Upload extends React.Component {
       return <Redirect push to={`/${this.state.datasetId}/preview`} />
     }
     return (
-      <Page {...this.props}>
-        <div className={this.props.className}>
-          <Grid columns={12} gap='15px' className='page'>
+      <Page match={this.props.match}>
+        <Cell width={12} className={this.props.className}>
+          <Grid columns={12} gap='15px' height='100%' alignContent='center'>
             <Cell width={4} left={2} center middle>
               <img width='100%' src={tablemap} />
               <UploadWidget
@@ -86,16 +86,14 @@ class Upload extends React.Component {
               {this.renderDatasetCards()}
             </Cell>
           </Grid>
-        </div>
+        </Cell>
       </Page>
     )
   }
 }
 
 export default styled(Upload)`
-  .page {
-    padding-bottom: 50px;
-  }
+  position: relative;
   .dot {
     position: relative;
   }

@@ -83,10 +83,10 @@ class Preview extends React.Component {
     }
     const {file} = this.state.preview
     return (
-      <Page {...this.props}>
-        <div className={this.props.className}>
+      <Page match={this.props.match}>
+        <Cell width={12} className={this.props.className}>
           <div className='overlay' />
-          <Grid columns={12} gap='0' alignContent='center' className='page'>
+          <Grid columns={12} gap='0' height='100%' alignContent='center'>
             <Cell width={10} left={2} className='box'>
               <Grid columns={10} gap='0' alignContent='space-between'>
                 <Cell width={8} className='preview'>
@@ -133,31 +133,26 @@ class Preview extends React.Component {
               </Grid>
             </Cell>
           </Grid>
-        </div>
+        </Cell>
       </Page>
     )
   }
 }
 
 export default styled(Preview)`
-  &, .overlay {
-    position: absolute;
-    width: 100%;
-    height: 100%;
+  position: relative;
+  .overlay {
+    position: fixed;
     top: 0;
     left: 0;
-  }
-  .overlay {
     background: ${colors.indigo};
     opacity: 0.5;
     height: 100%;
     width: 100%;
   }
-  .page {
-    height: 100%;
-    .box {
-      background: ${colors.monochrome[0]};
-    }
+  .box {
+    position: relative;
+    background: ${colors.monochrome[0]};
   }
   .preview, .location-columns {
     box-sizing: border-box;

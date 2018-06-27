@@ -14,6 +14,7 @@ import * as colors from './colors'
 // Pages
 import Upload from './upload'
 import Preview from './preview'
+import Check from './check'
 
 class App extends React.Component {
   render () {
@@ -22,6 +23,7 @@ class App extends React.Component {
         <Switch>
           <Route exact path='/' component={Upload} />
           <Route exact path='/:id/preview' component={Preview} />
+          <Route exact path='/:id/check' component={Check} />
         </Switch>
       </div>
     )
@@ -30,7 +32,6 @@ class App extends React.Component {
 
 export default styled(App)`
   background: ${colors.indigo};
-  min-height: 100%;
   &:before {
     content: ' ';
     width: 100%;
@@ -41,8 +42,5 @@ export default styled(App)`
     position: absolute;
     top: -25%;
     left: -55%;
-  }
-  .page {
-    position: relative;
   }
 `

@@ -7,6 +7,18 @@ span: 1
 ```
 
 ```color
+name: Indigo (Light)
+value: !import lightIndigo
+span: 1
+```
+
+```color
+name: Indigo (Dark)
+value: !import darkIndigo
+span: 1
+```
+
+```color
 name: Purple
 value: !import purple
 span: 1
