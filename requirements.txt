@@ -5,13 +5,18 @@
 #    pip-compile --output-file requirements.txt requirements.in
 #
 dj-database-url==0.5.0
-django-cors-headers==2.2.0
-django==2.0.5
+django-cors-headers==2.2.1
+django==2.0.6
 djangorestframework==3.8.2
-numpy==1.14.3             # via pandas
-pandas==0.22.0
-psycopg2-binary==2.7.4
+jellyfish==0.6.1          # via recordlinkage
+numpy==1.14.5             # via pandas, recordlinkage, scipy
+pandas==0.23.1
+psycopg2-binary==2.7.5
 python-dateutil==2.7.3    # via pandas
 python-dotenv==0.8.2
 pytz==2018.4              # via django, pandas
-six==1.11.0               # via python-dateutil
+recordlinkage==0.11.2
+scikit-learn==0.19.1      # via recordlinkage
+scipy==1.1.0              # via recordlinkage
+six==1.11.0               # via python-dateutil, recordlinkage
+xlrd==1.1.0
