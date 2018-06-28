@@ -30,9 +30,9 @@ class PSGCCodeMatcher:
         self.psgc = psgc
         self.dataset = dataset
 
-    def get_matches(self, file):
+    def get_matches(self, file, max_near_matches):
         self._clean_data()
-        self._collect_matches().to_csv(file, index=False)
+        self._collect_matches(max_near_matches).to_csv(file, index=False)
 
     # TODO: Refactor the replace logic
     def _clean_data(self):
@@ -80,7 +80,7 @@ class PSGCCodeMatcher:
         replacement = lambda m: 'SANTO {}'.format(m.group(1))
         self.dataset = _replace_value_in_col(self.dataset, "Barangay", regex, replacement)
 
-    def _collect_matches(self):
+    def _collect_matches(self, max_near_matches=5):
 
         psgc = self.psgc
 
@@ -175,9 +175,8 @@ class PSGCCodeMatcher:
             final_merge = higher_level
 
         merged = pd.merge(self.dataset, final_merge['table'], how='left', left_index=True, right_on='dataset_index')
-        print(merged[merged['matched']==True])
-
-        return self._add_total_score(merged)
+        scored = self._add_total_score(merged)
+        return scored.groupby(['dataset_index']).head(max_near_matches)
 
     def _dataset_has(self, field):
         return True if len(self.dataset[self.dataset[field].notna()]) else False
