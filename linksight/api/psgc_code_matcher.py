@@ -276,7 +276,8 @@ class PSGCCodeMatcher:
         table.drop(columns=['psgc_code_index'], inplace=True)
         return table
 
-    def _rename_interlevel_specific_cols(self, table, prefix):
+    @staticmethod
+    def _rename_interlevel_specific_cols(table, prefix):
         columns = list(table.columns)
         columns[columns.index('location')] = prefix
         columns[columns.index('code')] = '{} PSGC Code'.format(prefix)
@@ -284,11 +285,13 @@ class PSGCCodeMatcher:
         table.columns = columns
         return table
 
-    def _add_matching_code(self, table, psgc_field_name, code_offset):
+    @staticmethod
+    def _add_matching_code(table, psgc_field_name, code_offset):
         table['matching_code'] = list(table[psgc_field_name].astype(str).str[:code_offset].astype(int, errors='ignore'))
         return table
 
-    def _merge_interlevel_matches(self, left_table, right_table):
+    @staticmethod
+    def _merge_interlevel_matches(left_table, right_table):
         merged = pd.merge(left_table,
                           right_table,
                           on=['matching_code', 'client_doc_index'],
@@ -303,7 +306,8 @@ class PSGCCodeMatcher:
         df = self._drop_match_duplicates(df)
         return df
 
-    def _drop_match_duplicates(self, df):
+    @staticmethod
+    def _drop_match_duplicates(df):
         exact_matches = df[df['matched'] == True]
         df.drop(
             df[(df['client_doc_index'].isin(list(exact_matches['client_doc_index']))) & (df['matched'] == False)].index,
@@ -311,7 +315,8 @@ class PSGCCodeMatcher:
         df.drop(columns=['matching_code'], inplace=True)
         return df
 
-    def _add_total_score(self, df):
+    @staticmethod
+    def _add_total_score(df):
         regex = re.compile(r'Score', re.IGNORECASE)
         score_columns = list(filter(regex.search, list(df.columns)))
 
