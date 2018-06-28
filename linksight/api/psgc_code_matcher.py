@@ -89,8 +89,7 @@ class PSGCCodeMatcher:
             psgc_doc_prov = psgc_doc[(psgc_doc["interlevel"] == 'PROV') |
                                      (psgc_doc["interlevel"].isnull())]
 
-            fields = ['location']
-            prov_matches = self._get_interlevel_matches('Province', psgc_doc_prov, fields)
+            prov_matches = self._get_interlevel_matches('Province', psgc_doc_prov, 'location')
 
             prov_matches = self._add_psgc_columns(prov_matches)
             prov_matches = self._rename_interlevel_specific_cols(prov_matches, prefix)
@@ -120,8 +119,7 @@ class PSGCCodeMatcher:
 
             psgc_doc_city = _replace_value_in_col(psgc_doc_city, "location", regex, replacement)
 
-            fields = ['location']
-            city_matches = self._get_interlevel_matches('Municipality/City', psgc_doc_city, fields)
+            city_matches = self._get_interlevel_matches('Municipality/City', psgc_doc_city, 'location')
 
             city_matches = self._add_psgc_columns(city_matches)
             city_matches = self._rename_interlevel_specific_cols(city_matches, prefix)
@@ -169,8 +167,7 @@ class PSGCCodeMatcher:
 
             psgc_doc_bgy = psgc_doc[psgc_doc["interlevel"] == 'BGY']
 
-            fields = ['location']
-            bgy_matches = self._get_interlevel_matches('Barangay', psgc_doc_bgy, fields)
+            bgy_matches = self._get_interlevel_matches('Barangay', psgc_doc_bgy, 'location')
 
             bgy_matches = self._add_psgc_columns(bgy_matches)
             bgy_matches = self._rename_interlevel_specific_cols(bgy_matches, prefix)
@@ -212,7 +209,7 @@ class PSGCCodeMatcher:
     def _dataset_has(self, field):
         return True if len(self.dataset[self.dataset[field].notna()]) else False
 
-    def _get_interlevel_matches(self, interlevel, psgc_doc, fields):
+    def _get_interlevel_matches(self, interlevel, psgc_doc, field):
         """Match the dataset index with the accompanying PSGC index
 
         The input name is compared to the PSGC reference dataframe on the same inter-level.
@@ -224,44 +221,42 @@ class PSGCCodeMatcher:
         Args:
             interlevel: A string representing the interlevel of the location being matched
             psgc_doc: A dataframe representing the PSGC data
-            fields: A list of fields to be used for matching
+            field: The name of the column that will be used for matching
 
         Returns:
-            a dataframe containing the dataset index, psgc index, and the matching score
+            A dataframe containing the dataset index, psgc index, and the matching score
         """
         client_doc = self.dataset
         matches_list = []
 
-        # TODO: Remove the loop since we are currently always using one field
-        for field in fields:
-            indexer = rl.SortedNeighbourhoodIndex(left_on=interlevel,
-                                                  right_on=field,
-                                                  window=999)
-            pairs = indexer.index(client_doc, psgc_doc)
+        indexer = rl.SortedNeighbourhoodIndex(left_on=interlevel,
+                                              right_on=field,
+                                              window=999)
+        pairs = indexer.index(client_doc, psgc_doc)
 
-            comp = rl.Compare()
+        comp = rl.Compare()
 
-            comp.exact(interlevel, field)
-            comp.string(interlevel, field, label=field)
+        comp.exact(interlevel, field)
+        comp.string(interlevel, field, label=field)
 
-            # TODO: A better approach for matching cities
-            if interlevel == 'Municipality/City':
-                regex = re.compile(r"(.*)")
-                replacement = lambda m: '{} CITY'.format(m.group(1))
-                client_doc['temp'] = list(client_doc[interlevel].str.replace(regex, replacement))
-                comp.exact('temp', field, label='temp')
-                features = comp.compute(pairs, client_doc, psgc_doc)
-                client_doc.drop(columns=['temp'], inplace=True)
-            else:
-                features = comp.compute(pairs, client_doc, psgc_doc)
+        # TODO: A better approach for matching cities
+        if interlevel == 'Municipality/City':
+            regex = re.compile(r"(.*)")
+            replacement = lambda m: '{} CITY'.format(m.group(1))
+            client_doc['temp'] = list(client_doc[interlevel].str.replace(regex, replacement))
+            comp.exact('temp', field, label='temp')
+            features = comp.compute(pairs, client_doc, psgc_doc)
+            client_doc.drop(columns=['temp'], inplace=True)
+        else:
+            features = comp.compute(pairs, client_doc, psgc_doc)
 
-            features['score'] = features.sum(axis=1)
+        features['score'] = features.sum(axis=1)
 
-            matches = pd.DataFrame(np.array(list(features.index)))
-            matches['score'] = list(features['score'])
-            matches.columns = ['client_doc_index', 'psgc_code_index', 'score']
+        matches = pd.DataFrame(np.array(list(features.index)))
+        matches['score'] = list(features['score'])
+        matches.columns = ['client_doc_index', 'psgc_code_index', 'score']
 
-            matches_list.append(matches[matches['score'] > 0])
+        matches_list.append(matches[matches['score'] > 0])
 
         combined = pd.concat(matches_list)
         return combined
