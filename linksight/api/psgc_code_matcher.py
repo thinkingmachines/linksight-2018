@@ -89,7 +89,7 @@ class PSGCCodeMatcher:
             prefix = "Matched Province"
             psgc_doc_prov = psgc[(psgc["interlevel"] == 'PROV') | (psgc["interlevel"].isnull())]
             prov_matches = self._generate_potential_matches(prefix=prefix,
-                                                            dataset=psgc_doc_prov,
+                                                            psgc_reference_df=psgc_doc_prov,
                                                             field='Province')
 
             prov_matches = self._add_matching_code(prov_matches,
@@ -106,7 +106,7 @@ class PSGCCodeMatcher:
             psgc_doc_city = psgc[psgc["interlevel"].isin(['CITY', 'MUN', 'SUBMUN'])]
 
             city_matches = self._generate_potential_matches(prefix=prefix,
-                                                            dataset=psgc_doc_city,
+                                                            psgc_reference_df=psgc_doc_city,
                                                             field="Municipality/City")
 
             if higher_level:
@@ -146,7 +146,7 @@ class PSGCCodeMatcher:
             psgc_doc_bgy = psgc[psgc["interlevel"] == 'BGY']
 
             bgy_matches = self._generate_potential_matches(prefix=prefix,
-                                                           dataset=psgc_doc_bgy,
+                                                           psgc_reference_df=psgc_doc_bgy,
                                                            field="Barangay")
 
             if higher_level:
@@ -174,7 +174,7 @@ class PSGCCodeMatcher:
         else:
             final_merge = higher_level
 
-        merged = pd.merge(self.dataset, final_merge['table'], how='left', left_index=True, right_on='client_doc_index')
+        merged = pd.merge(self.dataset, final_merge['table'], how='left', left_index=True, right_on='dataset_index')
         print(merged[merged['matched']==True])
 
         return self._add_total_score(merged)
@@ -182,24 +182,24 @@ class PSGCCodeMatcher:
     def _dataset_has(self, field):
         return True if len(self.dataset[self.dataset[field].notna()]) else False
 
-    def _generate_potential_matches(self, prefix, dataset, field):
+    def _generate_potential_matches(self, prefix, psgc_reference_df, field):
         """
         Adds the PSGC columns based on the indexes of the passed dataset
 
         Args:
             prefix: A string to be used as prefix to the column name
-            dataset: The dataframe containing PSGC index to be joined to the PSGC dataframe
+            psgc_reference_df: The dataframe containing PSGC index to be joined to the PSGC dataframe
             field: A string representing the name of the field to be used for matching
 
         Returns:
 
         """
-        matches = self._get_index_of_matches(field, dataset, 'location')
+        matches = self._get_index_of_matches(field, psgc_reference_df, 'location')
         matches = self._add_psgc_columns(matches)
         matches = self._rename_interlevel_specific_cols(matches, prefix)
         return matches
 
-    def _get_index_of_matches(self, interlevel, psgc_doc, field):
+    def _get_index_of_matches(self, interlevel, psgc_reference_df, field):
         """Match the dataset index with the accompanying PSGC index
 
         The input name is compared to the PSGC reference dataframe on the same inter-level.
@@ -210,19 +210,19 @@ class PSGCCodeMatcher:
 
         Args:
             interlevel: A string representing the interlevel of the location being matched
-            psgc_doc: A dataframe representing the PSGC data
+            psgc_reference_df: A dataframe representing the PSGC data
             field: The name of the column that will be used for matching
 
         Returns:
             A dataframe containing the dataset index, psgc index, and the matching score
         """
-        client_doc = self.dataset
+        dataset = self.dataset
         matches_list = []
 
         indexer = rl.SortedNeighbourhoodIndex(left_on=interlevel,
                                               right_on=field,
                                               window=999)
-        pairs = indexer.index(client_doc, psgc_doc)
+        pairs = indexer.index(dataset, psgc_reference_df)
 
         comp = rl.Compare()
 
@@ -233,18 +233,18 @@ class PSGCCodeMatcher:
         if interlevel == 'Municipality/City':
             regex = re.compile(r"(.*)")
             replacement = lambda m: '{} CITY'.format(m.group(1))
-            client_doc['temp'] = list(client_doc[interlevel].str.replace(regex, replacement))
+            dataset['temp'] = list(dataset[interlevel].str.replace(regex, replacement))
             comp.exact('temp', field, label='temp')
-            features = comp.compute(pairs, client_doc, psgc_doc)
-            client_doc.drop(columns=['temp'], inplace=True)
+            features = comp.compute(pairs, dataset, psgc_reference_df)
+            dataset.drop(columns=['temp'], inplace=True)
         else:
-            features = comp.compute(pairs, client_doc, psgc_doc)
+            features = comp.compute(pairs, dataset, psgc_reference_df)
 
         features['score'] = features.sum(axis=1)
 
         matches = pd.DataFrame(np.array(list(features.index)))
         matches['score'] = list(features['score'])
-        matches.columns = ['client_doc_index', 'psgc_code_index', 'score']
+        matches.columns = ['dataset_index', 'psgc_code_index', 'score']
 
         matches_list.append(matches[matches['score'] > 0])
 
@@ -292,7 +292,7 @@ class PSGCCodeMatcher:
     def _merge_interlevel_matches(left_table, right_table):
         merged = pd.merge(left_table,
                           right_table,
-                          on=['matching_code', 'client_doc_index'],
+                          on=['matching_code', 'dataset_index'],
                           how='outer',
                           suffixes=('_left', '_right'))
         return merged
@@ -308,7 +308,7 @@ class PSGCCodeMatcher:
     def _drop_match_duplicates(df):
         exact_matches = df[df['matched'] == True]
         df.drop(
-            df[(df['client_doc_index'].isin(list(exact_matches['client_doc_index']))) & (df['matched'] == False)].index,
+            df[(df['dataset_index'].isin(list(exact_matches['dataset_index']))) & (df['matched'] == False)].index,
             inplace=True)
         df.drop(columns=['matching_code'], inplace=True)
         return df
@@ -319,5 +319,5 @@ class PSGCCodeMatcher:
         score_columns = list(filter(regex.search, list(df.columns)))
 
         df['total_score'] = df[score_columns].sum(axis=1)
-        df.sort_values(by=['client_doc_index', 'total_score'], ascending=False, inplace=True)
+        df.sort_values(by=['dataset_index', 'total_score'], ascending=False, inplace=True)
         return df
