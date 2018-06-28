@@ -81,15 +81,14 @@ class PSGCCodeMatcher:
         self.dataset = _replace_value_in_col(self.dataset, "Barangay", regex, replacement)
 
     def _collect_matches(self):
+
+        psgc = self.psgc
+
         higher_level = {}
-
-        psgc_doc = self.psgc
-        client_doc = self.dataset
-
         if self._dataset_has('Province'):
             prefix = 'Matched Prov'
-            psgc_doc_prov = psgc_doc[(psgc_doc["interlevel"] == 'PROV') |
-                                     (psgc_doc["interlevel"].isnull())]
+            psgc_doc_prov = psgc[(psgc["interlevel"] == 'PROV') |
+                                     (psgc["interlevel"].isnull())]
 
             prov_matches = self._get_interlevel_matches('Province', psgc_doc_prov, 'location')
 
@@ -108,7 +107,7 @@ class PSGCCodeMatcher:
         if self._dataset_has('Municipality/City'):
             prefix = 'Matched Mun/City'
 
-            psgc_doc_city = psgc_doc[psgc_doc["interlevel"].isin(
+            psgc_doc_city = psgc[psgc["interlevel"].isin(
                 ['CITY', 'MUN', 'SUBMUN']
             )]
 
@@ -158,7 +157,7 @@ class PSGCCodeMatcher:
         if self._dataset_has('Barangay'):
             prefix = 'Matched Barangay'
 
-            psgc_doc_bgy = psgc_doc[psgc_doc["interlevel"] == 'BGY']
+            psgc_doc_bgy = psgc[psgc["interlevel"] == 'BGY']
 
             bgy_matches = self._get_interlevel_matches('Barangay', psgc_doc_bgy, 'location')
 
@@ -194,7 +193,7 @@ class PSGCCodeMatcher:
         else:
             final_merge = higher_level
 
-        merged = pd.merge(client_doc, final_merge['table'], how='left', left_index=True, right_on='client_doc_index')
+        merged = pd.merge(self.dataset, final_merge['table'], how='left', left_index=True, right_on='client_doc_index')
 
         return self._add_total_score(merged)
 
