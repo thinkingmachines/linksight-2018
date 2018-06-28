@@ -114,8 +114,6 @@ class PSGCCodeMatcher:
                                                        '{} PSGC Code'.format(prefix),
                                                        higher_level['offset'])
 
-                city_matches = _column_to_numeric(city_matches, 'matching_code')
-
                 partial_merge = self._merge_interlevel_matches(city_matches, higher_level['table'])
                 partial_merge['matched'] = False
 
@@ -127,8 +125,6 @@ class PSGCCodeMatcher:
                                                         '{} PSGC Code'.format(prefix),
                                                         BGY_MATCHING_CODE_SIZE)
 
-                partial_merge = _column_to_numeric(partial_merge, 'matching_code')
-
                 higher_level = {
                     'table': partial_merge,
                     'prefix': prefix,
@@ -138,8 +134,6 @@ class PSGCCodeMatcher:
                 city_matches = self._add_matching_code(city_matches,
                                                        '{} PSGC Code'.format(prefix),
                                                        BGY_MATCHING_CODE_SIZE)
-
-                city_matches = _column_to_numeric(city_matches, 'matching_code')
 
                 higher_level = {
                     'table': city_matches,
@@ -160,11 +154,7 @@ class PSGCCodeMatcher:
                                                       '{} PSGC Code'.format(prefix),
                                                       higher_level['offset'])
 
-                bgy_matches = _column_to_numeric(bgy_matches,
-                                                 'matching_code')
-
-                partial_merge = self._merge_interlevel_matches(bgy_matches,
-                                                               higher_level['table'])
+                partial_merge = self._merge_interlevel_matches(bgy_matches, higher_level['table'])
                 partial_merge['matched'] = False
 
                 partial_merge = self._mark_exact_matches(partial_merge,
@@ -281,9 +271,22 @@ class PSGCCodeMatcher:
         return table
 
     @staticmethod
-    def _add_matching_code(table, psgc_field_name, code_offset):
-        table['matching_code'] = list(table[psgc_field_name].astype(str).str[:code_offset].astype(int, errors='ignore'))
-        return table
+    def _add_matching_code(df, field_name, code_offset):
+        """
+        Adds a column containing the sliced PSGC code based on the offset
+
+        Args:
+            df: The dataframe to be changed
+            field_name: A string representing the name of the field that will be used to generate the matching code
+            code_offset: An integer that represents how many digits we need from the PSGC code
+
+        Returns:
+            A dataframe containing the matching code
+
+        """
+        df['matching_code'] = list(df[field_name].astype(str).str[:code_offset].astype(int, errors='ignore'))
+        df = _column_to_numeric(df, 'matching_code')
+        return df
 
     @staticmethod
     def _merge_interlevel_matches(left_table, right_table):
@@ -318,4 +321,3 @@ class PSGCCodeMatcher:
         df['total_score'] = df[score_columns].sum(axis=1)
         df.sort_values(by=['client_doc_index', 'total_score'], ascending=False, inplace=True)
         return df
-
