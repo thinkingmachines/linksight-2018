@@ -65,6 +65,7 @@ const ToggleList = styled(props => (
   ul {
     list-style: none;
     padding: 0;
+    margin: 0 0 30px;
   }
   ul li:before {
     border-radius: ${props => ({square: '2px', circle: '50%'}[props.bullet])};

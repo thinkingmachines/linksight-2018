@@ -8,6 +8,9 @@ import * as colors from './colors'
 // Layouts
 import Page from './layouts/page'
 
+// Components
+import MatchesTable from './components/matches-table'
+
 class Check extends React.Component {
   render () {
     return (
@@ -23,7 +26,22 @@ class Check extends React.Component {
                 allowfullscreen
               />
             </Cell>
-            <Cell className='matches'>
+            <Cell className='matches' >
+              <MatchesTable
+                headers={[
+                  'Branch_Name',
+                  'Barangay',
+                  'City',
+                  'Province'
+                ]}
+                rows={[
+                  [1, 'Found', 'FamilyDOC Buhay Na Tubig', 'Brgy. Buhay Na Tubig', 'Imus', 'Cavite'],
+                  [2, 'Multiple', 'FamilyDOC Buhay Na Tubig', 'Brgy. Buhay Na Tubig', 'Imus', 'Cavite'],
+                  [3, 'None', 'FamilyDOC Buhay Na Tubig', 'Brgy. Buhay Na Tubig', 'Imus', 'Cavite'],
+                  [4, 'Found', 'FamilyDOC Buhay Na Tubig', 'Brgy. Buhay Na Tubig', 'Imus', 'Cavite'],
+                  [5, 'Multiple', 'FamilyDOC Marcos Alvarez', 'Brgy. Talon V', 'Las Pinas', null]
+                ]}
+              />
             </Cell>
           </Grid>
         </Cell>
@@ -39,5 +57,8 @@ export default styled(Check)`
   }
   .matches {
     background: ${colors.monochrome[1]};
+    padding: 30px;
+    box-sizing: border-box;
+    overflow-y: auto;
   }
 `
