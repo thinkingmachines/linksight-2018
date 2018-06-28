@@ -30,9 +30,9 @@ class PSGCCodeMatcher:
         self.psgc = psgc
         self.dataset = dataset
 
-    def process(self):
+    def get_matches(self, file):
         self._clean_data()
-        return self._collect_matches()
+        self._collect_matches().to_csv(file, index=False)
 
     # TODO: Refactor the replace logic
     def _clean_data(self):

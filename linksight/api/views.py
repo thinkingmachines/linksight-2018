@@ -42,7 +42,7 @@ def dataset_process(request, id):
 
     output_file = open('temp.csv', 'wb+')
     code_matcher = PSGCCodeMatcher(psgc_df, dataset_df)
-    code_matcher.process().to_csv(output_file, index=False)
+    code_matcher.get_matches(output_file)
 
     file = File(output_file)
     created = Dataset.objects.create(file=file)
