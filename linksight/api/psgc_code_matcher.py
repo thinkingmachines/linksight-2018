@@ -69,10 +69,12 @@ class PSGCCodeMatcher:
 
         regex = re.compile(r"\s\(CAPITAL\)")
         self.dataset = _replace_value_in_col(self.dataset, "Municipality/City", regex)
+        self.psgc = _replace_value_in_col(self.psgc, "location", regex)
 
         regex = re.compile(r"CITY\sOF\s(.*)")
         replacement = lambda m: '{} CITY'.format(m.group(1))
         self.dataset = _replace_value_in_col(self.dataset, "Municipality/City", regex, replacement)
+        self.psgc = _replace_value_in_col(self.psgc, "location", regex, replacement)
 
         regex = re.compile(r"^STO\.?\s(.*)")
         replacement = lambda m: 'SANTO {}'.format(m.group(1))
@@ -109,15 +111,6 @@ class PSGCCodeMatcher:
             psgc_doc_city = psgc_doc[psgc_doc["interlevel"].isin(
                 ['CITY', 'MUN', 'SUBMUN']
             )]
-
-            regex = re.compile(r"\s\(CAPITAL\)")
-            psgc_doc_city = _replace_value_in_col(psgc_doc_city, "location", regex)
-            client_doc = _replace_value_in_col(client_doc, "Municipality/City", regex)
-
-            regex = re.compile(r"CITY\sOF\s(.*)")
-            replacement = lambda m: '{} CITY'.format(m.group(1))
-
-            psgc_doc_city = _replace_value_in_col(psgc_doc_city, "location", regex, replacement)
 
             city_matches = self._get_interlevel_matches('Municipality/City', psgc_doc_city, 'location')
 
@@ -202,7 +195,6 @@ class PSGCCodeMatcher:
             final_merge = higher_level
 
         merged = pd.merge(client_doc, final_merge['table'], how='left', left_index=True, right_on='client_doc_index')
-        merged[merged['matched'] == False]
 
         return self._add_total_score(merged)
 
