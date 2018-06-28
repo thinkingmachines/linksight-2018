@@ -86,14 +86,11 @@ class PSGCCodeMatcher:
 
         higher_level = {}
         if self._dataset_has('Province'):
-            prefix = 'Matched Prov'
-            psgc_doc_prov = psgc[(psgc["interlevel"] == 'PROV') |
-                                     (psgc["interlevel"].isnull())]
-
-            prov_matches = self._get_interlevel_matches('Province', psgc_doc_prov, 'location')
-
-            prov_matches = self._add_psgc_columns(prov_matches)
-            prov_matches = self._rename_interlevel_specific_cols(prov_matches, prefix)
+            prefix = "Matched Province"
+            psgc_doc_prov = psgc[(psgc["interlevel"] == 'PROV') | (psgc["interlevel"].isnull())]
+            prov_matches = self._generate_potential_matches(prefix=prefix,
+                                                            dataset=psgc_doc_prov,
+                                                            field='Province')
 
             prov_matches = self._add_matching_code(prov_matches,
                                                    '{} PSGC Code'.format(prefix),
@@ -106,15 +103,11 @@ class PSGCCodeMatcher:
 
         if self._dataset_has('Municipality/City'):
             prefix = 'Matched Mun/City'
+            psgc_doc_city = psgc[psgc["interlevel"].isin(['CITY', 'MUN', 'SUBMUN'])]
 
-            psgc_doc_city = psgc[psgc["interlevel"].isin(
-                ['CITY', 'MUN', 'SUBMUN']
-            )]
-
-            city_matches = self._get_interlevel_matches('Municipality/City', psgc_doc_city, 'location')
-
-            city_matches = self._add_psgc_columns(city_matches)
-            city_matches = self._rename_interlevel_specific_cols(city_matches, prefix)
+            city_matches = self._generate_potential_matches(prefix=prefix,
+                                                            dataset=psgc_doc_city,
+                                                            field="Municipality/City")
 
             if higher_level:
                 city_matches = self._add_matching_code(city_matches,
@@ -156,13 +149,11 @@ class PSGCCodeMatcher:
 
         if self._dataset_has('Barangay'):
             prefix = 'Matched Barangay'
-
             psgc_doc_bgy = psgc[psgc["interlevel"] == 'BGY']
 
-            bgy_matches = self._get_interlevel_matches('Barangay', psgc_doc_bgy, 'location')
-
-            bgy_matches = self._add_psgc_columns(bgy_matches)
-            bgy_matches = self._rename_interlevel_specific_cols(bgy_matches, prefix)
+            bgy_matches = self._generate_potential_matches(prefix=prefix,
+                                                           dataset=psgc_doc_bgy,
+                                                           field="Barangay")
 
             if higher_level:
                 bgy_matches = self._add_matching_code(bgy_matches,
@@ -194,13 +185,31 @@ class PSGCCodeMatcher:
             final_merge = higher_level
 
         merged = pd.merge(self.dataset, final_merge['table'], how='left', left_index=True, right_on='client_doc_index')
+        print(merged[merged['matched']==True])
 
         return self._add_total_score(merged)
 
     def _dataset_has(self, field):
         return True if len(self.dataset[self.dataset[field].notna()]) else False
 
-    def _get_interlevel_matches(self, interlevel, psgc_doc, field):
+    def _generate_potential_matches(self, prefix, dataset, field):
+        """
+        Adds the PSGC columns based on the indexes of the passed dataset
+
+        Args:
+            prefix: A string to be used as prefix to the column name
+            dataset: The dataframe containing PSGC index to be joined to the PSGC dataframe
+            field: A string representing the name of the field to be used for matching
+
+        Returns:
+
+        """
+        matches = self._get_index_of_matches(field, dataset, 'location')
+        matches = self._add_psgc_columns(matches)
+        matches = self._rename_interlevel_specific_cols(matches, prefix)
+        return matches
+
+    def _get_index_of_matches(self, interlevel, psgc_doc, field):
         """Match the dataset index with the accompanying PSGC index
 
         The input name is compared to the PSGC reference dataframe on the same inter-level.
