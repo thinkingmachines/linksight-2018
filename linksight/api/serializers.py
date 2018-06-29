@@ -19,3 +19,9 @@ class DatasetPreviewSerializer(serializers.BaseSerializer):
 
     def to_representation(self, obj):
         return obj.preview()
+
+
+class DatasetMatchSerializer(serializers.Serializer):
+    barangay_col = serializers.CharField(required=True)
+    city_municipality_col = serializers.CharField(required=True)
+    province_col = serializers.CharField(required=True)

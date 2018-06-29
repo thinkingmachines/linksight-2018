@@ -2,7 +2,9 @@ import re
 
 import numpy as np
 import pandas as pd
+
 import recordlinkage as rl
+
 
 CITY_MATCHING_CODE_SIZE = 4
 BGY_MATCHING_CODE_SIZE = 6
@@ -26,19 +28,33 @@ def _replace_value_in_col(df, column_name, regex, value=""):
 
 class PSGCCodeMatcher:
 
-    def __init__(self, psgc, dataset):
+    def __init__(self, psgc, dataset,
+                 barangay_col='Barangay',
+                 city_municipality_col='City/Municipality',
+                 province_col='Province'):
         self.psgc = psgc
         self.dataset = dataset
+        self.barangay_col = barangay_col
+        self.city_municipality_col = city_municipality_col
+        self.province_col = province_col
 
-    def get_matches(self, file, max_near_matches):
+    def get_matches(self, max_near_matches):
         self._clean_data()
-        self._collect_matches(max_near_matches).to_csv(file, index=False)
+        matches = self._collect_matches(max_near_matches)
+        return matches.sort_values(
+            by=['dataset_index', 'total_score'],
+            ascending=[True, False],
+        )
 
     # TODO: Refactor the replace logic
     def _clean_data(self):
-        client_fields = ['Name', 'Barangay', 'Municipality/City', 'Province']
+        client_fields = [
+            self.barangay_col,
+            self.city_municipality_col,
+            self.province_col,
+        ]
         self.dataset = self.dataset[client_fields]
-        self.dataset = _col_values_to_upper_case(self.dataset, client_fields[1:])
+        self.dataset = _col_values_to_upper_case(self.dataset, client_fields)
 
         self.psgc = _col_values_to_upper_case(self.psgc, ['location', 'interlevel'])
 
@@ -59,41 +75,41 @@ class PSGCCodeMatcher:
         }
 
         self.psgc['location'] = list(self.psgc['location'].replace(standardized_nums, regex=True))
-        self.dataset['Barangay'] = list(self.dataset['Barangay'].replace(standardized_nums, regex=True))
-        self.dataset['Municipality/City'] = list(
-            self.dataset['Municipality/City'].replace(standardized_nums, regex=True))
-        self.dataset['Province'] = list(self.dataset['Province'].replace(standardized_nums, regex=True))
+        self.dataset[self.barangay_col] = list(self.dataset[self.barangay_col].replace(standardized_nums, regex=True))
+        self.dataset[self.city_municipality_col] = list(
+            self.dataset[self.city_municipality_col].replace(standardized_nums, regex=True))
+        self.dataset[self.province_col] = list(self.dataset[self.province_col].replace(standardized_nums, regex=True))
 
         regex = re.compile(r'BA?RA?N?GA?Y\.?\s')
-        self.dataset = _replace_value_in_col(self.dataset, "Barangay", regex)
+        self.dataset = _replace_value_in_col(self.dataset, self.barangay_col, regex)
 
         regex = re.compile(r"\s\(CAPITAL\)")
-        self.dataset = _replace_value_in_col(self.dataset, "Municipality/City", regex)
+        self.dataset = _replace_value_in_col(self.dataset, self.city_municipality_col, regex)
         self.psgc = _replace_value_in_col(self.psgc, "location", regex)
 
         regex = re.compile(r"CITY\sOF\s(.*)")
         replacement = lambda m: '{} CITY'.format(m.group(1))
-        self.dataset = _replace_value_in_col(self.dataset, "Municipality/City", regex, replacement)
+        self.dataset = _replace_value_in_col(self.dataset, self.city_municipality_col, regex, replacement)
         self.psgc = _replace_value_in_col(self.psgc, "location", regex, replacement)
 
         regex = re.compile(r"^STO\.?\s(.*)")
         replacement = lambda m: 'SANTO {}'.format(m.group(1))
-        self.dataset = _replace_value_in_col(self.dataset, "Barangay", regex, replacement)
+        self.dataset = _replace_value_in_col(self.dataset, self.barangay_col, regex, replacement)
 
     def _collect_matches(self, max_near_matches=5):
 
         psgc = self.psgc
 
         higher_level = {}
-        if self._dataset_has('Province'):
-            prefix = "Matched Province"
+        if self._dataset_has(self.province_col):
+            prefix = 'matched_province'
             psgc_doc_prov = psgc[(psgc["interlevel"] == 'PROV') | (psgc["interlevel"].isnull())]
             prov_matches = self._generate_potential_matches(prefix=prefix,
                                                             psgc_reference_df=psgc_doc_prov,
-                                                            field='Province')
+                                                            field=self.province_col)
 
             prov_matches = self._add_matching_code(prov_matches,
-                                                   '{} PSGC Code'.format(prefix),
+                                                   '{}_psgc_code'.format(prefix),
                                                    CITY_MATCHING_CODE_SIZE)
             higher_level = {
                 'table': prov_matches,
@@ -101,28 +117,28 @@ class PSGCCodeMatcher:
                 'offset': CITY_MATCHING_CODE_SIZE,
             }
 
-        if self._dataset_has('Municipality/City'):
-            prefix = 'Matched Mun/City'
+        if self._dataset_has(self.city_municipality_col):
+            prefix = 'matched_municipality_city'
             psgc_doc_city = psgc[psgc["interlevel"].isin(['CITY', 'MUN', 'SUBMUN'])]
 
             city_matches = self._generate_potential_matches(prefix=prefix,
                                                             psgc_reference_df=psgc_doc_city,
-                                                            field="Municipality/City")
+                                                            field=self.city_municipality_col)
 
             if higher_level:
                 city_matches = self._add_matching_code(city_matches,
-                                                       '{} PSGC Code'.format(prefix),
+                                                       '{}_psgc_code'.format(prefix),
                                                        higher_level['offset'])
 
                 partial_merge = self._merge_interlevel_matches(city_matches, higher_level['table'])
                 partial_merge['matched'] = False
 
                 partial_merge = self._mark_exact_matches(partial_merge,
-                                                         '{} Score'.format(prefix),
-                                                         '{} Score'.format(higher_level['prefix']))
+                                                         '{}_score'.format(prefix),
+                                                         '{}_score'.format(higher_level['prefix']))
 
                 partial_merge = self._add_matching_code(partial_merge,
-                                                        '{} PSGC Code'.format(prefix),
+                                                        '{}_psgc_code'.format(prefix),
                                                         BGY_MATCHING_CODE_SIZE)
 
                 higher_level = {
@@ -132,7 +148,7 @@ class PSGCCodeMatcher:
                 }
             else:
                 city_matches = self._add_matching_code(city_matches,
-                                                       '{} PSGC Code'.format(prefix),
+                                                       '{}_psgc_code'.format(prefix),
                                                        BGY_MATCHING_CODE_SIZE)
 
                 higher_level = {
@@ -141,25 +157,25 @@ class PSGCCodeMatcher:
                     'offset': BGY_MATCHING_CODE_SIZE,
                 }
 
-        if self._dataset_has('Barangay'):
-            prefix = 'Matched Barangay'
+        if self._dataset_has(self.barangay_col):
+            prefix = 'matched_barangay'
             psgc_doc_bgy = psgc[psgc["interlevel"] == 'BGY']
 
             bgy_matches = self._generate_potential_matches(prefix=prefix,
                                                            psgc_reference_df=psgc_doc_bgy,
-                                                           field="Barangay")
+                                                           field=self.barangay_col)
 
             if higher_level:
                 bgy_matches = self._add_matching_code(bgy_matches,
-                                                      '{} PSGC Code'.format(prefix),
+                                                      '{}_psgc_code'.format(prefix),
                                                       higher_level['offset'])
 
                 partial_merge = self._merge_interlevel_matches(bgy_matches, higher_level['table'])
                 partial_merge['matched'] = False
 
                 partial_merge = self._mark_exact_matches(partial_merge,
-                                                         '{} Score'.format(prefix),
-                                                         '{} Score'.format(higher_level['prefix']))
+                                                         '{}_score'.format(prefix),
+                                                         '{}_score'.format(higher_level['prefix']))
 
                 final_merge = {
                     'table': partial_merge,
@@ -229,7 +245,7 @@ class PSGCCodeMatcher:
         comp.string(interlevel, field, label=field)
 
         # TODO: A better approach for matching cities
-        if interlevel == 'Municipality/City':
+        if interlevel == self.city_municipality_col:
             regex = re.compile(r"(.*)")
             replacement = lambda m: '{} CITY'.format(m.group(1))
             dataset['temp'] = list(dataset[interlevel].str.replace(regex, replacement))
@@ -264,8 +280,8 @@ class PSGCCodeMatcher:
     def _rename_interlevel_specific_cols(table, prefix):
         columns = list(table.columns)
         columns[columns.index('location')] = prefix
-        columns[columns.index('code')] = '{} PSGC Code'.format(prefix)
-        columns[columns.index('score')] = '{} Score'.format(prefix)
+        columns[columns.index('code')] = '{}_psgc_code'.format(prefix)
+        columns[columns.index('score')] = '{}_score'.format(prefix)
         table.columns = columns
         return table
 
@@ -314,7 +330,7 @@ class PSGCCodeMatcher:
 
     @staticmethod
     def _add_total_score(df):
-        regex = re.compile(r'Score', re.IGNORECASE)
+        regex = re.compile(r'score', re.IGNORECASE)
         score_columns = list(filter(regex.search, list(df.columns)))
 
         df['total_score'] = df[score_columns].sum(axis=1)

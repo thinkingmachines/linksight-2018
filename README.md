@@ -1,4 +1,4 @@
-# Linksight
+# LinkSight
 
 http://unicefstories.org/2018/04/04/venturefundthinkingmachines/
 
