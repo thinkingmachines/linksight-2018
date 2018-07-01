@@ -2,6 +2,7 @@ dj-database-url
 django
 django-cors-headers
 djangorestframework
+ipython
 pandas
 psycopg2-binary
 python-dotenv

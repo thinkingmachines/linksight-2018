@@ -34,7 +34,8 @@ class Dataset(models.Model):
 class Match(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4,
                           editable=False)
-    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE,
+                                related_name='matches')
 
     barangay_col = models.CharField(max_length=256, blank=False)
     city_municipality_col = models.CharField(max_length=256, blank=False)
@@ -42,9 +43,13 @@ class Match(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return '{} ({})'.format(self.dataset.name, self.id)
+
 
 class MatchItem(models.Model):
-    match = models.ForeignKey(Match, on_delete=models.CASCADE, editable=False)
+    match = models.ForeignKey(Match, on_delete=models.CASCADE, editable=False,
+                              related_name='match_items')
     dataset_index = models.IntegerField(editable=False)
 
     source_barangay = models.CharField(
@@ -79,4 +84,3 @@ class MatchItem(models.Model):
 
     matched = models.BooleanField(editable=False)
     chosen = models.NullBooleanField(null=True)
-
