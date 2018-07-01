@@ -48,13 +48,18 @@ class PSGCCodeMatcher:
 
     # TODO: Refactor the replace logic
     def _clean_data(self):
-        client_fields = [
-            self.barangay_col,
-            self.city_municipality_col,
-            self.province_col,
+        self.dataset['source_barangay'] = self.dataset.pop(self.barangay_col)
+        self.dataset['source_city_municipality'] = self.dataset.pop(
+            self.city_municipality_col)
+        self.dataset['source_province'] = self.dataset.pop(self.province_col)
+
+        source_fields = [
+            'source_barangay',
+            'source_city_municipality',
+            'source_province',
         ]
-        self.dataset = self.dataset[client_fields]
-        self.dataset = _col_values_to_upper_case(self.dataset, client_fields)
+        self.dataset = self.dataset[source_fields]
+        self.dataset = _col_values_to_upper_case(self.dataset, source_fields)
 
         self.psgc = _col_values_to_upper_case(self.psgc, ['location', 'interlevel'])
 
@@ -75,38 +80,38 @@ class PSGCCodeMatcher:
         }
 
         self.psgc['location'] = list(self.psgc['location'].replace(standardized_nums, regex=True))
-        self.dataset[self.barangay_col] = list(self.dataset[self.barangay_col].replace(standardized_nums, regex=True))
-        self.dataset[self.city_municipality_col] = list(
-            self.dataset[self.city_municipality_col].replace(standardized_nums, regex=True))
-        self.dataset[self.province_col] = list(self.dataset[self.province_col].replace(standardized_nums, regex=True))
+        self.dataset['source_barangay'] = list(self.dataset['source_barangay'].replace(standardized_nums, regex=True))
+        self.dataset['source_city_municipality'] = list(
+            self.dataset['source_city_municipality'].replace(standardized_nums, regex=True))
+        self.dataset['source_province'] = list(self.dataset['source_province'].replace(standardized_nums, regex=True))
 
         regex = re.compile(r'BA?RA?N?GA?Y\.?\s')
-        self.dataset = _replace_value_in_col(self.dataset, self.barangay_col, regex)
+        self.dataset = _replace_value_in_col(self.dataset, 'source_barangay', regex)
 
         regex = re.compile(r"\s\(CAPITAL\)")
-        self.dataset = _replace_value_in_col(self.dataset, self.city_municipality_col, regex)
+        self.dataset = _replace_value_in_col(self.dataset, 'source_city_municipality', regex)
         self.psgc = _replace_value_in_col(self.psgc, "location", regex)
 
         regex = re.compile(r"CITY\sOF\s(.*)")
         replacement = lambda m: '{} CITY'.format(m.group(1))
-        self.dataset = _replace_value_in_col(self.dataset, self.city_municipality_col, regex, replacement)
+        self.dataset = _replace_value_in_col(self.dataset, 'source_city_municipality', regex, replacement)
         self.psgc = _replace_value_in_col(self.psgc, "location", regex, replacement)
 
         regex = re.compile(r"^STO\.?\s(.*)")
         replacement = lambda m: 'SANTO {}'.format(m.group(1))
-        self.dataset = _replace_value_in_col(self.dataset, self.barangay_col, regex, replacement)
+        self.dataset = _replace_value_in_col(self.dataset, 'source_barangay', regex, replacement)
 
     def _collect_matches(self, max_near_matches=5):
 
         psgc = self.psgc
 
         higher_level = {}
-        if self._dataset_has(self.province_col):
+        if self._dataset_has('source_province'):
             prefix = 'matched_province'
             psgc_doc_prov = psgc[(psgc["interlevel"] == 'PROV') | (psgc["interlevel"].isnull())]
             prov_matches = self._generate_potential_matches(prefix=prefix,
                                                             psgc_reference_df=psgc_doc_prov,
-                                                            field=self.province_col)
+                                                            field='source_province')
 
             prov_matches = self._add_matching_code(prov_matches,
                                                    '{}_psgc_code'.format(prefix),
@@ -117,13 +122,13 @@ class PSGCCodeMatcher:
                 'offset': CITY_MATCHING_CODE_SIZE,
             }
 
-        if self._dataset_has(self.city_municipality_col):
+        if self._dataset_has('source_city_municipality'):
             prefix = 'matched_municipality_city'
             psgc_doc_city = psgc[psgc["interlevel"].isin(['CITY', 'MUN', 'SUBMUN'])]
 
             city_matches = self._generate_potential_matches(prefix=prefix,
                                                             psgc_reference_df=psgc_doc_city,
-                                                            field=self.city_municipality_col)
+                                                            field='source_city_municipality')
 
             if higher_level:
                 city_matches = self._add_matching_code(city_matches,
@@ -157,13 +162,13 @@ class PSGCCodeMatcher:
                     'offset': BGY_MATCHING_CODE_SIZE,
                 }
 
-        if self._dataset_has(self.barangay_col):
+        if self._dataset_has('source_barangay'):
             prefix = 'matched_barangay'
             psgc_doc_bgy = psgc[psgc["interlevel"] == 'BGY']
 
             bgy_matches = self._generate_potential_matches(prefix=prefix,
                                                            psgc_reference_df=psgc_doc_bgy,
-                                                           field=self.barangay_col)
+                                                           field='source_barangay')
 
             if higher_level:
                 bgy_matches = self._add_matching_code(bgy_matches,
@@ -245,7 +250,7 @@ class PSGCCodeMatcher:
         comp.string(interlevel, field, label=field)
 
         # TODO: A better approach for matching cities
-        if interlevel == self.city_municipality_col:
+        if interlevel == 'source_city_municipality':
             regex = re.compile(r"(.*)")
             replacement = lambda m: '{} CITY'.format(m.group(1))
             dataset['temp'] = list(dataset[interlevel].str.replace(regex, replacement))
