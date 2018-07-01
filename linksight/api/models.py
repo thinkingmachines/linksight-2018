@@ -29,3 +29,54 @@ class Dataset(models.Model):
             'rows': len(df),
         }
         return preview
+
+
+class Match(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4,
+                          editable=False)
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
+
+    barangay_col = models.CharField(max_length=256, blank=False)
+    city_municipality_col = models.CharField(max_length=256, blank=False)
+    province_col = models.CharField(max_length=256, blank=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class MatchItem(models.Model):
+    match = models.ForeignKey(Match, on_delete=models.CASCADE, editable=False)
+    dataset_index = models.IntegerField(editable=False)
+
+    source_barangay = models.CharField(
+        max_length=256, editable=False)
+    source_city_municipality = models.CharField(
+        max_length=256, editable=False)
+    source_province = models.CharField(
+        max_length=256, editable=False)
+
+    matched_barangay = models.CharField(
+        max_length=256, editable=False)
+    matched_barangay_psgc_code = models.CharField(
+        max_length=256, editable=False)
+    matched_barangay_score = models.FloatField(
+        editable=False)
+
+    matched_municipality_city = models.CharField(
+        max_length=256, editable=False)
+    matched_municipality_city_psgc_code = models.CharField(
+        max_length=256, editable=False)
+    matched_municipality_city_score = models.FloatField(
+        editable=False)
+
+    matched_province = models.CharField(
+        max_length=256, editable=False)
+    matched_province_psgc_code = models.CharField(
+        max_length=256, editable=False)
+    matched_province_score = models.FloatField(
+        editable=False)
+
+    total_score = models.FloatField(editable=False)
+
+    matched = models.BooleanField(editable=False)
+    chosen = models.NullBooleanField(null=True)
+
