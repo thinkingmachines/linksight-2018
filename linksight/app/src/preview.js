@@ -13,6 +13,7 @@ import Page from './layouts/page'
 // Components
 import PreviewTable from './components/preview-table'
 import LocationColumn from './components/location-column'
+import LoadingOverlay from './components/loading-overlay'
 
 // Elements
 import {Button} from './elements'
@@ -29,11 +30,12 @@ class Preview extends React.Component {
     super(props)
     this.state = {
       preview: null,
-      selectedLocationColumns: {}
+      selectedLocationColumns: {},
+      isMatching: false
     }
   }
   componentDidMount () {
-    let {id} = this.props.match.params
+    const {id} = this.props.match.params
     axios.get(`http://localhost:8000/api/datasets/${id}/preview`)
       .then(resp => {
         this.setState({preview: resp.data})
@@ -77,6 +79,20 @@ class Preview extends React.Component {
       selectedLocationColumns.province
     )
   }
+  match () {
+    this.setState({isMatching: true})
+    const {selectedLocationColumns} = this.state
+    const {id} = this.props.match.params
+    axios.post(
+      `http://localhost:8000/api/datasets/${id}/match`, {
+        barangay_col: selectedLocationColumns.barangay,
+        city_municipality_col: selectedLocationColumns.city_municipality,
+        province_col: selectedLocationColumns.province
+      })
+      .then(resp => {
+        this.setState({isMatching: false})
+      })
+  }
   render () {
     if (!this.state.preview) {
       return null
@@ -88,6 +104,9 @@ class Preview extends React.Component {
           <div className='overlay' />
           <Grid columns={12} gap='0' height='100%' alignContent='center'>
             <Cell width={10} left={2} className='box'>
+              {this.state.isMatching ? (
+                <LoadingOverlay>Matching&hellip;</LoadingOverlay>
+              ) : null}
               <Grid columns={10} gap='0' alignContent='space-between'>
                 <Cell width={8} className='preview'>
                   <h1>{file.name}</h1>
@@ -127,7 +146,12 @@ class Preview extends React.Component {
                     onChange={this.selectLocationColumn.bind(this, 'province')}
                   />
                   {this.hasLocationColumnsSelected() && (
-                    <Button className='proceed'>Proceed</Button>
+                    <Button
+                      className='proceed'
+                      onClick={this.match.bind(this)}
+                    >
+                      Proceed
+                    </Button>
                   )}
                 </Cell>
               </Grid>
