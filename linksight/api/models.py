@@ -49,34 +49,34 @@ class Match(models.Model):
 
 class MatchItem(models.Model):
     match = models.ForeignKey(Match, on_delete=models.CASCADE, editable=False,
-                              related_name='match_items')
+                              related_name='items')
     dataset_index = models.IntegerField(editable=False)
 
     source_barangay = models.CharField(
-        max_length=256, editable=False)
+        max_length=256, editable=False, null=True)
     source_city_municipality = models.CharField(
-        max_length=256, editable=False)
+        max_length=256, editable=False, null=True)
     source_province = models.CharField(
-        max_length=256, editable=False)
+        max_length=256, editable=False, null=True)
 
     matched_barangay = models.CharField(
-        max_length=256, editable=False)
-    matched_barangay_psgc_code = models.CharField(
-        max_length=256, editable=False)
+        max_length=256, editable=False, null=True)
+    matched_barangay_psgc_code = models.IntegerField(
+        editable=False, null=True)
     matched_barangay_score = models.FloatField(
         editable=False)
 
     matched_municipality_city = models.CharField(
-        max_length=256, editable=False)
-    matched_municipality_city_psgc_code = models.CharField(
-        max_length=256, editable=False)
+        max_length=256, editable=False, null=True)
+    matched_municipality_city_psgc_code = models.IntegerField(
+        editable=False, null=True)
     matched_municipality_city_score = models.FloatField(
         editable=False)
 
     matched_province = models.CharField(
-        max_length=256, editable=False)
-    matched_province_psgc_code = models.CharField(
-        max_length=256, editable=False)
+        max_length=256, editable=False, null=True)
+    matched_province_psgc_code = models.IntegerField(
+        editable=False, null=True)
     matched_province_score = models.FloatField(
         editable=False)
 
