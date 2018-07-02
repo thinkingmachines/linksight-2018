@@ -9,7 +9,9 @@ backcall==0.1.0           # via ipython
 decorator==4.3.0          # via ipython, traitlets
 dj-database-url==0.5.0
 django-cors-headers==2.3.0
-django==2.0.6
+django==2.0.7
+djangorestframework-csv==2.1.0
+djangorestframework-link-header-pagination==0.1.1
 djangorestframework==3.8.2
 ipython-genutils==0.2.0   # via traitlets
 ipython==6.4.0
@@ -31,6 +33,7 @@ recordlinkage==0.11.2
 scikit-learn==0.19.1      # via recordlinkage
 scipy==1.1.0              # via recordlinkage
 simplegeneric==0.8.1      # via ipython
-six==1.11.0               # via prompt-toolkit, python-dateutil, recordlinkage, traitlets
+six==1.11.0               # via djangorestframework-csv, prompt-toolkit, python-dateutil, recordlinkage, traitlets
 traitlets==4.3.2          # via ipython
+unicodecsv==0.14.1        # via djangorestframework-csv
 wcwidth==0.1.7            # via prompt-toolkit

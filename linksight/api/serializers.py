@@ -32,6 +32,16 @@ class DatasetMatchSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('dataset',)
 
+    def clean_matches(self, matches):
+        for col in matches:
+            if col.endswith('score'):
+                filler = 0
+            else:
+                filler = None
+            matches[col] = matches[col].where(pd.notnull(matches[col]),
+                                              filler)
+        return matches
+
     def create(self, validated_data):
         psgc = Dataset.objects.get(pk=settings.PSGC_DATASET_ID)
         with psgc.file.open() as f:
@@ -49,8 +59,17 @@ class DatasetMatchSerializer(serializers.ModelSerializer):
             province_col=validated_data['province_col'],
         )
         matches = matcher.get_matches(max_near_matches=3)
+        matches = self.clean_matches(matches)
 
         for _, row in matches.iterrows():
             MatchItem.objects.create(match=obj, **row.to_dict())
 
         return obj
+
+
+class MatchItemSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = MatchItem
+        exclude = ('id', 'match',)
+
