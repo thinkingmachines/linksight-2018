@@ -140,3 +140,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 CORS_ORIGIN_WHITELIST = (
     'localhost:3000',
 )
+
+# DRF
+REST_FRAMEWORK = {
+    'PAGE_SIZE': 100,
+}
+SILENCED_SYSTEM_CHECKS = [
+    'rest_framework.W001',
+]
+
+# Datasets
+PSGC_DATASET_ID = os.environ['PSGC_DATASET_ID']
+

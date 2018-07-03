@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import {Grid, Cell} from 'styled-css-grid'
+import Papa from 'papaparse'
 
 // Colors
 import * as colors from './colors'
@@ -12,36 +13,64 @@ import Page from './layouts/page'
 import MatchesTable from './components/matches-table'
 
 class Check extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      matchItems: null
+    }
+  }
+  nestItems (items) {
+    let prevIndex = null
+    return items.reduce((matchItems, item) => {
+      if (item.matched === 'True') {
+        matchItems = [...matchItems, item]
+      } else {
+        if (item.dataset_index === prevIndex) {
+          let n = matchItems.length
+          let lastItem = matchItems[n - 1]
+          matchItems[n - 1] = {
+            ...lastItem,
+            choices: [...lastItem.choices, item]
+          }
+        } else {
+          matchItems = [...matchItems, {...item, choices: [item]}]
+        }
+        prevIndex = item.dataset_index
+      }
+      return matchItems
+    }, [])
+  }
+  componentDidMount () {
+    const {id} = this.props.match.params
+    Papa.parse(`http://localhost:8000/api/matches/${id}/items`, {
+      download: true,
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+      complete: ({data, meta}) => {
+        this.setState({matchItems: this.nestItems(data)})
+      }
+    })
+  }
   render () {
+    if (!this.state.matchItems) {
+      return null
+    }
     return (
       <Page match={this.props.match}>
         <Cell width={10} className={this.props.className}>
-          <Grid columns={1} rows='40% 60%' gap='0' height='100%'>
+          <Grid columns={1} rows='40% 60%' gap='0' height='100vh'>
             <Cell className='map'>
               <iframe
                 src='https://www.google.com/maps/embed/v1/place?q=place_id:ChIJr5Qp-vPIlzMRCuRgR6-IyYk&key=AIzaSyCIXyqG6o62e9kcnpLR_3Pz317ybfDWLiw'
                 width='100%'
                 height='100%'
-                frameborder='0'
-                allowfullscreen
+                frameBorder='0'
+                allowFullScreen
               />
             </Cell>
-            <Cell className='matches' >
-              <MatchesTable
-                headers={[
-                  'Branch_Name',
-                  'Barangay',
-                  'City',
-                  'Province'
-                ]}
-                rows={[
-                  [1, 'Found', 'FamilyDOC Buhay Na Tubig', 'Brgy. Buhay Na Tubig', 'Imus', 'Cavite'],
-                  [2, 'Multiple', 'FamilyDOC Buhay Na Tubig', 'Brgy. Buhay Na Tubig', 'Imus', 'Cavite'],
-                  [3, 'None', 'FamilyDOC Buhay Na Tubig', 'Brgy. Buhay Na Tubig', 'Imus', 'Cavite'],
-                  [4, 'Found', 'FamilyDOC Buhay Na Tubig', 'Brgy. Buhay Na Tubig', 'Imus', 'Cavite'],
-                  [5, 'Multiple', 'FamilyDOC Marcos Alvarez', 'Brgy. Talon V', 'Las Pinas', null]
-                ]}
-              />
+            <Cell className='matches'>
+              <MatchesTable items={this.state.matchItems} />
             </Cell>
           </Grid>
         </Cell>

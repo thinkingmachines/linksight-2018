@@ -52,8 +52,8 @@ export const ToggleList = styled(props => (
   <div className={props.className}>
     <h3>{props.title}</h3>
     <ul>
-      {props.items.map(item => (
-        <ToggleListItem {...item} />
+      {props.items.map((item, i) => (
+        <ToggleListItem key={i} {...item} />
       ))}
     </ul>
   </div>

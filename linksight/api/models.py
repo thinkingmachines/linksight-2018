@@ -29,3 +29,62 @@ class Dataset(models.Model):
             'rows': len(df),
         }
         return preview
+
+
+class Match(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4,
+                          editable=False)
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE,
+                                related_name='matches')
+
+    barangay_col = models.CharField(max_length=256, blank=False)
+    city_municipality_col = models.CharField(max_length=256, blank=False)
+    province_col = models.CharField(max_length=256, blank=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return '{} ({})'.format(self.dataset.name, self.id)
+
+
+class MatchItem(models.Model):
+    match = models.ForeignKey(Match, on_delete=models.CASCADE, editable=False,
+                              related_name='items')
+    dataset_index = models.IntegerField(editable=False)
+
+    source_barangay = models.CharField(
+        max_length=256, editable=False, null=True)
+    source_city_municipality = models.CharField(
+        max_length=256, editable=False, null=True)
+    source_province = models.CharField(
+        max_length=256, editable=False, null=True)
+
+    matched_barangay = models.CharField(
+        max_length=256, editable=False, null=True)
+    matched_barangay_psgc_code = models.IntegerField(
+        editable=False, null=True)
+    matched_barangay_score = models.FloatField(
+        editable=False)
+
+    matched_city_municipality = models.CharField(
+        max_length=256, editable=False, null=True)
+    matched_city_municipality_psgc_code = models.IntegerField(
+        editable=False, null=True)
+    matched_city_municipality_score = models.FloatField(
+        editable=False)
+
+    matched_province = models.CharField(
+        max_length=256, editable=False, null=True)
+    matched_province_psgc_code = models.IntegerField(
+        editable=False, null=True)
+    matched_province_score = models.FloatField(
+        editable=False)
+
+    total_score = models.FloatField(editable=False)
+
+    matched = models.BooleanField(editable=False)
+    chosen = models.NullBooleanField(null=True)
+
+    class Meta:
+        ordering = ['dataset_index', '-total_score']
+

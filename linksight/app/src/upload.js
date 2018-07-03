@@ -63,7 +63,7 @@ class Upload extends React.Component {
   }
   render () {
     if (this.state.datasetId) {
-      return <Redirect push to={`/${this.state.datasetId}/preview`} />
+      return <Redirect push to={`/datasets/${this.state.datasetId}/preview`} />
     }
     return (
       <Page match={this.props.match}>
