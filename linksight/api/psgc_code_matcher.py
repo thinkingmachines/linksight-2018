@@ -48,10 +48,10 @@ class PSGCCodeMatcher:
 
     # TODO: Refactor the replace logic
     def _clean_data(self):
-        self.dataset['source_barangay'] = self.dataset.pop(self.barangay_col)
+        self.dataset['source_barangay'] = self.dataset.pop(self.barangay_col).fillna("")
         self.dataset['source_city_municipality'] = self.dataset.pop(
-            self.city_municipality_col)
-        self.dataset['source_province'] = self.dataset.pop(self.province_col)
+            self.city_municipality_col).fillna("")
+        self.dataset['source_province'] = self.dataset.pop(self.province_col).fillna("")
 
         source_fields = [
             'source_barangay',
