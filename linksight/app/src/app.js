@@ -22,8 +22,8 @@ class App extends React.Component {
       <div className={'app ' + this.props.className}>
         <Switch>
           <Route exact path='/' component={Upload} />
-          <Route exact path='/:id/preview' component={Preview} />
-          <Route exact path='/:id/check' component={Check} />
+          <Route exact path='/datasets/:id/preview' component={Preview} />
+          <Route exact path='/matches/:id/check' component={Check} />
         </Switch>
       </div>
     )

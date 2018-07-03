@@ -11,7 +11,7 @@ class Page extends React.Component {
   isHeaderShown () {
     return ~[
       '/',
-      '/:id/preview'
+      '/datasets/:id/preview'
     ].lastIndexOf(this.props.match.path)
   }
   isSidebarShown () {

@@ -66,11 +66,11 @@ class MatchItem(models.Model):
     matched_barangay_score = models.FloatField(
         editable=False)
 
-    matched_municipality_city = models.CharField(
+    matched_city_municipality = models.CharField(
         max_length=256, editable=False, null=True)
-    matched_municipality_city_psgc_code = models.IntegerField(
+    matched_city_municipality_psgc_code = models.IntegerField(
         editable=False, null=True)
-    matched_municipality_city_score = models.FloatField(
+    matched_city_municipality_score = models.FloatField(
         editable=False)
 
     matched_province = models.CharField(
@@ -84,3 +84,7 @@ class MatchItem(models.Model):
 
     matched = models.BooleanField(editable=False)
     chosen = models.NullBooleanField(null=True)
+
+    class Meta:
+        ordering = ['dataset_index', '-total_score']
+

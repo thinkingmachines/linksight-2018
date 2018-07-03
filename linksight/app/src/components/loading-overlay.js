@@ -19,6 +19,23 @@ class LoadingOverlay extends React.Component {
   }
 }
 
+function generateKeyframes () {
+  let keyframes = ''
+  let r = 0
+  for (let i = 0; i < 100; i += 10) {
+    let s = Math.random() * 0.2 + 0.8
+    let y = Math.random() * 10 + 25
+    let x = (Math.random() > 0.5 ? -1 : 1) * (Math.random() * 10 + 10)
+    r += (Math.random() > 0.5 ? -1 : 1) * (Math.random() * 180 + 180)
+    keyframes += `
+      ${i}% {
+        transform: scale(${s}) translate(${x}%, ${y}%) rotate(${r}deg);
+      }
+    `
+  }
+  return keyframes
+}
+
 export default styled(LoadingOverlay)`
   position: absolute;
   z-index: 1;
@@ -32,17 +49,12 @@ export default styled(LoadingOverlay)`
   justify-content: center;
   background: rgba(255, 255, 255, 0.9);
   color: ${colors.indigo};
-  @keyframes rotate {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
+  @keyframes random {
+    ${props => generateKeyframes()}
   }
   img {
     width: 60px;
     height: 60px;
-    animation: 1s rotate infinite;
+    animation: 10s random alternate infinite;
   }
 `

@@ -5,40 +5,56 @@ import {Grid, Cell} from 'styled-css-grid'
 // Colors
 import * as colors from '../colors'
 
+class MatchItem extends React.Component {
+  render () {
+    let tag = {
+      'True': 'Found',
+      'False': 'Multiple'
+    }[this.props.matched]
+    return (
+      <React.Fragment>
+        <Cell middle className='table-cell -index'>{this.props.dataset_index + 1}</Cell>
+        <Cell middle className='table-cell'>
+          <span className={'tag tag-' + tag}>
+            {tag}
+          </span>
+        </Cell>
+        <Cell middle className='table-cell'>{this.props.source_barangay}</Cell>
+        <Cell middle className='table-cell'>{this.props.source_city_municipality}</Cell>
+        <Cell middle className='table-cell'>{this.props.source_province}</Cell>
+        {this.props.matched === 'True' ? null : this.renderChoices(this.props.choices)}
+      </React.Fragment>
+    )
+  }
+  renderChoices (choices) {
+    return choices.map((choice, i) => (
+      <React.Fragment key={i}>
+        <Cell middle left={2} className='table-cell -score'>
+          {parseFloat(choice.total_score / 4 * 100).toFixed(2)}
+        </Cell>
+        <Cell middle width={3} className='table-cell -choice'>
+          {[
+            choice.matched_barangay,
+            choice.matched_city_municipality,
+            choice.matched_province
+          ].filter(v => v).join(', ')}
+        </Cell>
+      </React.Fragment>
+    ))
+  }
+}
+
 class MatchesTable extends React.Component {
   render () {
-    const columns = `max-content 80px repeat(${this.props.headers.length}, 1fr)`
+    const columns = `max-content 80px repeat(3, 1fr)`
     return (
       <Grid columns={columns} gap='0' className={this.props.className}>
-        {this.props.headers.map((header, i) => (
-          <Cell left={i === 0 ? 3 : null} className='table-header'>
-            {header}
-          </Cell>
+        <Cell left={3} className='table-header'>Barangay</Cell>
+        <Cell className='table-header'>City/Municipality</Cell>
+        <Cell className='table-header'>Province</Cell>
+        {this.props.items.map((item, i) => (
+          <MatchItem key={i} {...item} />
         ))}
-
-        {this.props.rows.map(([index, tag, ...values]) => {
-          return (
-            <React.Fragment>
-              <Cell middle className='table-cell -index'>{index}</Cell>
-              <Cell middle className='table-cell'>
-                <span className={'tag tag-' + tag}>{tag}</span>
-              </Cell>
-              {values.map(value => (
-                <Cell middle className='table-cell'>{value}</Cell>
-              ))}
-            </React.Fragment>
-          )
-        })}
-
-        <Cell width={2} className='table-inset' />
-        <Cell width={this.props.headers.length} className='table-inset'>
-          <div className='choices'>
-            <div className='choice -selected'>Talon Singko, City of Las Pinas, Metro Manila</div>
-            <div className='choice'>Talon, Altavas, Aklan</div>
-            <div className='choice'>Talon, City of Gingoong, Misamis Oriental</div>
-          </div>
-        </Cell>
-
       </Grid>
     )
   }
@@ -68,6 +84,7 @@ export default styled(MatchesTable)`
     border-radius: 5px;
     text-align: center;
     margin-right: 15px;
+    cursor: pointer;
   }
   .tag-Found {
     background: ${colors.green};
@@ -78,32 +95,14 @@ export default styled(MatchesTable)`
   .tag-None {
     background: ${colors.orange};
   }
-  .table-inset {
+  .table-cell.-score {
+    font-size: 12px;
+    text-align: right;
+    padding-right: 15px;
     position: relative;
-    padding: 15px 0;
+    color: ${colors.monochrome[3]};
   }
-  .table-inset:before {
-    display: block;
-    content: ' ';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 5px;
-    background: linear-gradient(to bottom, ${colors.monochrome[2]}, transparent);
-  }
-  .choices {
-    display: inline-flex;
-    flex-flow: column;
-  }
-  .choice {
-    padding: 15px 20px 15px 45px;
-    background: ${colors.monochrome[0]};
-    border-bottom: 1px solid ${colors.monochrome[2]};
-    box-shadow: 0 2.5px 5px 0 ${colors.monochrome[2]};
-    position: relative;
-  }
-  .choice:before {
+  .table-cell.-score:before {
     display: block;
     content: ' ';
     width: 10px;
@@ -112,13 +111,10 @@ export default styled(MatchesTable)`
     border-radius: 50%;
     border: 1px solid ${colors.monochrome[2]};
     position: absolute;
-    left: 20px;
+    left: 15px;
     top: 20px;
   }
-  .choice.-selected {
-    box-shadow: inset 5px 0 0 0 ${colors.monochrome[2]};
-  }
-  .choice.-selected:before {
+  .tablce-cell.-score.-chosen:before {
     border-color: ${colors.green};
     background: ${colors.green};
   }

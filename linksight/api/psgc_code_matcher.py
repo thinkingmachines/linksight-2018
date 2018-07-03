@@ -123,7 +123,7 @@ class PSGCCodeMatcher:
             }
 
         if self._dataset_has('source_city_municipality'):
-            prefix = 'matched_municipality_city'
+            prefix = 'matched_city_municipality'
             psgc_doc_city = psgc[psgc["interlevel"].isin(['CITY', 'MUN', 'SUBMUN'])]
 
             city_matches = self._generate_potential_matches(prefix=prefix,

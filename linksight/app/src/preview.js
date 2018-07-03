@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import {Grid, Cell} from 'styled-css-grid'
 import axios from 'axios'
 import {fileSize} from 'humanize-plus'
+import {Redirect} from 'react-router-dom'
 
 // Colors
 import * as colors from './colors'
@@ -31,7 +32,8 @@ class Preview extends React.Component {
     this.state = {
       preview: null,
       selectedLocationColumns: {},
-      isMatching: false
+      isMatching: false,
+      matchId: null
     }
   }
   componentDidMount () {
@@ -89,13 +91,14 @@ class Preview extends React.Component {
         city_municipality_col: selectedLocationColumns.city_municipality,
         province_col: selectedLocationColumns.province
       })
-      .then(resp => {
-        this.setState({isMatching: false})
-      })
+      .then(resp => this.setState({matchId: resp.data.id}))
   }
   render () {
     if (!this.state.preview) {
       return null
+    }
+    if (this.state.matchId) {
+      return <Redirect push to={`/matches/${this.state.matchId}/check`} />
     }
     const {file} = this.state.preview
     return (
