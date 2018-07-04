@@ -34,6 +34,6 @@ class App extends React.Component {
 }
 
 export default styled(App)`
-  background: ${colors.indigo} url(${backgroundCircle}) no-repeat -300% 75%;
-  background-size: 150vh;
+  background: ${colors.indigo} url(${backgroundCircle}) no-repeat -60vw -60vh;
+  background-size: 100vw;
 `
