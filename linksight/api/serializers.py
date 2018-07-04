@@ -45,7 +45,7 @@ class DatasetMatchSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         psgc = Dataset.objects.get(pk=settings.PSGC_DATASET_ID)
         with psgc.file.open() as f:
-            psgc_df = pd.read_csv(f)
+            psgc_df = pd.read_csv(f, dtype={'code': object})
 
         obj = super().create(validated_data)
         with obj.dataset.file.open() as f:
