@@ -7,7 +7,7 @@ import * as colors from '../colors'
 
 class MatchItem extends React.Component {
   render () {
-    let tag = {
+    const tag = {
       'True': 'Found',
       'False': 'Multiple'
     }[this.props.matched]
@@ -84,7 +84,6 @@ export default styled(MatchesTable)`
     border-radius: 5px;
     text-align: center;
     margin-right: 15px;
-    cursor: pointer;
   }
   .tag-Found {
     background: ${colors.green};

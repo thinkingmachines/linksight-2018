@@ -8,6 +8,9 @@ import './css/typography.css'
 import './css/react-toggle.css'
 import 'filepond/dist/filepond.min.css'
 
+// Images
+import backgroundCircle from './images/background-circle.svg'
+
 // Colors
 import * as colors from './colors'
 
@@ -31,16 +34,6 @@ class App extends React.Component {
 }
 
 export default styled(App)`
-  background: ${colors.indigo};
-  &:before {
-    content: ' ';
-    width: 100%;
-    padding-bottom: 100%;
-    display: block;
-    background: ${colors.monochrome[0]};
-    border-radius: 50%;
-    position: absolute;
-    top: -25%;
-    left: -55%;
-  }
+  background: ${colors.indigo} url(${backgroundCircle}) no-repeat -300% 75%;
+  background-size: 150vh;
 `
