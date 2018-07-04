@@ -3,7 +3,8 @@ from drf_link_header_pagination import LinkHeaderPagination
 from linksight.api.models import Dataset, Match
 from linksight.api.serializers import (DatasetMatchSerializer,
                                        DatasetPreviewSerializer,
-                                       DatasetSerializer, MatchItemSerializer)
+                                       DatasetSerializer, MatchCheckSerializer,
+                                       MatchItemSerializer)
 from rest_framework.decorators import (api_view, parser_classes,
                                        renderer_classes)
 from rest_framework.parsers import JSONParser, MultiPartParser
@@ -47,4 +48,15 @@ def match_items(request, id):
     page = paginator.paginate_queryset(match.items.all(), request)
     serializer = MatchItemSerializer(page, many=True)
     return paginator.get_paginated_response(serializer.data)
+
+
+@api_view(['POST'])
+@parser_classes((JSONParser,))
+def match_check(request, id):
+    serializer = MatchCheckSerializer(data=request.data)
+    if serializer.is_valid():
+        match = get_object_or_404(Match, pk=id)
+        serializer.save(match=match)
+        return Response(serializer.data, status=200)
+    return Response(serializer.errors, status=400)
 

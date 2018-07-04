@@ -73,3 +73,25 @@ class MatchItemSerializer(serializers.ModelSerializer):
         model = MatchItem
         exclude = ('match',)
 
+
+class MatchCheckSerializer(serializers.BaseSerializer):
+
+    match_choices = serializers.DictField(child=serializers.IntegerField())
+
+    def to_internal_value(self, data):
+        return data
+
+    def to_representation(self, obj):
+        return {
+            **obj,
+            'match': obj['match'].id,
+        }
+
+    def create(self, validated_data):
+        match_choices = validated_data['match_choices']
+        match = validated_data['match']
+        match.items.filter(
+            id__in=match_choices.values(),
+        ).update(chosen=True)
+        return validated_data
+
