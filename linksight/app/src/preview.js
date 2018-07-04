@@ -12,6 +12,7 @@ import * as colors from './colors'
 import Page from './layouts/page'
 
 // Components
+import Header from './components/header'
 import PreviewTable from './components/preview-table'
 import LocationColumn from './components/location-column'
 import LoadingOverlay from './components/loading-overlay'
@@ -102,7 +103,8 @@ class Preview extends React.Component {
     }
     const {file} = this.state.preview
     return (
-      <Page match={this.props.match}>
+      <Page withHeader match={this.props.match}>
+        <Header />
         <Cell width={12} className={this.props.className}>
           <div className='overlay' />
           <Grid columns={12} gap='0' height='100%' alignContent='center'>
