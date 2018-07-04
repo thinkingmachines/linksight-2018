@@ -9,20 +9,6 @@ import * as colors from '../colors'
 import MatchItem from './match-item'
 
 class MatchesTable extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      matchChoices: {}
-    }
-  }
-  handleChoice (item) {
-    this.setState(prevState => ({
-      matchChoices: {
-        ...prevState.matchChoices,
-        [item.dataset_index]: item.id
-      }
-    }))
-  }
   render () {
     const columns = `max-content 80px repeat(3, 1fr)`
     return (
@@ -33,8 +19,8 @@ class MatchesTable extends React.Component {
         {this.props.items.map((item, i) => (
           <MatchItem
             key={i}
-            onChoose={this.handleChoice.bind(this)}
-            chosenItem={this.state.matchChoices[item.dataset_index]}
+            onChoose={this.props.onChoose}
+            chosenItem={this.props.matchChoices[item.dataset_index]}
             item={item}
           />
         ))}

@@ -16,6 +16,7 @@ import {Title} from './elements'
 import Page from './layouts/page'
 
 // Components
+import Header from './components/header'
 import DatasetCard from './components/dataset-card'
 import UploadWidget from './components/upload-widget'
 
@@ -66,7 +67,8 @@ class Upload extends React.Component {
       return <Redirect push to={`/datasets/${this.state.datasetId}/preview`} />
     }
     return (
-      <Page match={this.props.match}>
+      <Page withHeader match={this.props.match}>
+        <Header />
         <Cell width={12} className={this.props.className}>
           <Grid columns={12} gap='15px' height='100%' alignContent='center'>
             <Cell width={4} left={2} center middle>

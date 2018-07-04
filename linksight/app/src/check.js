@@ -10,13 +10,15 @@ import * as colors from './colors'
 import Page from './layouts/page'
 
 // Components
+import Sidebar from './components/sidebar'
 import MatchesTable from './components/matches-table'
 
 class Check extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      matchItems: null
+      matchItems: null,
+      matchChoices: {}
     }
   }
   nestItems (items) {
@@ -40,6 +42,14 @@ class Check extends React.Component {
       return matchItems
     }, [])
   }
+  handleChoice (item) {
+    this.setState(prevState => ({
+      matchChoices: {
+        ...prevState.matchChoices,
+        [item.dataset_index]: item.id
+      }
+    }))
+  }
   componentDidMount () {
     const {id} = this.props.match.params
     Papa.parse(`http://localhost:8000/api/matches/${id}/items`, {
@@ -58,6 +68,7 @@ class Check extends React.Component {
     }
     return (
       <Page match={this.props.match}>
+        <Sidebar />
         <Cell width={10} className={this.props.className}>
           <Grid columns={1} rows='40% 60%' gap='0' height='100vh'>
             <Cell className='map'>
@@ -70,7 +81,11 @@ class Check extends React.Component {
               />
             </Cell>
             <Cell className='matches'>
-              <MatchesTable items={this.state.matchItems} />
+              <MatchesTable
+                items={this.state.matchItems}
+                matchChoices={this.state.matchChoices}
+                onChoose={this.handleChoice.bind(this)}
+              />
             </Cell>
           </Grid>
         </Cell>
