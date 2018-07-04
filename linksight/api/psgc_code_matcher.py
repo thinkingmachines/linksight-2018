@@ -6,6 +6,7 @@ import pandas as pd
 import recordlinkage as rl
 
 
+PSGC_CODE_LEN = 9
 CITY_MATCHING_CODE_SIZE = 4
 BGY_MATCHING_CODE_SIZE = 6
 
@@ -14,11 +15,6 @@ def _col_values_to_upper_case(table, fields):
     for field in fields:
         table[field] = table[field].apply(lambda x: x.upper() if not pd.isna(x) else x)
     return table
-
-
-def _column_to_numeric(df, column):
-    df[column] = pd.to_numeric(df[column], errors='coerce')
-    return df
 
 
 def _replace_value_in_col(df, column_name, regex, value=""):
@@ -48,10 +44,10 @@ class PSGCCodeMatcher:
 
     # TODO: Refactor the replace logic
     def _clean_data(self):
-        self.dataset['source_barangay'] = self.dataset.pop(self.barangay_col)
+        self.dataset['source_barangay'] = self.dataset.pop(self.barangay_col).fillna("")
         self.dataset['source_city_municipality'] = self.dataset.pop(
-            self.city_municipality_col)
-        self.dataset['source_province'] = self.dataset.pop(self.province_col)
+            self.city_municipality_col).fillna("")
+        self.dataset['source_province'] = self.dataset.pop(self.province_col).fillna("")
 
         source_fields = [
             'source_barangay',
@@ -141,6 +137,11 @@ class PSGCCodeMatcher:
                 partial_merge = self._mark_exact_matches(partial_merge,
                                                          '{}_score'.format(prefix),
                                                          '{}_score'.format(higher_level['prefix']))
+
+                partial_merge = self._fill_parent_interlevel(partial_merge,
+                                                             'matched_city_municipality_psgc_code',
+                                                             CITY_MATCHING_CODE_SIZE,
+                                                             'matched_province')
 
                 partial_merge = self._add_matching_code(partial_merge,
                                                         '{}_psgc_code'.format(prefix),
@@ -304,8 +305,7 @@ class PSGCCodeMatcher:
             A dataframe containing the matching code
 
         """
-        df['matching_code'] = list(df[field_name].astype(str).str[:code_offset].astype(int, errors='ignore'))
-        df = _column_to_numeric(df, 'matching_code')
+        df['matching_code'] = list(df[field_name].astype(str).str[:code_offset])
         return df
 
     @staticmethod
@@ -323,6 +323,14 @@ class PSGCCodeMatcher:
 
         df = self._drop_match_duplicates(df)
         return df
+
+    def _fill_parent_interlevel(self, df, psgc_code_field, code_offset, field_to_populate):
+        df['matching_code'] = df[psgc_code_field].str.slice(start=code_offset).str.ljust(PSGC_CODE_LEN, '0')
+
+        merged = pd.merge(df, self.psgc, how='left', left_on='matching_code', right_on='code')
+        merged.loc[merged[field_to_populate].isnull(), field_to_populate] = merged["location"]
+        merged.drop(columns=["location", "code", "interlevel"], inplace=True)
+        return merged
 
     @staticmethod
     def _drop_match_duplicates(df):
