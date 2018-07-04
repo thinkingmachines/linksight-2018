@@ -194,6 +194,8 @@ class PSGCCodeMatcher:
                 }
 
         else:
+            higher_level['table'].drop(columns='matching_code', inplace=True)
+            higher_level['table'] = self._add_missing_columns(higher_level['table'])
             final_merge = higher_level
 
         merged = pd.merge(self.dataset, final_merge['table'], how='left', left_index=True, right_on='dataset_index')
@@ -201,7 +203,7 @@ class PSGCCodeMatcher:
         return scored.groupby(['dataset_index']).head(max_near_matches)
 
     def _dataset_has(self, field):
-        return True if len(self.dataset[self.dataset[field].notna()]) else False
+        return True if len(self.dataset) != (self.dataset[field] == '').sum() else False
 
     def _generate_potential_matches(self, prefix, psgc_reference_df, field):
         """
@@ -325,7 +327,7 @@ class PSGCCodeMatcher:
         return df
 
     def _fill_parent_interlevel(self, df, psgc_code_field, code_offset, field_to_populate):
-        df['matching_code'] = df[psgc_code_field].str.slice(start=code_offset).str.ljust(PSGC_CODE_LEN, '0')
+        df['matching_code'] = df[psgc_code_field].str.slice(stop=code_offset).str.ljust(PSGC_CODE_LEN, '0')
 
         merged = pd.merge(df, self.psgc, how='left', left_on='matching_code', right_on='code')
         merged.loc[merged[field_to_populate].isnull(), field_to_populate] = merged["location"]
@@ -348,4 +350,17 @@ class PSGCCodeMatcher:
 
         df['total_score'] = df[score_columns].sum(axis=1)
         df.sort_values(by=['dataset_index', 'total_score'], ascending=False, inplace=True)
+        return df
+
+    @staticmethod
+    def _add_missing_columns(df):
+        columns = ["matched_province", "matched_province_psgc_code", "matched_province_score",
+                   "matched_city_municipality", "matched_city_municipality_psgc_code",
+                   "matched_city_municipality_score",
+                   "matched_barangay", "matched_barangay_psgc_code", "matched_barangay_score"]
+
+        for column in columns:
+            if column not in df.columns:
+                df[column] = np.nan
+
         return df
