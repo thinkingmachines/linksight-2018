@@ -68,11 +68,12 @@ const Sidebar = styled(props => (
     content: ' ';
     background: ${colors.indigo};
     border-radius: 50%;
-    width: 250%;
-    padding-bottom: 250%;
+    width: 40vw;
+    height: 40vw;
     position: absolute;
-    left: -75%;
-    top: -60%;
+    left: 50%;
+    top: -32vw;
+    transform: translateX(-50%);
   }
   .sidebar * {
     position: relative;
