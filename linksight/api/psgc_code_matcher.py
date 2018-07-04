@@ -6,6 +6,7 @@ import pandas as pd
 import recordlinkage as rl
 
 
+PSGC_CODE_LEN = 9
 CITY_MATCHING_CODE_SIZE = 4
 BGY_MATCHING_CODE_SIZE = 6
 
@@ -136,6 +137,11 @@ class PSGCCodeMatcher:
                 partial_merge = self._mark_exact_matches(partial_merge,
                                                          '{}_score'.format(prefix),
                                                          '{}_score'.format(higher_level['prefix']))
+
+                partial_merge = self._fill_parent_interlevel(partial_merge,
+                                                             'matched_city_municipality_psgc_code',
+                                                             CITY_MATCHING_CODE_SIZE,
+                                                             'matched_province')
 
                 partial_merge = self._add_matching_code(partial_merge,
                                                         '{}_psgc_code'.format(prefix),
@@ -317,6 +323,14 @@ class PSGCCodeMatcher:
 
         df = self._drop_match_duplicates(df)
         return df
+
+    def _fill_parent_interlevel(self, df, psgc_code_field, code_offset, field_to_populate):
+        df['matching_code'] = df[psgc_code_field].str.slice(start=code_offset).str.ljust(PSGC_CODE_LEN, '0')
+
+        merged = pd.merge(df, self.psgc, how='left', left_on='matching_code', right_on='code')
+        merged.loc[merged[field_to_populate].isnull(), field_to_populate] = merged["location"]
+        merged.drop(columns=["location", "code", "interlevel"], inplace=True)
+        return merged
 
     @staticmethod
     def _drop_match_duplicates(df):
