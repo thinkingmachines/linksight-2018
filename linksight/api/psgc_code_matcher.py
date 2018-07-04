@@ -16,11 +16,6 @@ def _col_values_to_upper_case(table, fields):
     return table
 
 
-def _column_to_numeric(df, column):
-    df[column] = pd.to_numeric(df[column], errors='coerce')
-    return df
-
-
 def _replace_value_in_col(df, column_name, regex, value=""):
     df[column_name] = df[column_name].apply(lambda x: re.sub(regex, value, x) if not pd.isna(x) else x)
     return df
@@ -304,8 +299,7 @@ class PSGCCodeMatcher:
             A dataframe containing the matching code
 
         """
-        df['matching_code'] = list(df[field_name].astype(str).str[:code_offset].astype(int, errors='ignore'))
-        df = _column_to_numeric(df, 'matching_code')
+        df['matching_code'] = list(df[field_name].astype(str).str[:code_offset])
         return df
 
     @staticmethod
