@@ -65,9 +65,21 @@ class MatchItem extends React.Component {
             {tag}
           </span>
         </Cell>
-        <Cell middle className='table-cell'>{item.source_barangay}</Cell>
-        <Cell middle className='table-cell'>{item.source_city_municipality}</Cell>
-        <Cell middle className='table-cell'>{item.source_province}</Cell>
+        <Cell middle className='table-cell'>
+          {item.source_barangay ? item.source_barangay : (
+            <span className='missing'>{item.matched_barangay}</span>
+          )}
+        </Cell>
+        <Cell middle className='table-cell'>
+          {item.source_city_municipality ? item.source_city_municipality : (
+            <span className='missing'>{item.matched_city_municipality}</span>
+          )}
+        </Cell>
+        <Cell middle className='table-cell'>
+          {item.source_province ? item.source_province : (
+            <span className='missing'>{item.matched_province}</span>
+          )}
+        </Cell>
         {item.matched === 'True' ? null : this.renderChoices(item.choices)}
       </section>
     )
@@ -115,5 +127,9 @@ export default styled(MatchItem)`
   }
   .tag-None {
     background: ${colors.orange};
+  }
+  .table-cell .missing {
+    font-style: italic;
+    color: ${colors.monochrome[3]};
   }
 `
