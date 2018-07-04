@@ -325,7 +325,7 @@ class PSGCCodeMatcher:
         return df
 
     def _fill_parent_interlevel(self, df, psgc_code_field, code_offset, field_to_populate):
-        df['matching_code'] = df[psgc_code_field].str.slice(start=code_offset).str.ljust(PSGC_CODE_LEN, '0')
+        df['matching_code'] = df[psgc_code_field].str.slice(stop=code_offset).str.ljust(PSGC_CODE_LEN, '0')
 
         merged = pd.merge(df, self.psgc, how='left', left_on='matching_code', right_on='code')
         merged.loc[merged[field_to_populate].isnull(), field_to_populate] = merged["location"]
