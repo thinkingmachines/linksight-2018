@@ -71,5 +71,5 @@ class MatchItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MatchItem
-        exclude = ('id', 'match',)
+        exclude = ('match',)
 
