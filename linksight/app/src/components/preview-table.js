@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import {fileSize} from 'humanize-plus'
 
 // Colors
 import * as colors from '../colors'
@@ -54,6 +55,7 @@ class PreviewTable extends React.Component {
     return columnHighlights[column]
   }
   render () {
+    const {file} = this.props.preview
     const data = {}
     const fields = this.getFields()
     this.props.preview.data.forEach(row => {
@@ -66,21 +68,36 @@ class PreviewTable extends React.Component {
     })
     return (
       <div className={this.props.className}>
-        {fields.map((field, i) => (
-          <TableColumn
-            key={i}
-            name={field.name}
-            values={data[field.name]}
-            highlight={this.getHighlight(field.name)}
-          />
-        ))}
+        <h1>{file.name}</h1>
+        <p className='file-info -small'>
+          {file.rows} rows ({fileSize(file.size)})
+        </p>
+        <br />
+        <div className='table'>
+          {fields.map((field, i) => (
+            <TableColumn
+              key={i}
+              name={field.name}
+              values={data[field.name]}
+              highlight={this.getHighlight(field.name)}
+            />
+          ))}
+        </div>
       </div>
     )
   }
 }
 
 export default styled(PreviewTable)`
-  display: flex;
-  overflow-x: scroll;
-  padding-bottom: 1px;
+  h1 {
+    color: ${colors.indigo};
+  }
+  .file-info {
+    color: ${colors.monochrome[4]};
+  }
+  .table {
+    display: flex;
+    overflow-x: scroll;
+    padding-bottom: 1px;
+  }
 `

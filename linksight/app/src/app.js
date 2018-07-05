@@ -18,6 +18,7 @@ import * as colors from './colors'
 import Upload from './upload'
 import Preview from './preview'
 import Check from './check'
+import Export from './export'
 
 class App extends React.Component {
   render () {
@@ -27,6 +28,7 @@ class App extends React.Component {
           <Route exact path='/' component={Upload} />
           <Route exact path='/datasets/:id/preview' component={Preview} />
           <Route exact path='/matches/:id/check' component={Check} />
+          <Route exact path='/matches/:id/export' component={Export} />
         </Switch>
       </div>
     )
