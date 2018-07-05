@@ -139,6 +139,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # django-cors-headers
 CORS_ORIGIN_WHITELIST = (
     'localhost:3000',
+    'linksight.thinkingmachin.es',
 )
 
 # DRF
