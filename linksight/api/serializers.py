@@ -1,10 +1,6 @@
 import os.path
 
-import pandas as pd
-
-from django.conf import settings
 from linksight.api.models import Dataset, Match, MatchItem
-from linksight.api.psgc_code_matcher import PSGCCodeMatcher
 from rest_framework import serializers
 
 
@@ -32,38 +28,9 @@ class DatasetMatchSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('dataset',)
 
-    def clean_matches(self, matches):
-        for col in matches:
-            if col.endswith('score'):
-                filler = 0
-            else:
-                filler = None
-            matches[col] = matches[col].where(pd.notnull(matches[col]),
-                                              filler)
-        return matches
-
     def create(self, validated_data):
-        psgc = Dataset.objects.get(pk=settings.PSGC_DATASET_ID)
-        with psgc.file.open() as f:
-            psgc_df = pd.read_csv(f, dtype={'code': object})
-
         obj = super().create(validated_data)
-        with obj.dataset.file.open() as f:
-            dataset_df = pd.read_csv(f)
-
-        matcher = PSGCCodeMatcher(
-            psgc_df,
-            dataset_df,
-            barangay_col=validated_data['barangay_col'],
-            city_municipality_col=validated_data['city_municipality_col'],
-            province_col=validated_data['province_col'],
-        )
-        matches = matcher.get_matches(max_near_matches=3)
-        matches = self.clean_matches(matches)
-
-        for _, row in matches.iterrows():
-            MatchItem.objects.create(match=obj, **row.to_dict())
-
+        obj.generate_match_items(**validated_data)
         return obj
 
 
