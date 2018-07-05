@@ -3,9 +3,12 @@ import os.path
 import uuid
 
 import pandas as pd
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import Q
+
+from linksight.api.psgc_code_matcher import PSGCCodeMatcher
 
 
 class Dataset(models.Model):
@@ -50,6 +53,37 @@ class Match(models.Model):
 
     def __str__(self):
         return '{} ({})'.format(self.dataset.name, self.id)
+
+    def clean_matches(self, matches):
+        for col in matches:
+            if col.endswith('score'):
+                filler = 0
+            else:
+                filler = None
+            matches[col] = matches[col].where(pd.notnull(matches[col]),
+                                              filler)
+        return matches
+
+    def generate_match_items(self, **kwargs):
+        psgc = Dataset.objects.get(pk=settings.PSGC_DATASET_ID)
+        with psgc.file.open() as f:
+            psgc_df = pd.read_csv(f, dtype={'code': object})
+
+        with self.dataset.file.open() as f:
+            dataset_df = pd.read_csv(f)
+
+        matcher = PSGCCodeMatcher(
+            psgc_df,
+            dataset_df,
+            barangay_col=kwargs['barangay_col'],
+            city_municipality_col=kwargs['city_municipality_col'],
+            province_col=kwargs['province_col'],
+        )
+        matches = matcher.get_matches(max_near_matches=3)
+        matches = self.clean_matches(matches)
+
+        for _, row in matches.iterrows():
+            MatchItem.objects.create(match=self, **row.to_dict(), chosen=False)
 
     def save_choices(self, match_choices):
         self.items.all().update(chosen=False)
