@@ -13,6 +13,7 @@ django==2.0.7
 djangorestframework-csv==2.1.0
 djangorestframework-link-header-pagination==0.1.1
 djangorestframework==3.8.2
+gunicorn==19.9.0
 ipython-genutils==0.2.0   # via traitlets
 ipython==6.4.0
 jedi==0.12.1              # via ipython
