@@ -8,12 +8,6 @@ import * as colors from '../colors'
 // Images
 import logoLight from '../images/logo-light.svg'
 
-// Elements
-import {
-  Button,
-  ToggleList
-} from '../elements'
-
 const Sidebar = styled(props => (
   <Cell width={2} className={props.className}>
     <div className='sidebar'>
@@ -23,33 +17,11 @@ const Sidebar = styled(props => (
             <img src={logoLight} />
           </div>
           <div className='tags'>
-            <ToggleList
-              title='Tags'
-              bullet='square'
-              items={[
-                {toggled: true, color: colors.green, label: 'Found locations (15)'},
-                {toggled: true, color: colors.yellow, label: 'Multiple matches (10)'},
-                {toggled: false, color: colors.orange, label: 'No matches (8)'}
-              ]}
-            />
-            <ToggleList
-              title='Columns'
-              bullet='circle'
-              items={[
-                {toggled: true, label: 'Branch_Name'},
-                {toggled: true, label: 'Barangay'},
-                {toggled: true, label: 'City'},
-                {toggled: true, label: 'Province'},
-                {toggled: false, label: 'Mobile_Number'},
-                {toggled: false, label: 'Telephone_Number'},
-                {toggled: false, label: 'Email_Address'},
-                {toggled: false, label: 'Landmarks'}
-              ]}
-            />
+            {props.children}
           </div>
         </Cell>
         <Cell center>
-          <Button>Proceed</Button>
+          {props.button}
         </Cell>
       </Grid>
     </div>

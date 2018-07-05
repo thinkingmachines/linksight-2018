@@ -123,7 +123,7 @@ export default styled(MatchItem)`
     background: ${colors.green};
   }
   .tag-Multiple {
-    background: ${colors.yellow};
+    background: ${colors.orange};
   }
   .tag-None {
     background: ${colors.orange};

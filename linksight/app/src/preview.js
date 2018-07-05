@@ -1,8 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import {Grid, Cell} from 'styled-css-grid'
 import axios from 'axios'
-import {fileSize} from 'humanize-plus'
+import {Grid, Cell} from 'styled-css-grid'
 import {Redirect} from 'react-router-dom'
 
 // Colors
@@ -101,9 +100,8 @@ class Preview extends React.Component {
     if (this.state.matchId) {
       return <Redirect push to={`/matches/${this.state.matchId}/check`} />
     }
-    const {file} = this.state.preview
     return (
-      <Page withHeader match={this.props.match}>
+      <Page withHeader>
         <Header />
         <Cell width={12} className={this.props.className}>
           <div className='overlay' />
@@ -114,11 +112,6 @@ class Preview extends React.Component {
               ) : null}
               <Grid columns={10} gap='0' alignContent='space-between'>
                 <Cell width={8} className='preview'>
-                  <h1>{file.name}</h1>
-                  <p className='file-info -small'>
-                    {file.rows} rows ({fileSize(file.size)})
-                  </p>
-                  <br />
                   <PreviewTable
                     preview={this.state.preview}
                     columnHighlights={this.getColumnHighlights()}
@@ -188,12 +181,6 @@ export default styled(Preview)`
   }
   .preview {
     padding: 40px 0 40px 30px;
-  }
-  h1 {
-    color: ${colors.indigo};
-  }
-  .file-info {
-    color: ${colors.monochrome[4]};
   }
   .location-columns {
     padding: 40px 30px;

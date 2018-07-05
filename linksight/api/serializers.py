@@ -74,7 +74,7 @@ class MatchItemSerializer(serializers.ModelSerializer):
         exclude = ('match',)
 
 
-class MatchCheckSerializer(serializers.BaseSerializer):
+class MatchSaveChoicesSerializer(serializers.BaseSerializer):
 
     match_choices = serializers.DictField(child=serializers.IntegerField())
 
@@ -82,16 +82,15 @@ class MatchCheckSerializer(serializers.BaseSerializer):
         return data
 
     def to_representation(self, obj):
+        match = obj.pop('match')
         return {
-            **obj,
-            'match': obj['match'].id,
+            'match': match.id,
+            'matched_dataset': match.matched_dataset.id,
         }
 
     def create(self, validated_data):
         match_choices = validated_data['match_choices']
         match = validated_data['match']
-        match.items.filter(
-            id__in=match_choices.values(),
-        ).update(chosen=True)
+        match.save_choices(match_choices)
         return validated_data
 

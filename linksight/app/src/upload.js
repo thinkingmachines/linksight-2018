@@ -67,7 +67,7 @@ class Upload extends React.Component {
       return <Redirect push to={`/datasets/${this.state.datasetId}/preview`} />
     }
     return (
-      <Page withHeader match={this.props.match}>
+      <Page withHeader>
         <Header />
         <Cell width={12} className={this.props.className}>
           <Grid columns={12} gap='15px' height='100%' alignContent='center'>
