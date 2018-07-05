@@ -30,7 +30,8 @@ class LocationColumn extends React.Component {
       menuList: (base, style) => ({
         ...base,
         paddingTop: 0,
-        paddingBottom: 0
+        paddingBottom: 0,
+        maxHeight: '180px'
       }),
       singleValue: (base, style) => ({
         ...base,
