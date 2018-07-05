@@ -38,7 +38,7 @@ class Preview extends React.Component {
   }
   componentDidMount () {
     const {id} = this.props.match.params
-    axios.get(`http://localhost:8000/api/datasets/${id}/preview`)
+    axios.get(`${window.API_HOST}/api/datasets/${id}/preview`)
       .then(resp => {
         this.setState({preview: resp.data})
       })
@@ -86,7 +86,7 @@ class Preview extends React.Component {
     const {selectedLocationColumns} = this.state
     const {id} = this.props.match.params
     axios.post(
-      `http://localhost:8000/api/datasets/${id}/match`, {
+      `${window.API_HOST}/api/datasets/${id}/match`, {
         barangay_col: selectedLocationColumns.barangay,
         city_municipality_col: selectedLocationColumns.city_municipality,
         province_col: selectedLocationColumns.province

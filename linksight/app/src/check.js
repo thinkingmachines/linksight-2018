@@ -32,7 +32,7 @@ class Check extends React.Component {
   }
   componentDidMount () {
     const {id} = this.props.match.params
-    Papa.parse(`http://localhost:8000/api/matches/${id}/items`, {
+    Papa.parse(`${window.API_HOST}/api/matches/${id}/items`, {
       download: true,
       header: true,
       dynamicTyping: true,
@@ -82,7 +82,7 @@ class Check extends React.Component {
     const {id} = this.props.match.params
     this.setState({isSaving: true})
     axios.post(
-      `http://localhost:8000/api/matches/${id}/save-choices`, {
+      `${window.API_HOST}/api/matches/${id}/save-choices`, {
         match_choices: matchChoices
       })
       .then(resp => {

@@ -75,7 +75,7 @@ class Upload extends React.Component {
               <img width='100%' src={tablemap} />
               <UploadWidget
                 name='file'
-                server='http://localhost:8000/api/datasets/'
+                server={`${window.API_HOST}/api/datasets/`}
                 allowRevert={false}
                 onprocessfile={this.handleProcessFile.bind(this)}
               />
