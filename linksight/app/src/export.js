@@ -26,7 +26,7 @@ class Export extends React.Component {
   }
   componentDidMount () {
     const {id} = this.props.match.params
-    axios.get(`http://localhost:8000/api/matches/${id}/preview`)
+    axios.get(`${window.API_HOST}/api/matches/${id}/preview`)
       .then(resp => {
         this.setState({preview: resp.data})
       })
@@ -42,7 +42,7 @@ class Export extends React.Component {
     return (
       <Page>
         <Sidebar button={
-          <a href={'http://localhost:8000' + this.state.preview.file.url}>
+          <a href={`${window.API_HOST}${this.state.preview.file.url}`}>
             <Button>Export</Button>
           </a>
         }>
