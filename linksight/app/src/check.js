@@ -138,16 +138,7 @@ class Check extends React.Component {
           {this.state.isSaving ? (
             <LoadingOverlay>Saving choices&hellip;</LoadingOverlay>
           ) : null}
-          <Grid columns={1} rows='40% 60%' gap='0' height='100vh'>
-            <Cell className='map'>
-              <iframe
-                src='https://www.google.com/maps/embed/v1/place?q=place_id:ChIJr5Qp-vPIlzMRCuRgR6-IyYk&key=AIzaSyCIXyqG6o62e9kcnpLR_3Pz317ybfDWLiw'
-                width='100%'
-                height='100%'
-                frameBorder='0'
-                allowFullScreen
-              />
-            </Cell>
+          <Grid columns={1} gap='0' height='100vh'>
             <Cell className='matches'>
               <MatchesTable
                 items={this.state.matchItems}
