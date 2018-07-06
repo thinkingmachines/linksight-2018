@@ -25,7 +25,11 @@ class DatasetCard extends React.Component {
         </div>
       </div>
       <div className='toggle'>
-        <Toggle icons={false} />
+        <Toggle
+          icons={false}
+          defaultChecked={this.props.defaultChecked}
+          disabled={this.props.disabled}
+        />
       </div>
     </div>
   }
@@ -48,6 +52,10 @@ export default styled(DatasetCard)`
   }
   .info, .toggle {
     padding: 0 20px;
+  }
+  .actions {
+    // FIXME: Hide for now
+    display: none;
   }
   .actions a {
     color: ${colors.monochrome[3]};
