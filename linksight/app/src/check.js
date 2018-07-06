@@ -75,7 +75,14 @@ class Check extends React.Component {
     return this.state.matchItems.filter(item => item.matched === 'True').length
   }
   getMultipleCount () {
-    return this.state.matchItems.filter(item => item.matched !== 'True').length
+    return this.state.matchItems.filter(item => (
+      item.matched !== 'True' && !this.state.matchChoices[item.dataset_index]
+    )).length
+  }
+  getCheckedCount () {
+    return this.state.matchItems.filter(item => (
+      item.matched !== 'True' && this.state.matchChoices[item.dataset_index]
+    )).length
   }
   saveChoices () {
     const {matchChoices} = this.state
@@ -103,7 +110,7 @@ class Check extends React.Component {
       <Page>
         <Sidebar
           button={
-            Object.keys(this.state.matchChoices).length === this.getMultipleCount()
+            this.getMultipleCount() === 0
               ? <Button onClick={this.saveChoices.bind(this)}>Proceed</Button>
               : null
           }
@@ -121,6 +128,11 @@ class Check extends React.Component {
                 toggled: true,
                 color: colors.orange,
                 label: `Multiple matches (${this.getMultipleCount()})`
+              },
+              {
+                toggled: true,
+                color: colors.yellow,
+                label: `Checked matches (${this.getCheckedCount()})`
               }
             ]}
           />
