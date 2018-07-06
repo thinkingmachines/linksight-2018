@@ -51,7 +51,7 @@ class Export extends React.Component {
             bullet='square'
             items={[
               {
-                toggled: false,
+                toggled: true,
                 color: colors.orange,
                 label: 'Population'
               },

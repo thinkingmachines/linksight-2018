@@ -86,11 +86,15 @@ class Match(models.Model):
             MatchItem.objects.create(match=self, **row.to_dict(), chosen=False)
 
     def save_choices(self, match_choices):
+        # Save choices
+
         self.items.all().update(chosen=False)
         self.items.filter(
             id__in=match_choices.values(),
         ).update(chosen=True)
         self.refresh_from_db()
+
+        # Merge matches
 
         with self.dataset.file.open() as f:
             dataset_df = pd.read_csv(f)
@@ -101,17 +105,38 @@ class Match(models.Model):
         matches_df.set_index('dataset_index')
 
         joined_df = dataset_df.join(matches_df[[
-            'matched_barangay',
             'matched_barangay_psgc_code',
-            'matched_barangay_score',
-            'matched_city_municipality',
             'matched_city_municipality_psgc_code',
-            'matched_city_municipality_score',
-            'matched_province',
             'matched_province_psgc_code',
-            'matched_province_score',
-            'total_score',
         ]])
+
+        # Get deepest PSGC code
+
+        def get_deepest_code(row):
+            for field in ['barangay', 'city_municipality', 'province']:
+                key = 'matched_{}_psgc_code'.format(field)
+                if row.get(key):
+                    return row[key]
+
+        joined_df['psgc_code'] = joined_df.apply(get_deepest_code, axis=1)
+
+        # Merge population
+
+        population = Dataset.objects.get(pk=settings.POPULATION_DATASET_ID)
+        with population.file.open() as f:
+            population_df = pd.read_csv(f)
+
+        joined_df = joined_df.merge(population_df, left_on='psgc_code',
+                                    right_on='Code')
+        joined_df.drop([
+            'Code',
+            'psgc_code',
+            'matched_barangay_psgc_code',
+            'matched_city_municipality_psgc_code',
+            'matched_province_psgc_code',
+        ], axis='columns', inplace=True)
+
+        # Create matched dataset
 
         name, _ = os.path.splitext(self.dataset.name)
         self.matched_dataset = Dataset.objects.create(

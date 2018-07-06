@@ -28,17 +28,23 @@ class Upload extends React.Component {
         {
           name: 'PSA Population Dataset',
           description: 'Population per barangay (as of August 2015)',
-          iconUrl: require('./images/public-datasets/public-dataset-icon-population.svg')
+          iconUrl: require('./images/public-datasets/public-dataset-icon-population.svg'),
+          defaultChecked: true,
+          disabled: true
         },
         {
           name: 'Disaster Risk Dataset',
-          description: 'Risk factor per barangay (as of October 2017)',
-          iconUrl: require('./images/public-datasets/public-dataset-icon-disaster.svg')
+          description: <em>Coming soon</em>,
+          iconUrl: require('./images/public-datasets/public-dataset-icon-disaster.svg'),
+          defaultChecked: false,
+          disabled: true
         },
         {
           name: 'Barangay Competitiveness Dataset',
-          description: 'Competitiveness score per barangay',
-          iconUrl: require('./images/public-datasets/public-dataset-icon-competitiveness.svg')
+          description: <em>Coming soon</em>,
+          iconUrl: require('./images/public-datasets/public-dataset-icon-competitiveness.svg'),
+          defaultChecked: false,
+          disabled: true
         }
       ]
     }
