@@ -70,7 +70,7 @@ class PreviewTable extends React.Component {
       <div className={this.props.className}>
         <h1>{file.name}</h1>
         <p className='file-info -small'>
-          {file.rows} rows ({fileSize(file.size)})
+          Showing 10 of {file.rows} rows ({fileSize(file.size)})
         </p>
         <br />
         <div className='table'>
