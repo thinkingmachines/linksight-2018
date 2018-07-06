@@ -45,7 +45,6 @@ class Upload extends React.Component {
   }
   handleProcessFile (err, file) {
     if (err) {
-      window.alert(err)
       return
     }
     let datasetId = JSON.parse(file.serverId).id
