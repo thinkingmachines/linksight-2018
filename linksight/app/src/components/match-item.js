@@ -53,10 +53,12 @@ const Choice = styled(props => (
 class MatchItem extends React.Component {
   render () {
     const {item} = this.props
-    const tag = {
-      'True': 'Found',
-      'False': 'Multiple'
-    }[item.matched]
+    const tag = this.props.chosenItem
+      ? 'Checked'
+      : {
+        'True': 'Found',
+        'False': 'Multiple'
+      }[item.matched]
     return (
       <section className={'table-row ' + this.props.className}>
         <Cell middle className='table-cell -index'>{item.dataset_index + 1}</Cell>
@@ -125,8 +127,8 @@ export default styled(MatchItem)`
   .tag-Multiple {
     background: ${colors.orange};
   }
-  .tag-None {
-    background: ${colors.orange};
+  .tag-Checked {
+    background: ${colors.yellow};
   }
   .table-cell .missing {
     font-style: italic;
