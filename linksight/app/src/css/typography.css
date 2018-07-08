@@ -39,6 +39,18 @@ small {
   line-height: 15px;
 }
 
+/* Links */
+
+a {
+  color: #3f50b0;
+}
+a:hover, a:focus {
+  color: #6a81e2;
+}
+a:visited {
+  color: #243477;
+}
+
 /* Colors */
 
 .-light,
