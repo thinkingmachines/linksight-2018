@@ -78,6 +78,14 @@ class Upload extends React.Component {
           <Grid columns={12} gap='15px' height='100%' alignContent='center'>
             <Cell width={4} left={2} center middle>
               <img width='100%' src={tablemap} />
+              <div className='requirements -small'>
+                <h3>Locations file requirements</h3>
+                <ul>
+                  <li>CSV file type</li>
+                  <li>Max 1000 rows</li>
+                  <li>With Barangay, City/Municipality, Province in separate columns</li>
+                </ul>
+              </div>
               <UploadWidget
                 name='file'
                 server={`${window.API_HOST}/api/datasets/`}
@@ -114,5 +122,12 @@ export default styled(Upload)`
     background-color: ${colors.yellow};
     top: 0.2em;
     left: 0;
+  }
+  .requirements {
+    text-align: left;
+    margin: 30px;
+  }
+  .requirements ul {
+    padding-left: 15px;
   }
 `
