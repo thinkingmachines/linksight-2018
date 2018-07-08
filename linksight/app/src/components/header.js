@@ -8,14 +8,12 @@ import logo from '../images/logo.svg'
 const Header = styled(props => (
   <Cell width={10} left={2} className={props.className}>
     <Grid columns={10} gap='15px' alignContent='center'>
-      <Cell width={8} className='logo'>
+      <Cell width={9} className='logo'>
         <img src={logo} />
       </Cell>
-      <Cell width={2}>
+      <Cell width={1}>
         <ul className='links -light'>
-          <li><a href='#'>Datasets</a></li>
           <li><a href='#'>About</a></li>
-          <li><a href='#'>Contact</a></li>
         </ul>
       </Cell>
     </Grid>
@@ -31,7 +29,7 @@ const Header = styled(props => (
     padding: 0;
     list-style: none;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
   }
   .links li a {
     text-decoration: none;
