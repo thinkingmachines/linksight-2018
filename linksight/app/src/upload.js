@@ -88,7 +88,7 @@ class Upload extends React.Component {
             <Cell width={4} left={7}>
               <Title className='-light'>Expand your<br />data po<span className='dot'>i</span>nt of v<span className='dot'>i</span>ew</Title>
               <br />
-              <p className='subtitle -light'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua connect to public datasets:</p>
+              <p className='subtitle -light'>Combine a list of locations with any of the following barangay-level datasets:</p>
               <br />
               {this.renderDatasetCards()}
             </Cell>
