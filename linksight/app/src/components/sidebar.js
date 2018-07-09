@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import {Grid, Cell} from 'styled-css-grid'
+import {Link} from 'react-router-dom'
 
 // Colors
 import * as colors from '../colors'
@@ -14,7 +15,7 @@ const Sidebar = styled(props => (
       <Grid columns={1} rows='1fr min-content' height='100%'>
         <Cell>
           <div className='logo'>
-            <img src={logoLight} />
+            <Link to='/'><img src={logoLight} /></Link>
           </div>
           <div className='tags'>
             {props.children}
