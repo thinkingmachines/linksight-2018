@@ -17,7 +17,7 @@ import LocationColumn from './components/location-column'
 import LoadingOverlay from './components/loading-overlay'
 
 // Elements
-import {Button} from './elements'
+import {Button, Instruction} from './elements'
 
 // Constants
 const highlightColors = {
@@ -118,8 +118,10 @@ class Preview extends React.Component {
                   />
                 </Cell>
                 <Cell width={2} className='location-columns'>
-                  Select the following<br />
-                  location columns:
+                  <Instruction>
+                    Select the following<br />
+                    location columns:
+                  </Instruction>
                   <br />
                   <br />
                   <br />

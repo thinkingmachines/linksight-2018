@@ -3,9 +3,7 @@ import styled from 'styled-components'
 
 import * as colors from '../colors'
 
-import {
-  Toggle
-} from '../elements'
+import {Toggle} from '../elements'
 
 class DatasetCard extends React.Component {
   render () {
