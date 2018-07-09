@@ -110,9 +110,7 @@ class Check extends React.Component {
       <Page>
         <Sidebar
           button={
-            this.getMultipleCount() === 0
-              ? <Button onClick={this.saveChoices.bind(this)}>Proceed</Button>
-              : null
+            <Button onClick={this.saveChoices.bind(this)}>Proceed</Button>
           }
         >
           <ToggleList
