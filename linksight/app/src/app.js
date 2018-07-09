@@ -3,7 +3,7 @@ import {Route, Switch} from 'react-router-dom'
 import styled from 'styled-components'
 
 // Stylesheets
-import './css/app.css'
+import './css/base.css'
 import './css/typography.css'
 import './css/react-toggle.css'
 import 'filepond/dist/filepond.min.css'
@@ -19,9 +19,20 @@ import Upload from './upload'
 import Preview from './preview'
 import Check from './check'
 import Export from './export'
+import MobileNotice from './mobile-notice'
 
 class App extends React.Component {
+  constructor (props) {
+    super(props)
+    const mql = window.matchMedia('(max-width: 1000px)')
+    this.state = {
+      isMobile: !!mql.matches
+    }
+  }
   render () {
+    if (this.state.isMobile) {
+      return <MobileNotice />
+    }
     return (
       <div className={'app ' + this.props.className}>
         <Switch>
