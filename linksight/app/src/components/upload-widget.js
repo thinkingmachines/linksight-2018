@@ -9,7 +9,8 @@ export default styled(FilePond)`
     padding-top: 0;
     padding-bottom: 5px;
   }
-  .filepond--drop-label label .requirements {
+  .filepond--drop-label label .note {
     font-size: 12px;
+    margin-top: 5px;
   }
 `
