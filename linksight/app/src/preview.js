@@ -108,7 +108,7 @@ class Preview extends React.Component {
           <Grid columns={12} gap='0' height='100%' alignContent='center'>
             <Cell width={10} left={2} className='box'>
               {this.state.isMatching ? (
-                <LoadingOverlay>Matching&hellip;</LoadingOverlay>
+                <LoadingOverlay>Identifying locations&hellip;</LoadingOverlay>
               ) : null}
               <Grid columns={10} gap='0' alignContent='space-between'>
                 <Cell width={8} className='preview'>
