@@ -7,13 +7,11 @@ import * as colors from '../colors'
 
 const Choice = styled(props => (
   <section className={'table-row -choice ' + props.className}>
-    <Cell middle left={2} className='table-cell -score'>
-      {parseFloat(props.item.total_score / 6 * 100).toFixed(2)}
-    </Cell>
     <Cell
       middle
-      width={3}
-      className='table-cell'
+      width={4}
+      left={2}
+      className='table-cell -choice-content'
       onClick={props.onChoose.bind(null, props.item)}
     >
       {[
@@ -21,17 +19,17 @@ const Choice = styled(props => (
         props.item.matched_city_municipality,
         props.item.matched_province
       ].filter(v => v).join(', ')}
+      <span className='score'>
+        {parseFloat(props.item.total_score / 6 * 100).toFixed(2)}
+      </span>
     </Cell>
   </section>
 ))`
-  .table-cell.-score {
-    font-size: 12px;
-    text-align: right;
-    padding-right: 15px;
+  .table-cell.-choice-content {
     position: relative;
-    color: ${colors.monochrome[3]};
+    padding-left: 40px;
   }
-  .table-cell.-score:before {
+  .table-cell.-choice-content:before {
     display: block;
     content: ' ';
     width: 10px;
@@ -48,23 +46,32 @@ const Choice = styled(props => (
       background: ${colors.green};
     ` : null}
   }
+  .table-cell .score {
+    font-size: 12px;
+    color: ${colors.monochrome[3]};
+  }
 `
 
 class MatchItem extends React.Component {
   render () {
     const {item} = this.props
     const tag = this.props.chosenItem
-      ? 'Checked'
+      ? 'checked'
       : {
-        'True': 'Found',
-        'False': 'Multiple'
+        'True': 'identified',
+        'False': 'multiple'
       }[item.matched]
+    const icon = {
+      'identified': require('../images/tags/identified.svg'),
+      'multiple': require('../images/tags/multiple.svg'),
+      'checked': require('../images/tags/identified.svg')
+    }[tag]
     return (
       <section className={'table-row ' + this.props.className}>
         <Cell middle className='table-cell -index'>{item.dataset_index + 1}</Cell>
         <Cell middle className='table-cell'>
           <span className={'tag tag-' + tag}>
-            {tag}
+            <img src={icon} />
           </span>
         </Cell>
         <Cell middle className='table-cell'>
@@ -121,13 +128,17 @@ export default styled(MatchItem)`
     text-align: center;
     margin-right: 15px;
   }
-  .tag-Found {
+  .tag img {
+    width: 12px;
+    height: 12px;
+  }
+  .tag-identified {
     background: ${colors.green};
   }
-  .tag-Multiple {
+  .tag-multiple {
     background: ${colors.orange};
   }
-  .tag-Checked {
+  .tag-checked {
     background: ${colors.yellow};
   }
   .table-cell .missing {

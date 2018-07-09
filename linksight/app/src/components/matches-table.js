@@ -10,7 +10,7 @@ import MatchItem from './match-item'
 
 class MatchesTable extends React.Component {
   render () {
-    const columns = `max-content 80px repeat(3, 1fr)`
+    const columns = `max-content 40px repeat(3, 1fr)`
     return (
       <Grid columns={columns} gap='0' className={this.props.className}>
         <Cell left={3} className='table-header'>Barangay</Cell>
