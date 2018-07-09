@@ -89,7 +89,7 @@ class Upload extends React.Component {
                     Locations file requirements:
                     CSV file type, max 1000 rows with Barangay, City/Municipality, Province in separate columns
                   </p>
-                  <p class='note'>
+                  <p class='note -muted'>
                     We need to temporarily save a copy of your data to process it.
                     The copy will be deleted from our system within 24 hours of upload.
                   </p>
