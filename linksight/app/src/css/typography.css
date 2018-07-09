@@ -1,5 +1,6 @@
 html, body, input, textarea, button, select {
   font-size: 15px;
+  line-height: 20px;
   font-family: Barlow, sans-serif;
   font-weight: 400;
 }
@@ -28,10 +29,6 @@ h1, h2, h3, p, ul {
 }
 
 /* Paragraph */
-
-p {
-  line-height: 20px;
-}
 
 .-small,
 small {

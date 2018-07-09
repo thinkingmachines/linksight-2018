@@ -1,4 +1,5 @@
 import React from 'react'
+import {renderToString} from 'react-dom/server'
 import styled from 'styled-components'
 import {Grid, Cell} from 'styled-css-grid'
 import {Redirect} from 'react-router-dom'
@@ -10,7 +11,7 @@ import tablemap from './images/tablemap.svg'
 import * as colors from './colors'
 
 // Elements
-import {Title} from './elements'
+import {Title, Instruction} from './elements'
 
 // Layouts
 import Page from './layouts/page'
@@ -67,6 +68,13 @@ class Upload extends React.Component {
       </Grid>
     )
   }
+  renderInstruction () {
+    return renderToString(
+      <Instruction className='instruction'>
+        Drag your file or <span class='filepond--label-action'>Browse</span>
+      </Instruction>
+    )
+  }
   render () {
     if (this.state.datasetId) {
       return <Redirect push to={`/datasets/${this.state.datasetId}/preview`} />
@@ -84,7 +92,7 @@ class Upload extends React.Component {
                 allowRevert={false}
                 onprocessfile={this.handleProcessFile.bind(this)}
                 labelIdle={`
-                  <p>Drag your file or <span class='filepond--label-action'>Browse</span></p>
+                  ${this.renderInstruction()}
                   <p class='note'>
                     Locations file requirements:
                     CSV file type, max 1000 rows with Barangay, City/Municipality, Province in separate columns
@@ -125,5 +133,9 @@ export default styled(Upload)`
     background-color: ${colors.yellow};
     top: 0.2em;
     left: 0;
+  }
+  .instruction {
+    display: inline-block;
+    line-height: 20px;
   }
 `

@@ -47,3 +47,27 @@ export const Toggle = styled(ReactToggle)`
     border-color: ${colors.yellow};
   }
 `
+
+export const Instruction = styled.div`
+  position: relative;
+  @keyframes pulse {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.5);
+    }
+  }
+  &:before {
+    content: ' ';
+    display: block;
+    border: .2em solid ${colors.yellow};
+    border-radius: 50%;
+    width: .4em;
+    height: .4em;
+    position: absolute;
+    top: .27em;
+    left: -1.33em;
+    animation: pulse 0.5s infinite alternate;
+  }
+`

@@ -9,7 +9,7 @@ import {Redirect} from 'react-router-dom'
 import * as colors from './colors'
 
 // Elements
-import {Button} from './elements'
+import {Button, Instruction} from './elements'
 
 // Layouts
 import Page from './layouts/page'
@@ -122,7 +122,7 @@ class Check extends React.Component {
               {
                 toggled: true,
                 color: colors.green,
-                label: `Found locations (${this.getFoundCount()})`
+                label: `Identified locations (${this.getFoundCount()})`
               },
               {
                 toggled: true,
@@ -152,6 +152,12 @@ class Check extends React.Component {
           ) : null}
           <Grid columns={1} gap='0' height='100vh'>
             <Cell className='matches'>
+              <Instruction className='instruction -small'>
+                We've identified {this.getFoundCount()} of the locations! For
+                records with multiple matches, select the correct location match
+                from the list below it. Unchecked records will be excluded in the
+                export.
+              </Instruction>
               <MatchesTable
                 items={this.state.matchItems}
                 matchChoices={this.state.matchChoices}
@@ -169,6 +175,9 @@ export default styled(Check)`
   position: relative;
   .map {
     background: #e5e3e0;  // color from Google Maps
+  }
+  .instruction {
+    margin: 15px 30px;
   }
   .matches {
     background: ${colors.monochrome[1]};
