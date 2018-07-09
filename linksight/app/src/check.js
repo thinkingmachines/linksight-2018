@@ -71,7 +71,7 @@ class Check extends React.Component {
       }
     }))
   }
-  getFoundCount () {
+  getIdentifiedCount () {
     return this.state.matchItems.filter(item => item.matched === 'True').length
   }
   getMultipleCount () {
@@ -120,7 +120,7 @@ class Check extends React.Component {
               {
                 toggled: true,
                 color: colors.green,
-                label: `Identified locations (${this.getFoundCount()})`
+                label: `Identified locations (${this.getIdentifiedCount()})`
               },
               {
                 toggled: true,
@@ -151,7 +151,7 @@ class Check extends React.Component {
           <Grid columns={1} gap='0' height='100vh'>
             <Cell className='matches'>
               <Instruction className='instruction -small'>
-                We've identified {this.getFoundCount()} of the locations! For
+                We've identified {this.getIdentifiedCount()} of the locations! For
                 records with multiple matches, select the correct location match
                 from the list below it. Unchecked records will be excluded in the
                 export.
@@ -175,7 +175,7 @@ export default styled(Check)`
     background: #e5e3e0;  // color from Google Maps
   }
   .instruction {
-    margin: 15px 30px;
+    margin: 0 30px 20px;
   }
   .matches {
     background: ${colors.monochrome[1]};
