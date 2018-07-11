@@ -10,23 +10,20 @@ PSGC_CODE_LEN = 9
 
 class LinksightMatcher:
     def __init__(self, reference,
-                 reference_interlevels,
                  reference_location_field,
                  dataset,
-                 dataset_interlevels,
                  interlevels):
         self.reference = reference
-        self.reference_interlevels = reference_interlevels
         self.reference_location_field = reference_location_field
         self.dataset = dataset
-        self.dataset_interlevels = dataset_interlevels
         self.interlevels = interlevels
 
     def get_match(self, dataset):
         matched_df = self.dataset.copy()
 
+        codes = []
         for interlevel in self.interlevels:
-            reference_subset = self._get_subset(interlevel)
+            reference_subset = self._get_subset(interlevel, codes)
 
             pairs = self._get_pairs(self.dataset, reference_subset)
             pairs.columns = ['dataset_index', 'reference_index']
@@ -43,11 +40,32 @@ class LinksightMatcher:
 
             merged['matched'] = merged.apply(self._get_score, axis=1,
                                              args=[interlevel['dataset_field_name'], 'location'])
-            return merged.loc[merged.matched == True]
 
-    def _get_subset(self, interlevel):
+            matches = merged.loc[merged.matched == True]
+            if len(matches) > 0:
+                matches = matches[['dataset_index', 'code', 'location']]
+                codes = list(matches['code'])
+                matches.columns = ['dataset_index',
+                                   'matched_{}_code'.format(interlevel['name']),
+                                   'matched_{}'.format(interlevel['name'])]
+
+                matched_df = pd.merge(matched_df, matches,
+                                      how='left',
+                                      left_index=True,
+                                      right_on='dataset_index')
+                matched_df.set_index('dataset_index', inplace=True, drop=True)
+
+        return matched_df
+
+    def _get_subset(self, interlevel, codes):
         if interlevel['matching_size'] == 0:
             return self.reference.loc[self.reference.interlevel.isin(interlevel['reference_fields'])]
+
+        code_field = '{}_code'.format(interlevel['name'])
+        subset = self.reference.loc[self.reference[code_field].isin(codes) &
+                                    self.reference.interlevel.isin(interlevel['reference_fields'])]
+
+        return subset
 
     @staticmethod
     def _get_pairs(df1, df2):
