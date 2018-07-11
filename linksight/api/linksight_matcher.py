@@ -6,8 +6,6 @@ import recordlinkage as rl
 from fuzzywuzzy import fuzz
 
 PSGC_CODE_LEN = 9
-CITY_MATCHING_CODE_SIZE = 4
-BGY_MATCHING_CODE_SIZE = 6
 
 
 class LinksightMatcher:
@@ -25,41 +23,40 @@ class LinksightMatcher:
         self.interlevels = interlevels
 
     def get_match(self, dataset):
-        merged = self.dataset.copy()
+        matched_df = self.dataset.copy()
 
-        for interlevel in reversed(self.dataset_interlevels):
-            for reference_interlevel in reversed(self.reference_interlevels):
-                print("interlevel: {} | reference_interlevel: {}".format(interlevel, reference_interlevel))
-                match = self._match(interlevel, reference_interlevel)
-                return match
+        for interlevel in self.interlevels:
+            reference_subset = self._get_subset(interlevel)
 
-    def _match(self, interlevel, reference_interlevel):
-        subset = self._get_subset(0, reference_interlevel)
+            pairs = self._get_pairs(self.dataset, reference_subset)
+            pairs.columns = ['dataset_index', 'reference_index']
 
+            merged = pd.merge(pairs, self.dataset[[interlevel['dataset_field_name']]],
+                              how='left',
+                              left_on='dataset_index',
+                              right_index=True)
+
+            merged = pd.merge(merged, reference_subset,
+                              how='left',
+                              left_on='reference_index',
+                              right_index=True)
+
+            merged['matched'] = merged.apply(self._get_score, axis=1,
+                                             args=[interlevel['dataset_field_name'], 'location'])
+            return merged.loc[merged.matched == True]
+
+    def _get_subset(self, interlevel):
+        if interlevel['matching_size'] == 0:
+            return self.reference.loc[self.reference.interlevel.isin(interlevel['reference_fields'])]
+
+    @staticmethod
+    def _get_pairs(df1, df2):
         indexer = rl.FullIndex()
-        pairs = indexer.index(self.dataset, subset)
+        pairs = indexer.index(df1, df2)
         compare_cl = rl.Compare()
-        pairs = compare_cl.compute(pairs, self.dataset, subset)
+        pairs = compare_cl.compute(pairs, df1, df2)
         pairs = pd.DataFrame(np.array(list(pairs.index)))
-        pairs.columns = ['dataset_index', 'reference_index']
-
-        merged = pd.merge(pairs, self.dataset[[interlevel]],
-                          how='left',
-                          left_on='dataset_index',
-                          right_index=True)
-
-        merged = pd.merge(merged, subset,
-                          how='left',
-                          left_on='reference_index',
-                          right_index=True)
-
-        merged['matched'] = merged.apply(self._get_score, axis=1,
-                                         args=[interlevel, self.reference_location_field])
-        return merged.loc[merged.matched == True]
-
-    def _get_subset(self, matching_size, reference_interlevel):
-        if matching_size == 0:
-            return self.reference.loc[self.reference.interlevel == reference_interlevel].copy()
+        return pairs
 
     @staticmethod
     def _get_score(row, source_field, reference_field):
