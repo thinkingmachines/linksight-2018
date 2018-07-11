@@ -1,11 +1,8 @@
-import re
 import numpy as np
 import pandas as pd
 import recordlinkage as rl
 
 from fuzzywuzzy import fuzz
-
-PSGC_CODE_LEN = 9
 
 
 class LinksightMatcher:
@@ -19,10 +16,13 @@ class LinksightMatcher:
         self.interlevels = interlevels
 
     def get_match(self, dataset):
+        self.dataset.fillna("", inplace=True)
         matched_df = self.dataset.copy()
 
         codes = []
         for interlevel in self.interlevels:
+            dataset_field_name = self.dataset.iloc[0]['Province']
+
             reference_subset = self._get_subset(interlevel, codes)
 
             pairs = self._get_pairs(self.dataset, reference_subset)
@@ -57,15 +57,15 @@ class LinksightMatcher:
 
         return matched_df
 
-    def _get_subset(self, interlevel, codes):
-        if interlevel['matching_size'] == 0:
-            return self.reference.loc[self.reference.interlevel.isin(interlevel['reference_fields'])]
+    def _get_subset(self, interlevel, codes, filter_using_code=False):
 
-        code_field = '{}_code'.format(interlevel['name'])
-        subset = self.reference.loc[self.reference[code_field].isin(codes) &
-                                    self.reference.interlevel.isin(interlevel['reference_fields'])]
+        if filter_using_code == True:
+            code_field = '{}_code'.format(interlevel['name'])
+            subset = self.reference.loc[self.reference[code_field].isin(codes) &
+                                        self.reference.interlevel.isin(interlevel['reference_fields'])]
+            return subset
 
-        return subset
+        return self.reference.loc[self.reference.interlevel.isin(interlevel['reference_fields'])]
 
     @staticmethod
     def _get_pairs(df1, df2):
