@@ -1,8 +1,11 @@
+from itertools import dropwhile
+
 import numpy as np
 import pandas as pd
 import recordlinkage as rl
 
 from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
 
 
 class LinksightMatcher:
@@ -21,9 +24,14 @@ class LinksightMatcher:
 
         codes = []
         for interlevel in self.interlevels:
-            dataset_field_name = self.dataset.iloc[0]['Province']
+            location = self.dataset.iloc[0][interlevel['dataset_field_name']]
 
-            reference_subset = self._get_subset(interlevel, codes)
+            if location == "":
+                continue
+            if len(codes) == 0:
+                reference_subset = self._get_subset(interlevel)
+            else:
+                reference_subset = self._get_subset(interlevel, filter_using_code=True, codes=codes)
 
             pairs = self._get_pairs(self.dataset, reference_subset)
             pairs.columns = ['dataset_index', 'reference_index']
@@ -54,18 +62,23 @@ class LinksightMatcher:
                                       left_index=True,
                                       right_on='dataset_index')
                 matched_df.set_index('dataset_index', inplace=True, drop=True)
+                matched_df.drop_duplicates(inplace=True)
 
         return matched_df
 
-    def _get_subset(self, interlevel, codes, filter_using_code=False):
+    def _get_subset(self, starting_interlevel, filter_using_code=False, codes=[]):
+        interlevels = dropwhile(lambda x: x != starting_interlevel, reversed(self.interlevels))
 
         if filter_using_code == True:
-            code_field = '{}_code'.format(interlevel['name'])
-            subset = self.reference.loc[self.reference[code_field].isin(codes) &
-                                        self.reference.interlevel.isin(interlevel['reference_fields'])]
-            return subset
+            for interlevel in interlevels:
+                code_field = '{}_code'.format(interlevel['name'])
+                subset = self.reference.loc[self.reference[code_field].isin(codes) &
+                                            self.reference.interlevel.isin(starting_interlevel['reference_fields'])]
 
-        return self.reference.loc[self.reference.interlevel.isin(interlevel['reference_fields'])]
+                if len(subset) > 0:
+                    return subset
+
+        return self.reference.loc[self.reference.interlevel.isin(starting_interlevel['reference_fields'])]
 
     @staticmethod
     def _get_pairs(df1, df2):
