@@ -23,33 +23,64 @@ class LinksightMatcher:
         matched_df = self.dataset.copy()
 
         codes = []
+        previous_interlevel_name = ""
         for interlevel in self.interlevels:
             location = self.dataset.iloc[0][interlevel['dataset_field_name']]
 
             if location == "":
+                matched_df['matched_{}_code'.format(interlevel['name'])] = np.nan
+                matched_df['matched_{}'.format(interlevel['name'])] = np.nan
                 continue
             if len(codes) == 0:
                 reference_subset = self._get_subset(interlevel)
+                pairs = self._get_pairs(self.dataset, reference_subset)
+                pairs.columns = ['dataset_index', 'reference_index']
+
+                merged = pd.merge(pairs, self.dataset[[interlevel['dataset_field_name']]],
+                                  how='left',
+                                  left_on='dataset_index',
+                                  right_index=True)
+
+                merged = pd.merge(merged, reference_subset,
+                                  how='left',
+                                  left_on='reference_index',
+                                  right_index=True)
+
+                merged['matched'] = merged.apply(self._get_score, axis=1,
+                                                 args=[interlevel['dataset_field_name'], 'location'])
+
+                matches = merged.loc[merged.matched == True]
             else:
-                reference_subset = self._get_subset(interlevel, filter_using_code=True, codes=codes)
+                partial_matches = []
+                for code in codes:
+                    reference_subset = self._get_subset(interlevel, filter_using_code=True, codes=[code])
 
-            pairs = self._get_pairs(self.dataset, reference_subset)
-            pairs.columns = ['dataset_index', 'reference_index']
+                    pairs = self._get_pairs(self.dataset, reference_subset)
+                    pairs.columns = ['dataset_index', 'reference_index']
 
-            merged = pd.merge(pairs, self.dataset[[interlevel['dataset_field_name']]],
-                              how='left',
-                              left_on='dataset_index',
-                              right_index=True)
+                    merged = pd.merge(pairs, self.dataset[[interlevel['dataset_field_name']]],
+                                      how='left',
+                                      left_on='dataset_index',
+                                      right_index=True)
 
-            merged = pd.merge(merged, reference_subset,
-                              how='left',
-                              left_on='reference_index',
-                              right_index=True)
+                    merged = pd.merge(merged, reference_subset,
+                                      how='left',
+                                      left_on='reference_index',
+                                      right_index=True)
 
-            merged['matched'] = merged.apply(self._get_score, axis=1,
-                                             args=[interlevel['dataset_field_name'], 'location'])
+                    merged['matched'] = merged.apply(self._get_score, axis=1,
+                                                     args=[interlevel['dataset_field_name'], 'location'])
 
-            matches = merged.loc[merged.matched == True]
+                    if len(merged.loc[merged.matched == True]) == 0:
+                        field_name = "matched_{}_code".format(previous_interlevel_name)
+                        matched_df.reset_index(inplace=True)
+                        index_to_drop = matched_df[matched_df[field_name] == code].index[0]
+                        matched_df.drop(index=[index_to_drop], inplace=True)
+                        matched_df.set_index('dataset_index', inplace=True, drop=True)
+
+                    partial_matches.append(merged.loc[merged.matched == True])
+                matches = pd.concat(partial_matches)
+
             if len(matches) > 0:
                 matches = matches[['dataset_index', 'code', 'location']]
                 codes = list(matches['code'])
@@ -63,6 +94,10 @@ class LinksightMatcher:
                                       right_on='dataset_index')
                 matched_df.set_index('dataset_index', inplace=True, drop=True)
                 matched_df.drop_duplicates(inplace=True)
+                previous_interlevel_name = interlevel['name']
+            else:
+                matched_df['matched_{}_code'.format(interlevel['name'])] = np.nan
+                matched_df['matched_{}'.format(interlevel['name'])] = np.nan
 
         return matched_df
 
