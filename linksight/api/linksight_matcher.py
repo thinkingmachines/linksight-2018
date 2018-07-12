@@ -32,22 +32,9 @@ class LinksightMatcher:
                 matched_df['matched_{}'.format(interlevel['name'])] = np.nan
                 continue
             if len(codes) == 0:
+
                 reference_subset = self._get_subset(interlevel)
-                pairs = self._get_pairs(self.dataset, reference_subset)
-                pairs.columns = ['dataset_index', 'reference_index']
-
-                merged = pd.merge(pairs, self.dataset[[interlevel['dataset_field_name']]],
-                                  how='left',
-                                  left_on='dataset_index',
-                                  right_index=True)
-
-                merged = pd.merge(merged, reference_subset,
-                                  how='left',
-                                  left_on='reference_index',
-                                  right_index=True)
-
-                merged['matched'] = merged.apply(self._get_score, axis=1,
-                                                 args=[interlevel['dataset_field_name'], 'location'])
+                merged = self._get_matches(interlevel, reference_subset)
 
                 matches = merged.loc[merged.matched == True]
             else:
@@ -55,21 +42,7 @@ class LinksightMatcher:
                 for code in codes:
                     reference_subset = self._get_subset(interlevel, filter_using_code=True, codes=[code])
 
-                    pairs = self._get_pairs(self.dataset, reference_subset)
-                    pairs.columns = ['dataset_index', 'reference_index']
-
-                    merged = pd.merge(pairs, self.dataset[[interlevel['dataset_field_name']]],
-                                      how='left',
-                                      left_on='dataset_index',
-                                      right_index=True)
-
-                    merged = pd.merge(merged, reference_subset,
-                                      how='left',
-                                      left_on='reference_index',
-                                      right_index=True)
-
-                    merged['matched'] = merged.apply(self._get_score, axis=1,
-                                                     args=[interlevel['dataset_field_name'], 'location'])
+                    merged = self._get_matches(interlevel, reference_subset)
 
                     if len(merged.loc[merged.matched == True]) == 0:
                         field_name = "matched_{}_code".format(previous_interlevel_name)
@@ -114,6 +87,25 @@ class LinksightMatcher:
                     return subset
 
         return self.reference.loc[self.reference.interlevel.isin(starting_interlevel['reference_fields'])]
+
+    def _get_matches(self, interlevel, reference_subset):
+        pairs = self._get_pairs(self.dataset, reference_subset)
+        pairs.columns = ['dataset_index', 'reference_index']
+
+        merged = pd.merge(pairs, self.dataset[[interlevel['dataset_field_name']]],
+                          how='left',
+                          left_on='dataset_index',
+                          right_index=True)
+
+        merged = pd.merge(merged, reference_subset,
+                          how='left',
+                          left_on='reference_index',
+                          right_index=True)
+
+        merged['matched'] = merged.apply(self._get_score, axis=1,
+                                         args=[interlevel['dataset_field_name'], 'location'])
+
+        return merged
 
     @staticmethod
     def _get_pairs(df1, df2):
