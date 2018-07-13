@@ -5,7 +5,8 @@ import pandas as pd
 import recordlinkage as rl
 
 from fuzzywuzzy import fuzz
-from fuzzywuzzy import process
+
+CODE_LEN = 9
 
 
 class LinksightMatcher:
@@ -23,7 +24,7 @@ class LinksightMatcher:
         matched_df = self.dataset.copy()
 
         codes = []
-        previous_interlevel_name = ""
+        previous_interlevel = ""
         for interlevel in self.interlevels:
             location = self.dataset.iloc[0][interlevel['dataset_field_name']]
 
@@ -46,11 +47,8 @@ class LinksightMatcher:
                     merged = self._get_matches(interlevel, reference_subset)
                     near_matches = self._drop_mismatches(merged)
 
-                    if len(near_matches) == 0:
-                        matched_df = self._drop_unmatched_row(matched_df, previous_interlevel_name, code)
-
                     partial_matches.append(near_matches)
-                matches = pd.concat(partial_matches)
+                matches = pd.concat(partial_matches, sort=False)
 
             if len(matches) > 0:
                 matches = matches[['dataset_index', 'code', 'location', 'matched', 'score']]
@@ -65,9 +63,14 @@ class LinksightMatcher:
                                       how='left',
                                       left_index=True,
                                       right_on='dataset_index')
+
+                matched_df["stay"] = matched_df.apply(self._remove_duplicates, axis=1,
+                                                      args=[interlevel, previous_interlevel])
+
+                matched_df = matched_df[matched_df["stay"] == True].drop(columns="stay").copy()
+
                 matched_df.set_index('dataset_index', inplace=True, drop=True)
-                matched_df.drop_duplicates(inplace=True)
-                previous_interlevel_name = interlevel['name']
+                previous_interlevel = interlevel
             else:
                 matched_df['matched_{}_code'.format(interlevel['name'])] = np.nan
                 matched_df['matched_{}'.format(interlevel['name'])] = np.nan
@@ -79,6 +82,19 @@ class LinksightMatcher:
             return mismatch
         else:
             return matched_df
+
+    def _remove_duplicates(self, row, interlevel, previous_interlevel):
+        if previous_interlevel == "":
+            return True
+
+        current_field = "matched_{}_code".format(interlevel['name'])
+        previous_field = "matched_{}_code".format(previous_interlevel['name'])
+        code_offset = interlevel['matching_size']
+        matching_code = row[current_field][:code_offset].ljust(CODE_LEN, "0")
+        if row[previous_field] == matching_code:
+            return True
+        else:
+            return False
 
     def _get_subset(self, starting_interlevel, filter_using_code=False, codes=[]):
         interlevels = dropwhile(lambda x: x != starting_interlevel, reversed(self.interlevels))
@@ -109,7 +125,7 @@ class LinksightMatcher:
                           right_index=True)
 
         merged[["matched", "score"]] = merged.apply(self._get_score, axis=1,
-                                                    args=[interlevel['dataset_field_name'], 'location'],
+                                                    args=[interlevel, 'location'],
                                                     result_type='expand')
         return merged
 
@@ -121,15 +137,6 @@ class LinksightMatcher:
             return df[df['matched'] == 'near'].sort_values(by='score', ascending=False).head(5)
 
     @staticmethod
-    def _drop_unmatched_row(df, previous_interlevel_name, code):
-        field_name = "matched_{}_code".format(previous_interlevel_name)
-        df.reset_index(inplace=True)
-        index_to_drop = df[df[field_name] == code].index[0]
-        df.drop(index=[index_to_drop], inplace=True)
-        df.set_index('dataset_index', inplace=True, drop=True)
-        return df
-
-    @staticmethod
     def _get_pairs(df1, df2):
         indexer = rl.FullIndex()
         pairs = indexer.index(df1, df2)
@@ -139,7 +146,9 @@ class LinksightMatcher:
         return pairs
 
     @staticmethod
-    def _get_score(row, source_field, reference_field):
+    def _get_score(row, interlevel, reference_field):
+        source_field = interlevel['dataset_field_name']
+
         functions = [fuzz.token_set_ratio]
         for func in functions:
             score = func(row[source_field], row[reference_field])
