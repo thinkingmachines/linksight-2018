@@ -30,31 +30,36 @@ class LinksightMatcher:
             if location == "":
                 matched_df['matched_{}_code'.format(interlevel['name'])] = np.nan
                 matched_df['matched_{}'.format(interlevel['name'])] = np.nan
+                matched_df['matched_{}_matched'.format(interlevel['name'])] = np.nan
+                matched_df['matched_{}_score'.format(interlevel['name'])] = 0
                 continue
 
             if len(codes) == 0:
                 reference_subset = self._get_subset(interlevel)
 
                 merged = self._get_matches(interlevel, reference_subset)
-                matches = merged.loc[merged.matched == True]
+                matches = self._drop_mismatches(merged)
             else:
                 partial_matches = []
                 for code in codes:
                     reference_subset = self._get_subset(interlevel, filter_using_code=True, codes=[code])
                     merged = self._get_matches(interlevel, reference_subset)
+                    near_matches = self._drop_mismatches(merged)
 
-                    if len(merged.loc[merged.matched == True]) == 0:
+                    if len(near_matches) == 0:
                         matched_df = self._drop_unmatched_row(matched_df, previous_interlevel_name, code)
 
-                    partial_matches.append(merged.loc[merged.matched == True])
+                    partial_matches.append(near_matches)
                 matches = pd.concat(partial_matches)
 
             if len(matches) > 0:
-                matches = matches[['dataset_index', 'code', 'location']]
+                matches = matches[['dataset_index', 'code', 'location', 'matched', 'score']]
                 codes = list(matches['code'])
                 matches.columns = ['dataset_index',
                                    'matched_{}_code'.format(interlevel['name']),
-                                   'matched_{}'.format(interlevel['name'])]
+                                   'matched_{}'.format(interlevel['name']),
+                                   'matched_{}_matched'.format(interlevel['name']),
+                                   'matched_{}_score'.format(interlevel['name'])]
 
                 matched_df = pd.merge(matched_df, matches,
                                       how='left',
@@ -66,8 +71,14 @@ class LinksightMatcher:
             else:
                 matched_df['matched_{}_code'.format(interlevel['name'])] = np.nan
                 matched_df['matched_{}'.format(interlevel['name'])] = np.nan
+                matched_df['matched_{}_matched'.format(interlevel['name'])] = np.nan
+                matched_df['matched_{}_score'.format(interlevel['name'])] = 0
 
-        return matched_df
+        if len(matched_df) == 0:
+            mismatch = pd.concat([matched_df, self.dataset], sort=False)
+            return mismatch
+        else:
+            return matched_df
 
     def _get_subset(self, starting_interlevel, filter_using_code=False, codes=[]):
         interlevels = dropwhile(lambda x: x != starting_interlevel, reversed(self.interlevels))
@@ -97,10 +108,17 @@ class LinksightMatcher:
                           left_on='reference_index',
                           right_index=True)
 
-        merged['matched'] = merged.apply(self._get_score, axis=1,
-                                         args=[interlevel['dataset_field_name'], 'location'])
-
+        merged[["matched", "score"]] = merged.apply(self._get_score, axis=1,
+                                                    args=[interlevel['dataset_field_name'], 'location'],
+                                                    result_type='expand')
         return merged
+
+    @staticmethod
+    def _drop_mismatches(df):
+        if len(df[df['matched'] == 'exact']) > 0:
+            return df[df['matched'] == 'exact'].copy()
+        else:
+            return df[df['matched'] == 'near'].sort_values(by='score', ascending=False).head(5)
 
     @staticmethod
     def _drop_unmatched_row(df, previous_interlevel_name, code):
@@ -126,5 +144,9 @@ class LinksightMatcher:
         for func in functions:
             score = func(row[source_field], row[reference_field])
             if score == 100:
-                return True
-        return False
+                matched = "exact"
+            elif score >= 75:
+                matched = "near"
+            else:
+                matched = "mismatch"
+        return [matched, score]
