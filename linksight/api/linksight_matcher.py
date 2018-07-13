@@ -18,7 +18,7 @@ class LinksightMatcher:
         self.dataset = dataset
         self.interlevels = interlevels
 
-    def get_match(self, dataset):
+    def get_match(self):
         self.dataset.fillna("", inplace=True)
         matched_df = self.dataset.copy()
 
@@ -31,25 +31,20 @@ class LinksightMatcher:
                 matched_df['matched_{}_code'.format(interlevel['name'])] = np.nan
                 matched_df['matched_{}'.format(interlevel['name'])] = np.nan
                 continue
+
             if len(codes) == 0:
-
                 reference_subset = self._get_subset(interlevel)
-                merged = self._get_matches(interlevel, reference_subset)
 
+                merged = self._get_matches(interlevel, reference_subset)
                 matches = merged.loc[merged.matched == True]
             else:
                 partial_matches = []
                 for code in codes:
                     reference_subset = self._get_subset(interlevel, filter_using_code=True, codes=[code])
-
                     merged = self._get_matches(interlevel, reference_subset)
 
                     if len(merged.loc[merged.matched == True]) == 0:
-                        field_name = "matched_{}_code".format(previous_interlevel_name)
-                        matched_df.reset_index(inplace=True)
-                        index_to_drop = matched_df[matched_df[field_name] == code].index[0]
-                        matched_df.drop(index=[index_to_drop], inplace=True)
-                        matched_df.set_index('dataset_index', inplace=True, drop=True)
+                        matched_df = self._drop_unmatched_row(matched_df, previous_interlevel_name, code)
 
                     partial_matches.append(merged.loc[merged.matched == True])
                 matches = pd.concat(partial_matches)
@@ -106,6 +101,15 @@ class LinksightMatcher:
                                          args=[interlevel['dataset_field_name'], 'location'])
 
         return merged
+
+    @staticmethod
+    def _drop_unmatched_row(df, previous_interlevel_name, code):
+        field_name = "matched_{}_code".format(previous_interlevel_name)
+        df.reset_index(inplace=True)
+        index_to_drop = df[df[field_name] == code].index[0]
+        df.drop(index=[index_to_drop], inplace=True)
+        df.set_index('dataset_index', inplace=True, drop=True)
+        return df
 
     @staticmethod
     def _get_pairs(df1, df2):
