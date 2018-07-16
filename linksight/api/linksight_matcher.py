@@ -46,10 +46,9 @@ class LinksightMatcher:
                 for code in codes:
                     reference_subset = self._get_subset(interlevel, filter_using_code=True, codes=[code])
                     merged = self._get_matches(interlevel, reference_subset)
-                    near_matches = self._drop_mismatches(merged)
-
-                    partial_matches.append(near_matches)
+                    partial_matches.append(merged)
                 matches = pd.concat(partial_matches, sort=False)
+                matches = self._drop_mismatches(matches)
 
             if len(matches) > 0:
                 matches = matches[['dataset_index', 'code', 'location', 'matched', 'score']]
