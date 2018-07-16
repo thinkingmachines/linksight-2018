@@ -33,6 +33,7 @@ class LinksightMatcher:
                 matched_df['matched_{}'.format(interlevel['name'])] = np.nan
                 matched_df['matched_{}_matched'.format(interlevel['name'])] = np.nan
                 matched_df['matched_{}_score'.format(interlevel['name'])] = 0
+#                previous_interlevel = interlevel
                 continue
 
             if len(codes) == 0:
@@ -65,7 +66,7 @@ class LinksightMatcher:
                                       right_on='dataset_index')
 
                 matched_df["stay"] = matched_df.apply(self._remove_duplicates, axis=1,
-                                                      args=[interlevel, previous_interlevel])
+                                                      args=(interlevel, previous_interlevel))
 
                 matched_df = matched_df[matched_df["stay"] == True].drop(columns="stay").copy()
 
@@ -76,6 +77,7 @@ class LinksightMatcher:
                 matched_df['matched_{}'.format(interlevel['name'])] = np.nan
                 matched_df['matched_{}_matched'.format(interlevel['name'])] = np.nan
                 matched_df['matched_{}_score'.format(interlevel['name'])] = 0
+#                previous_interlevel = interlevel
 
         if len(matched_df) == 0:
             mismatch = pd.concat([matched_df, self.dataset], sort=False)
@@ -96,19 +98,19 @@ class LinksightMatcher:
         else:
             return False
 
-    def _get_subset(self, starting_interlevel, filter_using_code=False, codes=[]):
-        interlevels = dropwhile(lambda x: x != starting_interlevel, reversed(self.interlevels))
+    def _get_subset(self, current_interlevel, filter_using_code=False, codes=[]):
+        interlevels = dropwhile(lambda x: x != current_interlevel, reversed(self.interlevels))
 
         if filter_using_code == True:
             for interlevel in interlevels:
                 code_field = '{}_code'.format(interlevel['name'])
                 subset = self.reference.loc[self.reference[code_field].isin(codes) &
-                                            self.reference.interlevel.isin(starting_interlevel['reference_fields'])]
+                                            self.reference.interlevel.isin(current_interlevel['reference_fields'])]
 
                 if len(subset) > 0:
                     return subset
 
-        return self.reference.loc[self.reference.interlevel.isin(starting_interlevel['reference_fields'])]
+        return self.reference.loc[self.reference.interlevel.isin(current_interlevel['reference_fields'])]
 
     def _get_matches(self, interlevel, reference_subset):
         pairs = self._get_pairs(self.dataset, reference_subset)
