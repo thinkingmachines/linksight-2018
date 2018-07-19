@@ -1,6 +1,7 @@
 import pandas as pd
 
 from fuzzywuzzy import process
+from itertools import dropwhile
 
 MAX_MATCHES = 10
 SCORE_CUTOFF = 80
@@ -44,10 +45,21 @@ class LinkSightMatcher:
         matches.set_index("index", drop=True, inplace=True)
         return matches
 
-    def _populate_missing_interlevels(self, interlevels, matches):
-        for interlevel in interlevels:
-            code_field = "{}_code".format(interlevel["name"])
+    def _populate_missing_interlevels(self, missing_interlevels, matches):
+        for missing_interlevel in missing_interlevels:
+            code_field = "{}_code".format(missing_interlevel["name"])
+
             if code_field not in self.reference.columns:
+                partial_match = pd.DataFrame().reindex_like(matches)
+                next_interlevel = self._get_next_higher_interlevel(missing_interlevel)
+
+                field_name = "{}_code".format(next_interlevel["name"])
+
+                partial_match[field_name] = list(matches[field_name])
+                partial_match["interlevel"] = missing_interlevel["reference_fields"][0]
+                partial_match.drop_duplicates([field_name], inplace=True)
+
+                matches = matches.append(partial_match, sort=False)
                 continue
 
             codes = set(matches[code_field])
@@ -56,6 +68,9 @@ class LinkSightMatcher:
             matches = matches.append(partial_match, sort=False)
 
         return matches
+
+    def _get_next_higher_interlevel(self, interlevel):
+        return next(dropwhile(lambda x: x == interlevel, reversed(self.interlevels)))
 
     def _get_reference_subset(self, interlevel, codes=[], previous_interlevel=""):
         if codes:
