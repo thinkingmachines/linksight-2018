@@ -86,4 +86,7 @@ class LinkSightMatcher:
             df["score"] = score
             matches = matches.append(df)
 
+        if len(matches) and len(matches[matches["score"] == 100]):
+            return matches[matches["score"] == 100].copy()
+
         return matches
