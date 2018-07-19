@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'corsheaders',
 
     'linksight.api',
-    'linksight.app',
 ]
 
 MIDDLEWARE = [
