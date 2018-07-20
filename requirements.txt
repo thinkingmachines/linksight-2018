@@ -8,7 +8,7 @@ appnope==0.1.0            # via ipython
 backcall==0.1.0           # via ipython
 decorator==4.3.0          # via ipython, traitlets
 dj-database-url==0.5.0
-django-cors-headers==2.3.0
+django-cors-headers==2.4.0
 django==2.0.7
 djangorestframework-csv==2.1.0
 djangorestframework-link-header-pagination==0.1.1
@@ -19,8 +19,8 @@ ipython==6.4.0
 jedi==0.12.1              # via ipython
 jellyfish==0.6.1          # via recordlinkage
 numpy==1.14.5             # via pandas, recordlinkage, scipy
-pandas==0.23.1
-parso==0.3.0              # via jedi
+pandas==0.23.3
+parso==0.3.1              # via jedi
 pexpect==4.6.0            # via ipython
 pickleshare==0.7.4        # via ipython
 prompt-toolkit==1.0.15    # via ipython
@@ -31,7 +31,7 @@ python-dateutil==2.7.3    # via pandas
 python-dotenv==0.8.2
 pytz==2018.5              # via django, pandas
 recordlinkage==0.11.2
-scikit-learn==0.19.1      # via recordlinkage
+scikit-learn==0.19.2      # via recordlinkage
 scipy==1.1.0              # via recordlinkage
 simplegeneric==0.8.1      # via ipython
 six==1.11.0               # via djangorestframework-csv, prompt-toolkit, python-dateutil, recordlinkage, traitlets
