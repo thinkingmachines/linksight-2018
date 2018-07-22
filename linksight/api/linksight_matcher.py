@@ -8,6 +8,18 @@ SCORE_CUTOFF = 80
 
 
 class LinkSightMatcher:
+    """Returns a dataframe containing near and exact address matches
+
+    Attributes:
+        dataset: pandas dataframe row containing the barangay, city_municipality, and province field
+        dataset_index: the index of the dataset being processed
+        reference: pandas dataframe containing the reference codes based on the location
+        interlevels: dict containing interlevel information:
+            name: interlevel name
+            dataset_field_name: the dataset's column name corresponding to the interlevel
+            reference_fields: list of interlevel values from the reference dataframe that are
+                              considered as part of the interlevel
+    """
     def __init__(self, dataset, dataset_index,
                  reference, interlevels):
         self.dataset = dataset
@@ -16,6 +28,11 @@ class LinkSightMatcher:
         self.interlevels = interlevels
 
     def get_matches(self):
+        """Gets potential address matches based on the a dataset row
+
+        :return: a dataframe containing all of the matches in all interlevels in the following format:
+        | code | interlevel | location | province_code | city_municipality_code | score
+        """
         self.dataset.fillna("", inplace=True)
         codes = []
         missing_interlevels = []
@@ -46,6 +63,13 @@ class LinkSightMatcher:
         return matches
 
     def _populate_missing_interlevels(self, missing_interlevels, matches):
+        """Extracts missing higher-interlevel rows based on the matched lower-level ones. If the
+        lowest level is missing, the method will add empty dataframes with higher-level interlevel
+        codes populated so we can join them later
+
+        :param missing_interlevels: list of unmatched interlevels
+        :param matches: the dataframe containing the matches
+        """
         for missing_interlevel in missing_interlevels:
             code_field = "{}_code".format(missing_interlevel["name"])
 
@@ -73,6 +97,13 @@ class LinkSightMatcher:
         return next(dropwhile(lambda x: x == interlevel, reversed(self.interlevels)))
 
     def _get_reference_subset(self, interlevel, codes=[], previous_interlevel=""):
+        """Returns a subset of the reference dataset based on the current interlevel and the results
+        of the previous interlevel match attempt
+
+        :param interlevel: the dict containing info on the interlevel being processed
+        :param codes: the list containing the last successfully-matched codes
+        :param previous_interlevel: the dict containing info the last processed interleel
+        """
         if codes:
             code_field = "{}_code".format(previous_interlevel["name"])
             subset = self.reference.loc[self.reference[code_field].isin(codes) &
@@ -82,6 +113,13 @@ class LinkSightMatcher:
         return self.reference.loc[self.reference.interlevel.isin(interlevel["reference_fields"])]
 
     def _get_matches(self, interlevel, reference_subset):
+        """Returns a dataframe containing matches found on a certain interlevel in the following format:
+        | code | interlevel | location | province_code | city_municipality_code | score
+
+        :param interlevel: the dict containing intelevel information
+        :param reference_subset: the dataframe containing a subset of the reference dataframe where
+                                 the matches will be based on
+        """
         location = self.dataset.iloc[0][interlevel["dataset_field_name"]]
 
         choices = {}
