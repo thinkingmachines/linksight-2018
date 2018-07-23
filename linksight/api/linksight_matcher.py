@@ -1,9 +1,10 @@
-import pandas as pd
-
-from fuzzywuzzy import process
 from itertools import dropwhile
 
-MAX_MATCHES = 10
+import pandas as pd
+from fuzzywuzzy import process
+
+MAX_MATCHES = 7
+MAX_SCORE_DIFF = 9
 SCORE_CUTOFF = 80
 
 
@@ -131,8 +132,12 @@ class LinkSightMatcher:
         matched_tuples = process.extractBests(location, choices.keys(),
                                               score_cutoff=SCORE_CUTOFF, limit=MAX_MATCHES)
 
+        prev_score = 0
         matches = pd.DataFrame()
         for matched_loc, score in matched_tuples:
+            if prev_score and (prev_score - score) >= MAX_SCORE_DIFF:
+                break
+            prev_score = score
             temp = {}
             temp[matched_loc] = choices[matched_loc]
             df = pd.DataFrame.from_dict(temp[matched_loc], orient="index")
@@ -141,5 +146,5 @@ class LinkSightMatcher:
 
         if len(matches) and len(matches[matches["score"] == 100]):
             return matches[matches["score"] == 100].copy()
-
-        return matches
+        else:
+            return matches
