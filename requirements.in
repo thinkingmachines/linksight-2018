@@ -4,6 +4,7 @@ django-cors-headers
 djangorestframework
 djangorestframework-csv
 djangorestframework-link-header-pagination
+fuzzywuzzy[speedup]
 gunicorn
 ipython
 pandas
