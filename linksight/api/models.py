@@ -109,7 +109,8 @@ class Match(models.Model):
         matches = self.join_interlevels(matched_raw, interlevels)
 
         matches['matched'] = ~matches.duplicated('index', keep=False)
-        print(matches.columns)
+        matches.rename(columns={'index': 'dataset_index'}, inplace=True)
+        matches['total_score'] = 100
 
         for _, row in matches.iterrows():
             MatchItem.objects.create(match=self, **row.to_dict(), chosen=False)
