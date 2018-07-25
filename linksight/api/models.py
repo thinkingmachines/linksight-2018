@@ -83,17 +83,17 @@ class Match(models.Model):
         interlevels = [
             {
                 'name': 'province',
-                'dataset_field_name': 'Province',
+                'dataset_field_name': kwargs['province_col'],
                 'reference_fields': ['Prov', 'Dist']
             },
             {
                 'name': 'city_municipality',
-                'dataset_field_name': 'Municipality/City',
+                'dataset_field_name': kwargs['city_municipality_col'],
                 'reference_fields': ['City', 'Mun', 'SubMun']
             },
             {
                 'name': 'barangay',
-                'dataset_field_name': 'Barangay',
+                'dataset_field_name': kwargs['barangay_col'],
                 'reference_fields': ['Bgy']
             },
         ]
@@ -125,14 +125,14 @@ class Match(models.Model):
         df = df.copy().reset_index()
         merged = pd.DataFrame()
         for prev_interlevel, interlevel in self.current_and_prev(interlevels):
-            sub = df[df["interlevel"].isin(interlevel["reference_fields"])].copy()
-            sub.drop(columns=["interlevel"], inplace=True)
+            sub = df[df['interlevel'].isin(interlevel['reference_fields'])].copy()
+            sub.drop(columns=['interlevel'], inplace=True)
 
-            interlevel_name = interlevel["name"]
+            interlevel_name = interlevel['name']
             updated_column_names = {
-                "code": "matched_{}_psgc_code".format(interlevel_name),
-                "location": "matched_{}".format(interlevel_name),
-                "score": "matched_{}_score".format(interlevel_name)
+                'code': 'matched_{}_psgc_code'.format(interlevel_name),
+                'location': 'matched_{}'.format(interlevel_name),
+                'score': 'matched_{}_score'.format(interlevel_name)
             }
 
             sub.rename(columns=updated_column_names, inplace=True)
@@ -141,19 +141,26 @@ class Match(models.Model):
                 merged = sub
                 continue
 
-            prev_interlevel_name = prev_interlevel["name"]
+            prev_interlevel_name = prev_interlevel['name']
             merged = pd.merge(sub, merged,
-                              how="inner",
-                              left_on=["index", "{}_code".format(prev_interlevel_name)],
-                              right_on=["index", "matched_{}_psgc_code".format(prev_interlevel_name)])
+                              how='inner',
+                              left_on=['index', '{}_code'.format(prev_interlevel_name)],
+                              right_on=['index', 'matched_{}_psgc_code'.format(prev_interlevel_name)])
 
-            merged.drop(columns=["{}_code_x".format(prev_interlevel_name)], inplace=True, errors="ignore")
-            merged.drop(columns=["{}_code_y".format(prev_interlevel_name)], inplace=True, errors="ignore")
-            merged.drop(columns=["{}_code_x".format(interlevel_name)], inplace=True, errors="ignore")
-            merged.drop(columns=["{}_code_y".format(interlevel_name)], inplace=True, errors="ignore")
+            for column_name, fill_value in (
+                ('matched_{}_psgc_code', 0),
+                ('matched_{}', ''),
+                ('matched_{}_score', 0),
+            ):
+                merged[column_name.format(interlevel_name)] = merged[column_name.format(interlevel_name)].fillna(fill_value)
 
-        merged.drop(columns=["{}_code".format(interlevel["name"]) for interlevel in interlevels],
-                    inplace=True, errors="ignore")
+            merged.drop(columns=['{}_code_x'.format(prev_interlevel_name)], inplace=True, errors='ignore')
+            merged.drop(columns=['{}_code_y'.format(prev_interlevel_name)], inplace=True, errors='ignore')
+            merged.drop(columns=['{}_code_x'.format(interlevel_name)], inplace=True, errors='ignore')
+            merged.drop(columns=['{}_code_y'.format(interlevel_name)], inplace=True, errors='ignore')
+
+        merged.drop(columns=['{}_code'.format(interlevel['name']) for interlevel in interlevels],
+                    inplace=True, errors='ignore')
 
         return merged
 
