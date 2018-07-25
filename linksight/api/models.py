@@ -1,14 +1,19 @@
 import json
 import os.path
 import uuid
+from itertools import chain, tee
 
 import pandas as pd
+
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import Q
+from linksight.api.linksight_matcher import LinkSightMatcher
 
-from linksight.api.psgc_code_matcher import PSGCCodeMatcher
+CITY_MUN_CODE_LEN = 6
+PROV_CODE_LEN = 4
+PSGC_CODE_LEN = 9
 
 
 class Dataset(models.Model):
@@ -72,18 +77,85 @@ class Match(models.Model):
         with self.dataset.file.open() as f:
             dataset_df = pd.read_csv(f)
 
-        matcher = PSGCCodeMatcher(
-            psgc_df,
-            dataset_df,
-            barangay_col=kwargs['barangay_col'],
-            city_municipality_col=kwargs['city_municipality_col'],
-            province_col=kwargs['province_col'],
-        )
-        matches = matcher.get_matches(max_near_matches=3)
-        matches = self.clean_matches(matches)
+        psgc_df['province_code'] = psgc_df['code'].str.slice(stop=PROV_CODE_LEN).str.ljust(PSGC_CODE_LEN, '0')
+        psgc_df['city_municipality_code'] = psgc_df['code'].str.slice(stop=CITY_MUN_CODE_LEN).str.ljust(PSGC_CODE_LEN,
+                                                                                                        '0')
+        interlevels = [
+            {
+                'name': 'province',
+                'dataset_field_name': 'Province',
+                'reference_fields': ['Prov', 'Dist']
+            },
+            {
+                'name': 'city_municipality',
+                'dataset_field_name': 'Municipality/City',
+                'reference_fields': ['City', 'Mun', 'SubMun']
+            },
+            {
+                'name': 'barangay',
+                'dataset_field_name': 'Barangay',
+                'reference_fields': ['Bgy']
+            },
+        ]
+
+        matched_raw = pd.DataFrame()
+        for index, row in dataset_df.iterrows():
+            matcher = LinkSightMatcher(dataset=pd.DataFrame([row]),
+                                       dataset_index=index,
+                                       reference=psgc_df,
+                                       interlevels=interlevels)
+            matched_raw = matched_raw.append(matcher.get_matches())
+
+        matches = self.merge_to_dataset(matched_raw, interlevels)
+
+        matches = pd.merge(dataset_df, matches,
+                           how='left', left_index=True, right_on='index')
+
+        matches['matched'] = ~matches.duplicated('index', keep=False)
 
         for _, row in matches.iterrows():
             MatchItem.objects.create(match=self, **row.to_dict(), chosen=False)
+
+    @staticmethod
+    def current_and_prev(iterable):
+        current, prev = tee(iterable, 2)
+        prev = chain([None], prev)
+        return zip(prev, current)
+
+    def merge_to_dataset(self, df, interlevels):
+        df = df.copy().reset_index()
+        merged = pd.DataFrame()
+        for prev_interlevel, interlevel in self.current_and_prev(interlevels):
+            sub = df[df["interlevel"].isin(interlevel["reference_fields"])].copy()
+            sub.drop(columns=["interlevel"], inplace=True)
+
+            interlevel_name = interlevel["name"]
+            updated_column_names = {
+                "code": "matched_{}_code".format(interlevel_name),
+                "location": "matched_{}".format(interlevel_name),
+                "score": "{}_score".format(interlevel_name)
+            }
+
+            sub.rename(columns=updated_column_names, inplace=True)
+
+            if merged.empty:
+                merged = sub
+                continue
+
+            prev_interlevel_name = prev_interlevel["name"]
+            merged = pd.merge(sub, merged,
+                              how="inner",
+                              left_on=["index", "{}_code".format(prev_interlevel_name)],
+                              right_on=["index", "matched_{}_code".format(prev_interlevel_name)])
+
+            merged.drop(columns=["{}_code".format(prev_interlevel_name)], inplace=True, errors="ignore")
+            merged.drop(columns=["{}_code".format(prev_interlevel_name)], inplace=True, errors="ignore")
+            merged.drop(columns=["{}_code_x".format(prev_interlevel_name)], inplace=True, errors="ignore")
+            merged.drop(columns=["{}_code_y".format(prev_interlevel_name)], inplace=True, errors="ignore")
+            merged.drop(columns=["{}_code_x".format(interlevel_name)], inplace=True, errors="ignore")
+            merged.drop(columns=["{}_code_y".format(interlevel_name)], inplace=True, errors="ignore")
+
+        return merged
 
     def save_choices(self, match_choices):
         # Save choices
@@ -190,4 +262,3 @@ class MatchItem(models.Model):
 
     class Meta:
         ordering = ['dataset_index', '-total_score']
-

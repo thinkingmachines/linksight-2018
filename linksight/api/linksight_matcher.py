@@ -34,6 +34,7 @@ class LinkSightMatcher:
         :return: a dataframe containing all of the matches in all interlevels in the following format:
         | code | interlevel | location | province_code | city_municipality_code | score
         """
+
         self.dataset.fillna("", inplace=True)
         codes = []
         missing_interlevels = []
@@ -61,6 +62,7 @@ class LinkSightMatcher:
         matches = self._populate_missing_interlevels(missing_interlevels, matches)
         matches["index"] = self.dataset_index
         matches.set_index("index", drop=True, inplace=True)
+
         return matches
 
     def _populate_missing_interlevels(self, missing_interlevels, matches):
@@ -121,6 +123,7 @@ class LinkSightMatcher:
         :param reference_subset: the dataframe containing a subset of the reference dataframe where
                                  the matches will be based on
         """
+
         location = self.dataset.iloc[0][interlevel["dataset_field_name"]]
 
         choices = {}
