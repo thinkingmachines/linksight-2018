@@ -20,7 +20,7 @@ const Choice = styled(props => (
         props.item.matched_province
       ].filter(v => v).join(', ')}
       <span className='score'>
-        {parseFloat(props.item.total_score / 6 * 100).toFixed(2)}
+        {parseFloat(props.item.total_score).toFixed(2)}
       </span>
     </Cell>
   </section>
