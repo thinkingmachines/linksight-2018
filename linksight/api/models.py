@@ -106,7 +106,7 @@ class Match(models.Model):
                                        interlevels=interlevels)
             matched_raw = matched_raw.append(matcher.get_matches())
 
-        matches = self.join_interlevels(matched_raw, interlevels)
+        matches = self.join_interlevels(matched_raw, dataset_df, interlevels)
 
         matches['matched'] = ~matches.duplicated('index', keep=False)
         matches.rename(columns={'index': 'dataset_index'}, inplace=True)
@@ -121,14 +121,19 @@ class Match(models.Model):
         prev = chain([None], prev)
         return zip(prev, current)
 
-    def join_interlevels(self, df, interlevels):
-        df = df.copy().reset_index()
+    def join_interlevels(self, matches, dataset, interlevels):
+        df = matches.copy().reset_index()
         merged = pd.DataFrame()
         for prev_interlevel, interlevel in self.current_and_prev(interlevels):
+            interlevel_name = interlevel['name']
+            dataset.rename(columns={interlevel['dataset_field_name']: 'source_{}'.format(interlevel_name)},
+                           inplace=True)
+            source_field = 'source_{}'.format(interlevel_name)
+            dataset[source_field] = dataset[source_field].fillna("")
+
             sub = df[df['interlevel'].isin(interlevel['reference_fields'])].copy()
             sub.drop(columns=['interlevel'], inplace=True)
 
-            interlevel_name = interlevel['name']
             updated_column_names = {
                 'code': 'matched_{}_psgc_code'.format(interlevel_name),
                 'location': 'matched_{}'.format(interlevel_name),
@@ -161,6 +166,11 @@ class Match(models.Model):
 
         merged.drop(columns=['{}_code'.format(interlevel['name']) for interlevel in interlevels],
                     inplace=True, errors='ignore')
+
+        source_columns = ['source_{}'.format(interlevel['name']) for interlevel in interlevels]
+        dataset = dataset[source_columns]
+        merged = pd.merge(dataset, merged,
+                          how='left', left_index=True, right_on='index')
 
         return merged
 
