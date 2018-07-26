@@ -1,5 +1,6 @@
 import json
 import os.path
+import re
 import uuid
 from itertools import chain, tee
 
@@ -110,21 +111,29 @@ class Match(models.Model):
 
         matches['matched'] = ~matches.duplicated('index', keep=False)
         matches.rename(columns={'index': 'dataset_index'}, inplace=True)
-        matches['total_score'] = 100
+        matches = self._add_total_score(matches)
 
         for _, row in matches.iterrows():
             MatchItem.objects.create(match=self, **row.to_dict(), chosen=False)
 
     @staticmethod
-    def current_and_prev(iterable):
-        current, prev = tee(iterable, 2)
-        prev = chain([None], prev)
-        return zip(prev, current)
+    def _add_total_score(df):
+        regex = re.compile(r'score', re.IGNORECASE)
+        score_columns = list(filter(regex.search, list(df.columns)))
+
+        df['total_score'] = df[score_columns].sum(axis=1)
+        return df
 
     def join_interlevels(self, matches, dataset, interlevels):
         df = matches.copy().reset_index()
         merged = pd.DataFrame()
-        for prev_interlevel, interlevel in self.current_and_prev(interlevels):
+
+        def current_and_prev(iterable):
+            current, prev = tee(iterable, 2)
+            prev = chain([None], prev)
+            return zip(prev, current)
+
+        for prev_interlevel, interlevel in current_and_prev(interlevels):
             interlevel_name = interlevel['name']
             dataset.rename(columns={interlevel['dataset_field_name']: 'source_{}'.format(interlevel_name)},
                            inplace=True)
