@@ -1,5 +1,4 @@
-from itertools import dropwhile
-
+import numpy as np
 import pandas as pd
 from fuzzywuzzy import process
 
@@ -31,7 +30,7 @@ class LinkSightMatcher:
     def get_matches(self):
         """Gets potential address matches based on the a dataset row
 
-        :return: a dataframe containing all of the matches in all interlevels in the following format:
+        :returns: a dataframe containing all of the matches in all interlevels in the following format:
         | code | interlevel | location | province_code | city_municipality_code | score
         """
 
@@ -72,32 +71,47 @@ class LinkSightMatcher:
 
         :param missing_interlevels: list of unmatched interlevels
         :param matches: the dataframe containing the matches
+        :returns: a Pandas dataframe
         """
         for missing_interlevel in missing_interlevels:
             code_field = "{}_code".format(missing_interlevel["name"])
 
             if code_field not in self.reference.columns:
-                partial_match = pd.DataFrame().reindex_like(matches)
-                next_interlevel = self._get_next_higher_interlevel(missing_interlevel)
-
-                field_name = "{}_code".format(next_interlevel["name"])
-
-                partial_match[field_name] = list(matches[field_name])
-                partial_match["interlevel"] = missing_interlevel["reference_fields"][0]
-                partial_match.drop_duplicates([field_name], inplace=True)
-
-                matches = matches.append(partial_match, sort=False)
+                matches = self._create_empty_rows(missing_interlevel, matches)
                 continue
 
             codes = set(matches[code_field])
-            partial_match = self.reference[self.reference['code'].isin(codes)].copy()
+            partial_match = self.reference.loc[self.reference['code'].isin(codes) &
+                                               self.reference.interlevel.isin(missing_interlevel["reference_fields"])].copy()
+
+            if partial_match.empty:
+                matches = self._create_empty_rows(missing_interlevel, matches)
+                continue
+
             partial_match['score'] = 100
             matches = matches.append(partial_match, sort=False)
 
         return matches
 
-    def _get_next_higher_interlevel(self, interlevel):
-        return next(dropwhile(lambda x: x == interlevel, reversed(self.interlevels)))
+    def _create_empty_rows(self, missing_interlevel, matches):
+        """Appends rows to the dataframe. These rows will be a copy of the matched dataframe but
+        with the interlevel changed to match the missing interlevel. The location will be empty.
+        The city_municipality_code and province_code will be the same as the matched one so we can
+        join them later in the process
+
+        :param missing_interlevel: dict containing the interlevel details
+        :param matches: the dataframe containing the matches
+        :returns: a pandas dataframe
+
+        """
+        partial_match = matches.copy()
+        partial_match["interlevel"] = missing_interlevel["reference_fields"][0]
+        partial_match["location"] = np.nan
+        partial_match.drop_duplicates(["code"], inplace=True)
+        partial_match["score"] = 0
+
+        matches = matches.append(partial_match, sort=False)
+        return matches.copy()
 
     def _get_reference_subset(self, interlevel, codes=[], previous_interlevel=""):
         """Returns a subset of the reference dataset based on the current interlevel and the results
@@ -106,6 +120,7 @@ class LinkSightMatcher:
         :param interlevel: the dict containing info on the interlevel being processed
         :param codes: the list containing the last successfully-matched codes
         :param previous_interlevel: the dict containing info the last processed interleel
+        :returns: a pandas dataframe
         """
         if codes:
             code_field = "{}_code".format(previous_interlevel["name"])
@@ -122,6 +137,7 @@ class LinkSightMatcher:
         :param interlevel: the dict containing intelevel information
         :param reference_subset: the dataframe containing a subset of the reference dataframe where
                                  the matches will be based on
+        :returns: a Pandas dataframe
         """
 
         location = self.dataset.iloc[0][interlevel["dataset_field_name"]]

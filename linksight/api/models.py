@@ -122,6 +122,7 @@ class Match(models.Model):
         score_columns = list(filter(regex.search, list(df.columns)))
 
         df['total_score'] = df[score_columns].sum(axis=1)
+
         return df
 
     def join_interlevels(self, matches, dataset, interlevels):
