@@ -58,6 +58,8 @@ class LinkSightMatcher:
             matches = matches.append(partial_matches)
             previous_interlevel = interlevel
 
+        if matches.empty:
+            return matches
         matches = self._populate_missing_interlevels(missing_interlevels, matches)
         matches["index"] = self.dataset_index
         matches.set_index("index", drop=True, inplace=True)
