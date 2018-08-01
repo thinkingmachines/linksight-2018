@@ -243,8 +243,8 @@ class Match(models.Model):
         with population.file.open() as f:
             population_df = pd.read_csv(f, dtype={'Code': object})
 
-        joined_df = joined_df.merge(population_df, left_on='PSGC',
-                                    right_on='Code')
+        joined_df = joined_df.merge(population_df, how='left',
+                                    left_on='PSGC', right_on='Code')
         joined_df.drop([
             'Code',
             'matched_barangay_psgc',
