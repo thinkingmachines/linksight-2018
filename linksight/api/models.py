@@ -209,7 +209,7 @@ class Match(models.Model):
             'matched_province_psgc_code',
         ]])
 
-        # Get deepest PSGC code
+        # Get deepest PSGC
 
         def get_deepest_code(row):
             for field in ['barangay', 'city_municipality', 'province']:
@@ -217,7 +217,7 @@ class Match(models.Model):
                 if row.get(key):
                     return row[key]
 
-        joined_df['psgc_code'] = joined_df.apply(get_deepest_code, axis=1)
+        joined_df['PSGC'] = joined_df.apply(get_deepest_code, axis=1)
 
         # Merge population
 
@@ -225,11 +225,10 @@ class Match(models.Model):
         with population.file.open() as f:
             population_df = pd.read_csv(f)
 
-        joined_df = joined_df.merge(population_df, left_on='psgc_code',
+        joined_df = joined_df.merge(population_df, left_on='PSGC',
                                     right_on='Code')
         joined_df.drop([
             'Code',
-            'psgc_code',
             'matched_barangay_psgc_code',
             'matched_city_municipality_psgc_code',
             'matched_province_psgc_code',
