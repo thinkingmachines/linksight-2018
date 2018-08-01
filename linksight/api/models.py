@@ -14,7 +14,7 @@ from linksight.api.linksight_matcher import LinkSightMatcher
 
 CITY_MUN_CODE_LEN = 6
 PROV_CODE_LEN = 4
-PSGC_CODE_LEN = 9
+PSGC_LEN = 9
 
 
 class Dataset(models.Model):
@@ -78,9 +78,12 @@ class Match(models.Model):
         with self.dataset.file.open() as f:
             dataset_df = pd.read_csv(f)
 
-        psgc_df['province_code'] = psgc_df['code'].str.slice(stop=PROV_CODE_LEN).str.ljust(PSGC_CODE_LEN, '0')
-        psgc_df['city_municipality_code'] = psgc_df['code'].str.slice(stop=CITY_MUN_CODE_LEN).str.ljust(PSGC_CODE_LEN,
-                                                                                                        '0')
+        psgc_df['province_code'] = (psgc_df['code']
+                                    .str.slice(stop=PROV_CODE_LEN)
+                                    .str.ljust(PSGC_LEN, '0'))
+        psgc_df['city_municipality_code'] = (psgc_df['code']
+                                             .str.slice(stop=CITY_MUN_CODE_LEN)
+                                             .str.ljust(PSGC_LEN, '0'))
         interlevels = [
             {
                 'name': 'province',
@@ -136,8 +139,10 @@ class Match(models.Model):
 
         for prev_interlevel, interlevel in current_and_prev(interlevels):
             interlevel_name = interlevel['name']
-            dataset.rename(columns={interlevel['dataset_field_name']: 'source_{}'.format(interlevel_name)},
-                           inplace=True)
+            dataset.rename(columns={
+                interlevel['dataset_field_name']: 'source_{}'.format(
+                    interlevel_name),
+            }, inplace=True)
             source_field = 'source_{}'.format(interlevel_name)
             dataset[source_field] = dataset[source_field].fillna("")
 
@@ -145,7 +150,7 @@ class Match(models.Model):
             sub.drop(columns=['interlevel'], inplace=True)
 
             updated_column_names = {
-                'code': 'matched_{}_psgc_code'.format(interlevel_name),
+                'code': 'matched_{}_psgc'.format(interlevel_name),
                 'location': 'matched_{}'.format(interlevel_name),
                 'score': 'matched_{}_score'.format(interlevel_name)
             }
@@ -157,30 +162,43 @@ class Match(models.Model):
                 continue
 
             prev_interlevel_name = prev_interlevel['name']
-            merged = pd.merge(sub, merged,
-                              how='inner',
-                              left_on=['index', '{}_code'.format(prev_interlevel_name)],
-                              right_on=['index', 'matched_{}_psgc_code'.format(prev_interlevel_name)])
+            merged = pd.merge(
+                sub, merged, how='inner',
+                left_on=['index', '{}_code'.format(prev_interlevel_name)],
+                right_on=['index', 'matched_{}_psgc'.format(prev_interlevel_name)])
 
             for column_name, fill_value in (
-                ('matched_{}_psgc_code', 0),
+                ('matched_{}_psgc', 0),
                 ('matched_{}', ''),
                 ('matched_{}_score', 0),
             ):
-                merged[column_name.format(interlevel_name)] = merged[column_name.format(interlevel_name)].fillna(fill_value)
+                merged[column_name.format(interlevel_name)] = (
+                    merged[column_name.format(interlevel_name)].fillna(fill_value)
+                )
 
-            merged.drop(columns=['{}_code_x'.format(prev_interlevel_name)], inplace=True, errors='ignore')
-            merged.drop(columns=['{}_code_y'.format(prev_interlevel_name)], inplace=True, errors='ignore')
-            merged.drop(columns=['{}_code_x'.format(interlevel_name)], inplace=True, errors='ignore')
-            merged.drop(columns=['{}_code_y'.format(interlevel_name)], inplace=True, errors='ignore')
+            merged.drop(
+                columns=['{}_code_x'.format(prev_interlevel_name)],
+                inplace=True, errors='ignore')
+            merged.drop(
+                columns=['{}_code_y'.format(prev_interlevel_name)],
+                inplace=True, errors='ignore')
+            merged.drop(
+                columns=['{}_code_x'.format(interlevel_name)],
+                inplace=True, errors='ignore')
+            merged.drop(
+                columns=['{}_code_y'.format(interlevel_name)],
+                inplace=True, errors='ignore')
 
-        merged.drop(columns=['{}_code'.format(interlevel['name']) for interlevel in interlevels],
-                    inplace=True, errors='ignore')
+        merged.drop(columns=[
+            '{}_code'.format(interlevel['name']) for interlevel in interlevels],
+            inplace=True, errors='ignore')
 
-        source_columns = ['source_{}'.format(interlevel['name']) for interlevel in interlevels]
+        source_columns = [
+            'source_{}'.format(interlevel['name']) for interlevel in interlevels
+        ]
         dataset = dataset[source_columns]
-        merged = pd.merge(dataset, merged,
-                          how='left', left_index=True, right_on='index')
+        merged = pd.merge(dataset, merged, how='left', left_index=True,
+                          right_on='index')
 
         return merged
 
@@ -204,16 +222,16 @@ class Match(models.Model):
         matches_df.set_index('dataset_index')
 
         joined_df = dataset_df.join(matches_df[[
-            'matched_barangay_psgc_code',
-            'matched_city_municipality_psgc_code',
-            'matched_province_psgc_code',
+            'matched_barangay_psgc',
+            'matched_city_municipality_psgc',
+            'matched_province_psgc',
         ]])
 
         # Get deepest PSGC
 
         def get_deepest_code(row):
             for field in ['barangay', 'city_municipality', 'province']:
-                key = 'matched_{}_psgc_code'.format(field)
+                key = 'matched_{}_psgc'.format(field)
                 if row.get(key):
                     return row[key]
 
@@ -223,15 +241,15 @@ class Match(models.Model):
 
         population = Dataset.objects.get(pk=settings.POPULATION_DATASET_ID)
         with population.file.open() as f:
-            population_df = pd.read_csv(f)
+            population_df = pd.read_csv(f, dtype={'Code': object})
 
         joined_df = joined_df.merge(population_df, left_on='PSGC',
                                     right_on='Code')
         joined_df.drop([
             'Code',
-            'matched_barangay_psgc_code',
-            'matched_city_municipality_psgc_code',
-            'matched_province_psgc_code',
+            'matched_barangay_psgc',
+            'matched_city_municipality_psgc',
+            'matched_province_psgc',
         ], axis='columns', inplace=True)
 
         # Create matched dataset
@@ -262,22 +280,22 @@ class MatchItem(models.Model):
 
     matched_barangay = models.CharField(
         max_length=256, editable=False, null=True)
-    matched_barangay_psgc_code = models.IntegerField(
-        editable=False, null=True)
+    matched_barangay_psgc = models.CharField(
+        max_length=10, editable=False, null=True)
     matched_barangay_score = models.FloatField(
         editable=False)
 
     matched_city_municipality = models.CharField(
         max_length=256, editable=False, null=True)
-    matched_city_municipality_psgc_code = models.IntegerField(
-        editable=False, null=True)
+    matched_city_municipality_psgc = models.CharField(
+        max_length=10, editable=False, null=True)
     matched_city_municipality_score = models.FloatField(
         editable=False)
 
     matched_province = models.CharField(
         max_length=256, editable=False, null=True)
-    matched_province_psgc_code = models.IntegerField(
-        editable=False, null=True)
+    matched_province_psgc = models.CharField(
+        max_length=10, editable=False, null=True)
     matched_province_score = models.FloatField(
         editable=False)
 
