@@ -35,6 +35,13 @@ class Export extends React.Component {
     const {fields} = this.state.preview.schema
     return fields.filter(field => field.name !== 'index')
   }
+  getColumnHighlights () {
+    return {
+      'PSGC': colors.green,
+      'Population': colors.orange,
+      'Administrative Level': colors.orange
+    }
+  }
   render () {
     if (!this.state.preview) {
       return null
@@ -79,6 +86,7 @@ class Export extends React.Component {
         <Cell width={10} className={this.props.className}>
           <PreviewTable
             preview={this.state.preview}
+            columnHighlights={this.getColumnHighlights()}
           />
         </Cell>
       </Page>
