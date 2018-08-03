@@ -1,5 +1,5 @@
-.PHONY: build ssh
-build: venv requirements.txt
+.PHONY: install ssh
+install: venv requirements.txt
 	venv/bin/pip-sync
 venv:
 	python3 -m venv venv
