@@ -11,7 +11,7 @@ class LoadingOverlay extends React.Component {
   render () {
     return (
       <div className={this.props.className}>
-        <img src={logoIcon} />
+        <img src={logoIcon} alt='Loading icon' />
         <br />
         {this.props.children}
       </div>

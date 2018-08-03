@@ -15,7 +15,7 @@ const Sidebar = styled(props => (
       <Grid columns={1} rows='1fr min-content' height='100%'>
         <Cell>
           <div className='logo'>
-            <Link to='/'><img src={logoLight} /></Link>
+            <Link to='/'><img src={logoLight} alt='logo' /></Link>
           </div>
           <div className='tags'>
             {props.children}

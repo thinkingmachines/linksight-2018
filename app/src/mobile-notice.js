@@ -15,7 +15,7 @@ class MobileNotice extends React.Component {
     return (
       <div className={this.props.className}>
         <div className='notice'>
-          <p><img src={laptop} /></p>
+          <p><img src={laptop} alt='laptop' /></p>
           <p>To use this tool, switch to a desktop device.</p>
         </div>
         <div className='about'>
