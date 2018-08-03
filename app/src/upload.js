@@ -71,7 +71,7 @@ class Upload extends React.Component {
   renderInstruction () {
     return renderToString(
       <Instruction className='instruction'>
-        Drag your file or <span class='filepond--label-action'>Browse</span>
+        Drag your file or <span className='filepond--label-action'>Browse</span>
       </Instruction>
     )
   }
