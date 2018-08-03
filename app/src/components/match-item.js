@@ -14,14 +14,16 @@ const Choice = styled(props => (
       className='table-cell -choice-content'
       onClick={props.onChoose.bind(null, props.item)}
     >
-      {[
+      {props.noChoice ? 'No correct match' : [
         props.item.matched_barangay,
         props.item.matched_city_municipality,
         props.item.matched_province
       ].filter(v => v).join(', ')}
-      <span className='score'>
-        {parseFloat(props.item.total_score).toFixed(2)}
-      </span>
+      {props.noChoice ? null : (
+        <span className='score'>
+          {parseFloat(props.item.total_score).toFixed(2)}
+        </span>
+      )}
     </Cell>
   </section>
 ))`
@@ -90,6 +92,7 @@ class MatchItem extends React.Component {
           )}
         </Cell>
         {item.matched === 'True' ? null : this.renderChoices(item.choices)}
+        {item.matched === 'True' ? null : this.renderNoChoice(item)}
       </section>
     )
   }
@@ -102,6 +105,19 @@ class MatchItem extends React.Component {
         chosenItem={this.props.chosenItem}
       />
     ))
+  }
+  renderNoChoice (item) {
+    return (
+      <Choice noChoice='true'
+        /*
+          Based on how chosenItem works, the passed item needs to have:
+            - no id
+            - a dataset_index
+        */
+        item={{dataset_index: item.dataset_index}}
+        onChoose={this.props.onChoose}
+        chosenItem={this.props.chosenItem} />
+    )
   }
 }
 
