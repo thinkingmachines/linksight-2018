@@ -14,6 +14,9 @@ import backgroundCircle from './images/background-circle.svg'
 // Colors
 import * as colors from './colors'
 
+// Components
+import Topbar from './components/topbar'
+
 // Pages
 import Upload from './upload'
 import Preview from './preview'
@@ -35,6 +38,7 @@ class App extends React.Component {
     }
     return (
       <div className={'app ' + this.props.className}>
+        <Topbar />
         <Switch>
           <Route exact path='/' component={Upload} />
           <Route exact path='/datasets/:id/preview' component={Preview} />
