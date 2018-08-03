@@ -153,7 +153,7 @@ class Check extends React.Component {
               <Instruction className='instruction -small'>
                 We've identified {this.getIdentifiedCount()} of the locations! For
                 records with multiple matches, select the correct location match
-                from the list below it. Unchecked records will be excluded in the
+                from the list below it. Unchecked records will be excluded from the
                 export.
               </Instruction>
               <MatchesTable
