@@ -252,6 +252,14 @@ class Match(models.Model):
             'matched_province_psgc',
         ], axis='columns', inplace=True)
 
+        # Reorder so merged datasets are in front
+
+        front_cols = ['PSGC', 'Population', 'Administrative Level']
+        other_cols = [col for col in joined_df.columns.tolist()
+                      if col not in front_cols]
+        new_cols = front_cols + other_cols
+        joined_df = joined_df[new_cols]
+
         # Create matched dataset
 
         name, _ = os.path.splitext(self.dataset.name)
