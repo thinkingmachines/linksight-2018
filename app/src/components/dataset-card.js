@@ -14,13 +14,6 @@ class DatasetCard extends React.Component {
       <div className='info'>
         <h3 className='name'>{this.props.name}</h3>
         <p className='description -small'>{this.props.description}</p>
-        <div className='actions -small'>
-          <a href='#'>About</a>
-          <span className='bull'>&bull;</span>
-          <a href='#'>Preview</a>
-          <span className='bull'>&bull;</span>
-          <a href='#'>Download</a>
-        </div>
       </div>
       <div className='toggle'>
         <Toggle
