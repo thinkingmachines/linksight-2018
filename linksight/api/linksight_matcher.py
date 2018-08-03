@@ -55,6 +55,7 @@ class LinkSightMatcher:
                 continue
 
             codes = list(partial_matches["code"])
+            partial_matches.drop_duplicates(subset=["code"], inplace=True)
             matches = matches.append(partial_matches)
             previous_interlevel = interlevel
 
