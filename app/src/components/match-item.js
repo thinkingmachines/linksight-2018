@@ -73,7 +73,7 @@ class MatchItem extends React.Component {
         <Cell middle className='table-cell -index'>{item.dataset_index + 1}</Cell>
         <Cell middle className='table-cell'>
           <span className={'tag tag-' + tag}>
-            <img src={icon} />
+            <img src={icon} alt={tag} />
           </span>
         </Cell>
         <Cell middle className='table-cell'>

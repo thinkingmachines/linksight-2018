@@ -85,7 +85,7 @@ class Upload extends React.Component {
         <Cell width={12} className={this.props.className}>
           <Grid columns={12} gap='15px' height='100%' alignContent='center'>
             <Cell width={4} left={2} center middle>
-              <img width='100%' src={tablemap} />
+              <img width='100%' src={tablemap} alt='map with pins' />
               <UploadWidget
                 name='file'
                 server={`${window.API_HOST}/api/datasets/`}

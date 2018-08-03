@@ -34,7 +34,7 @@ class Header extends React.Component {
         ) : null}
         <Grid columns={10} gap='15px' alignContent='center'>
           <Cell width={9} className='logo'>
-            <img src={logo} />
+            <img src={logo} alt='logo' />
           </Cell>
           <Cell width={1}>
             <ul className='links -light'>

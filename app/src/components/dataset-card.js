@@ -9,7 +9,7 @@ class DatasetCard extends React.Component {
   render () {
     return <div className={this.props.className}>
       <div className='icon'>
-        <img src={this.props.iconUrl} />
+        <img src={this.props.iconUrl} alt={this.props.name} />
       </div>
       <div className='info'>
         <h3 className='name'>{this.props.name}</h3>
