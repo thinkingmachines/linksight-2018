@@ -1,6 +1,17 @@
 # LinkSight
 
-http://unicefstories.org/2018/04/04/venturefundthinkingmachines/
+This web app takes a list of barangay, municipality, city, and province names and looks up their closest matches in the [Philippine Standard Geographic Code (PSGC)](http://nap.psa.gov.ph/activestats/psgc/default.asp). It's useful if you're trying to standardize location names for merging location datasets from diverse sources.
+
+## How it works
+
+1. Upload a single CSV file that contains separate barangay, province, and city or municipality columns.
+2. Identify the columns that correspond to the correct administrative levels in the PSG code.
+3. For places with exact matches in the PSGC, LinkSight returns the precise PSG code. For places with more than one possible matching PSG code, use the app's graphical user interface to select the correct match.
+4. Export the results as a CSV.
+
+## Feedback
+
+This app is in active development! Your feedback will help us improve it. If you have any suggestions for features, enhancements, or find any bugs, or just want to contribute, please e-mail us linksight@thinkingmachin.es.
 
 ## Development
 
@@ -76,7 +87,3 @@ http://unicefstories.org/2018/04/04/venturefundthinkingmachines/
 ```sh
 npm run catalog-start
 ```
-
-## Contributing
-
-Interested in contributing? Talk to us: hello@thinkingmachin.es
