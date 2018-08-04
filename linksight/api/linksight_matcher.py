@@ -55,15 +55,18 @@ class LinkSightMatcher:
                 continue
 
             codes = list(partial_matches["code"])
-            partial_matches.drop_duplicates(subset=["code"], inplace=True)
             matches = matches.append(partial_matches)
             previous_interlevel = interlevel
 
         if matches.empty:
             return matches
+        matches = pd.merge(matches[['code', 'score']].copy(),
+                           self.reference[self.reference.original == True].copy(),
+                           how='inner', on='code')
         matches = self._populate_missing_interlevels(missing_interlevels, matches)
         matches["index"] = self.dataset_index
         matches.set_index("index", drop=True, inplace=True)
+        matches.drop(columns=['original'], inplace=True)
 
         return matches
 
