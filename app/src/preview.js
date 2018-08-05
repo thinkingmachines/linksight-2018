@@ -15,6 +15,7 @@ import Header from './components/header'
 import PreviewTable from './components/preview-table'
 import LocationColumn from './components/location-column'
 import LoadingOverlay from './components/loading-overlay'
+import ErrorOverlay from './components/error-overlay'
 
 // Elements
 import {Button, Instruction} from './elements'
@@ -92,6 +93,14 @@ class Preview extends React.Component {
         province_col: selectedLocationColumns.province
       })
       .then(resp => this.setState({matchId: resp.data.id}))
+      .catch(error => this.setState({
+        isMatching: false,
+        error: <p>
+          Uh oh! An unexpected error has occured.<br />
+          We've been notified about this and will try to<br />
+          look into it as soon as possible!
+        </p>
+      }))
   }
   render () {
     if (!this.state.preview) {
@@ -109,6 +118,11 @@ class Preview extends React.Component {
             <Cell width={10} left={2} className='box'>
               {this.state.isMatching ? (
                 <LoadingOverlay>Identifying locations&hellip;</LoadingOverlay>
+              ) : null}
+              {this.state.error ? (
+                <ErrorOverlay>
+                  {this.state.error}
+                </ErrorOverlay>
               ) : null}
               <Grid columns={10} gap='0' alignContent='space-between'>
                 <Cell width={8} className='preview'>

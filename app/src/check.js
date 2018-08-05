@@ -19,6 +19,7 @@ import Sidebar from './components/sidebar'
 import ToggleList from './components/toggle-list'
 import MatchesTable from './components/matches-table'
 import LoadingOverlay from './components/loading-overlay'
+import ErrorOverlay from './components/error-overlay'
 
 class Check extends React.Component {
   constructor (props) {
@@ -92,12 +93,18 @@ class Check extends React.Component {
       `${window.API_HOST}/api/matches/${id}/save-choices`, {
         match_choices: matchChoices
       })
-      .then(resp => {
-        this.setState({
-          isSaving: false,
-          isSaved: true
-        })
-      })
+      .then(resp => this.setState({
+        isSaving: false,
+        isSaved: true
+      }))
+      .catch(error => this.setState({
+        isSaving: false,
+        error: <p>
+          Uh oh! An unexpected error has occured.<br />
+          We've been notified about this and will try to<br />
+          look into it as soon as possible!
+        </p>
+      }))
   }
   render () {
     if (!this.state.matchItems) {
@@ -147,6 +154,11 @@ class Check extends React.Component {
         <Cell width={10} className={this.props.className}>
           {this.state.isSaving ? (
             <LoadingOverlay>Saving choices&hellip;</LoadingOverlay>
+          ) : null}
+          {this.state.error ? (
+            <ErrorOverlay>
+              {this.state.error}
+            </ErrorOverlay>
           ) : null}
           <Grid columns={1} gap='0' height='calc(100vh - 30px)'>
             <Cell className='matches'>
