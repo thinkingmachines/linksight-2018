@@ -7,18 +7,6 @@ import * as colors from '../colors'
 // Images
 import logoIcon from '../images/logo-icon.svg'
 
-class LoadingOverlay extends React.Component {
-  render () {
-    return (
-      <div className={this.props.className}>
-        <img src={logoIcon} alt='Loading icon' />
-        <br />
-        {this.props.children}
-      </div>
-    )
-  }
-}
-
 function generateKeyframes () {
   let keyframes = ''
   let r = 0
@@ -36,7 +24,13 @@ function generateKeyframes () {
   return keyframes
 }
 
-export default styled(LoadingOverlay)`
+const LoadingOverlay = styled((props) => (
+  <div className={props.className}>
+    <img src={logoIcon} alt='Loading icon' />
+    <br />
+    {props.children}
+  </div>
+))`
   position: absolute;
   z-index: 1;
   top: 0;
@@ -58,3 +52,5 @@ export default styled(LoadingOverlay)`
     animation: 10s random alternate infinite;
   }
 `
+
+export default LoadingOverlay
