@@ -18,5 +18,5 @@ class Page extends React.Component {
 }
 
 export default styled(Page)`
-  min-height: 100vh;
+  min-height: calc(100vh - 30px);
 `

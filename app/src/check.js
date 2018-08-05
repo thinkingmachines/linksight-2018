@@ -148,7 +148,7 @@ class Check extends React.Component {
           {this.state.isSaving ? (
             <LoadingOverlay>Saving choices&hellip;</LoadingOverlay>
           ) : null}
-          <Grid columns={1} gap='0' height='100vh'>
+          <Grid columns={1} gap='0' height='calc(100vh - 30px)'>
             <Cell className='matches'>
               <Instruction className='instruction -small'>
                 We've identified {this.getIdentifiedCount()} of the locations! For
