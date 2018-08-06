@@ -232,10 +232,19 @@ class Match(models.Model):
         matches_df.set_index('dataset_index')
 
         joined_df = dataset_df.join(matches_df[[
+            'matched_barangay',
             'matched_barangay_psgc',
+            'matched_city_municipality',
             'matched_city_municipality_psgc',
+            'matched_province',
             'matched_province_psgc',
         ]])
+
+        joined_df.rename(columns={
+            'matched_barangay': 'Matched Barangay',
+            'matched_city_municipality': 'Matched City/Municipality',
+            'matched_province': 'Matched Province',
+        }, inplace=True)
 
         # Get deepest PSGC
 
