@@ -5,9 +5,8 @@ class About extends React.Component {
     return (
       <React.Fragment>
         <h1>Location Intelligence made easy</h1>
-        <p>Many Philippine NGOs and grassroots organizations collect, encode, analyze and derive insights from their data. However, this process is usually done manually and the data they get is only limited to what they can physically gather.</p>
-        <p>They want to learn more about their communities so they more effectively target their programs and projects. Unfortunately, Philippine Census statistics are often hard to find and hard to use.</p>
-        <p>LinkSight will be a repository of ready-to-use Philippine geospatial data and socioeconomic indicators that anyone can merge with their own location datasets to expand their data point of view.</p>
+        <p>This app was created by <a href="http://thinkingmachin.es">Thinking Machines Data Science</a>, a data science consultancy that builds data systems for humans. Our projects include data transformation for major enterprises and on civic data problems for the public sector.</p>
+        <p>We're building this open-source tool as part of a larger initiative to help Philippine development organizations more easily link their own data with broader Philippine geospatial and socioeconomic datasets.</p>
         <p>If you're interested in contributing or learning more about the project, you can contact us at <a href='mailto:linksight@thinkingmachin.es'>linksight@thinkingmachin.es</a></p>
       </React.Fragment>
     )
