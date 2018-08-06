@@ -205,6 +205,11 @@ class Match(models.Model):
         merged = pd.merge(dataset, merged, how='left', left_index=True,
                           right_on='index')
 
+        merged.fillna({
+            'matched_barangay': '',
+            'matched_city_municipality': '',
+            'matched_province': '',
+        }, inplace=True)
         return merged
 
     def save_choices(self, match_choices):
