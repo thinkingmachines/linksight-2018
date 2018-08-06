@@ -4,6 +4,21 @@ http://unicefstories.org/2018/04/04/venturefundthinkingmachines/
 
 ## Development
 
+### React App
+
+1. Install dependencies
+
+    ```sh
+    cd app
+    npm install
+    ```
+
+1. Run server
+
+    ```sh
+    npm start
+    ```
+
 ### Django API
 
 1. Install dependencies
@@ -54,21 +69,6 @@ http://unicefstories.org/2018/04/04/venturefundthinkingmachines/
 
     ```sh
     python manage.py runserver
-    ```
-
-### React App
-
-1. Install dependencies
-
-    ```sh
-    cd app
-    npm install
-    ```
-
-1. Run server
-
-    ```sh
-    npm start
     ```
 
 ### Components Catalog
