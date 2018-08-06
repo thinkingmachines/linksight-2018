@@ -77,8 +77,8 @@ class Preview extends React.Component {
   hasLocationColumnsSelected () {
     const {selectedLocationColumns} = this.state
     return (
-      selectedLocationColumns.barangay &&
-      selectedLocationColumns.city_municipality &&
+      selectedLocationColumns.barangay ||
+      selectedLocationColumns.city_municipality ||
       selectedLocationColumns.province
     )
   }
@@ -199,6 +199,8 @@ export default styled(Preview)`
     padding: 40px 0 40px 30px;
   }
   .location-columns {
+    box-sizing: border-box;
+    min-height: 540px;
     padding: 40px 30px;
     background: ${colors.monochrome[1]};
     border-left: 1px solid ${colors.monochrome[2]};

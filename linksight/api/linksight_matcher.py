@@ -41,7 +41,12 @@ class LinkSightMatcher:
         matches = pd.DataFrame()
 
         for interlevel in self.interlevels:
-            location = self.dataset.iloc[0][interlevel["dataset_field_name"]]
+            field_name = interlevel["dataset_field_name"]
+            if not field_name:
+                missing_interlevels.append(interlevel)
+                continue
+
+            location = self.dataset.iloc[0][field_name]
 
             if location == "":
                 missing_interlevels.append(interlevel)

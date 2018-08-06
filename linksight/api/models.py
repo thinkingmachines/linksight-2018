@@ -52,9 +52,10 @@ class Match(models.Model):
     matched_dataset = models.ForeignKey(Dataset, on_delete=models.SET_NULL,
                                         related_name='+', null=True)
 
-    barangay_col = models.CharField(max_length=256, blank=False)
-    city_municipality_col = models.CharField(max_length=256, blank=False)
-    province_col = models.CharField(max_length=256, blank=False)
+    barangay_col = models.CharField(max_length=256, blank=False, null=True)
+    city_municipality_col = models.CharField(max_length=256, blank=False,
+                                             null=True)
+    province_col = models.CharField(max_length=256, blank=False, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -88,17 +89,17 @@ class Match(models.Model):
         interlevels = [
             {
                 'name': 'province',
-                'dataset_field_name': kwargs['province_col'],
+                'dataset_field_name': kwargs.get('province_col'),
                 'reference_fields': ['Prov', 'Dist']
             },
             {
                 'name': 'city_municipality',
-                'dataset_field_name': kwargs['city_municipality_col'],
+                'dataset_field_name': kwargs.get('city_municipality_col'),
                 'reference_fields': ['City', 'Mun', 'SubMun']
             },
             {
                 'name': 'barangay',
-                'dataset_field_name': kwargs['barangay_col'],
+                'dataset_field_name': kwargs.get('barangay_col'),
                 'reference_fields': ['Bgy']
             },
         ]
@@ -145,7 +146,10 @@ class Match(models.Model):
                     interlevel_name),
             }, inplace=True)
             source_field = 'source_{}'.format(interlevel_name)
-            dataset[source_field] = dataset[source_field].fillna("")
+            if source_field in dataset:
+                dataset[source_field] = dataset[source_field].fillna('')
+            else:
+                dataset[source_field] = ''
 
             sub = df[df['interlevel'].isin(interlevel['reference_fields'])].copy()
             sub.drop(columns=['interlevel'], inplace=True)
