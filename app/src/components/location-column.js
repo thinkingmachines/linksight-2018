@@ -50,7 +50,7 @@ class LocationColumn extends React.Component {
     }
   }
   handleChange (option) {
-    this.props.onChange && this.props.onChange(option.value)
+    this.props.onChange && this.props.onChange(option ? option.value : null)
   }
   render () {
     return (
@@ -62,6 +62,7 @@ class LocationColumn extends React.Component {
             placeholder='Select a column'
             styles={this.getSelectStyles()}
             onChange={this.handleChange.bind(this)}
+            isClearable
           />
         </div>
       </div>
