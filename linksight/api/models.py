@@ -38,6 +38,7 @@ class Dataset(models.Model):
             'name': self.name,
             'size': f.size,
             'rows': len(df),
+            'rowsShown': n,
             'url': self.file.url,
         }
         return preview

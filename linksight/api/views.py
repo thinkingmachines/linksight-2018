@@ -25,7 +25,8 @@ def dataset_list(request):
 @api_view(['GET'])
 def dataset_preview(request, id):
     dataset = get_object_or_404(Dataset, pk=id)
-    serializer = DatasetPreviewSerializer(dataset)
+    context = {'rows_shown': request.query_params.get('rowsShown', 10)}
+    serializer = DatasetPreviewSerializer(dataset, context=context)
     return Response(serializer.data)
 
 
@@ -64,6 +65,8 @@ def match_save_choices(request, id):
 @api_view(['GET'])
 def match_preview(request, id):
     match = get_object_or_404(Match, pk=id)
-    serializer = DatasetPreviewSerializer(match.matched_dataset)
+    context = {'rows_shown': int(request.query_params.get('rowsShown', 10))}
+    serializer = DatasetPreviewSerializer(match.matched_dataset,
+                                          context=context)
     return Response(serializer.data)
 
