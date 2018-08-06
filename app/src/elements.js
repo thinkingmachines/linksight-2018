@@ -6,8 +6,8 @@ import chroma from 'chroma-js'
 import * as colors from './colors'
 
 export const Title = styled.h1`
-  font-size: 52px;
-  line-height: 60px;
+  font-size: 40px;
+  line-height: 46px;
 `
 
 export const Button = styled.button`
