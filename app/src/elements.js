@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import ReactToggle from 'react-toggle'
+import chroma from 'chroma-js'
 
 // Colors
 import * as colors from './colors'
@@ -17,7 +18,7 @@ export const Button = styled.button`
   line-height: 35px;
   border-radius: 10px;
   &:hover {
-    background: ${colors.yellow};
+    background: ${chroma(colors.yellow).brighten(0.5)};
   }
 `
 
