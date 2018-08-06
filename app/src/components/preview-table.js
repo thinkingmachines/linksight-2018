@@ -66,11 +66,14 @@ class PreviewTable extends React.Component {
         data[field.name].push(row[field.name])
       })
     })
+    const rows = file.rows > file.rowsShown
+      ? `Showing ${file.rowsShown} of ${file.rows}`
+      : file.rows
     return (
       <div className={this.props.className}>
         <h1>{file.name}</h1>
         <p className='file-info -small'>
-          Showing 10 of {file.rows} rows ({fileSize(file.size)})
+          {rows} rows ({fileSize(file.size)})
         </p>
         <br />
         <div className='table'>

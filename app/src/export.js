@@ -26,7 +26,11 @@ class Export extends React.Component {
   }
   componentDidMount () {
     const {id} = this.props.match.params
-    axios.get(`${window.API_HOST}/api/matches/${id}/preview`)
+    axios.get(`${window.API_HOST}/api/matches/${id}/preview`, {
+      params: {
+        'rowsShown': 100
+      }
+    })
       .then(resp => {
         this.setState({preview: resp.data})
       })
