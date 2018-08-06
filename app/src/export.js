@@ -63,18 +63,13 @@ class Export extends React.Component {
             items={[
               {
                 toggled: true,
+                color: colors.green,
+                label: 'PSGC'
+              },
+              {
+                toggled: true,
                 color: colors.orange,
                 label: 'Population'
-              },
-              {
-                toggled: false,
-                color: colors.green,
-                label: 'Disaster Risk Factor'
-              },
-              {
-                toggled: false,
-                color: colors.purple,
-                label: 'Competitiveness Score'
               }
             ]}
           />

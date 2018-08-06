@@ -28,24 +28,17 @@ class Upload extends React.Component {
     this.state = {
       datasets: [
         {
-          name: 'PSA Population Dataset',
-          description: 'Population per barangay (as of August 2015)',
-          iconUrl: require('./images/public-datasets/public-dataset-icon-population.svg'),
+          name: 'PSGC',
+          description: 'Philippine Standard Geographic Code (as of March 2018)',
+          iconUrl: require('./images/public-datasets/public-dataset-icon-psgc.svg'),
           defaultChecked: true,
           disabled: true
         },
         {
-          name: 'Disaster Risk Dataset',
-          description: <em>Coming soon</em>,
-          iconUrl: require('./images/public-datasets/public-dataset-icon-disaster.svg'),
-          defaultChecked: false,
-          disabled: true
-        },
-        {
-          name: 'Barangay Competitiveness Dataset',
-          description: <em>Coming soon</em>,
-          iconUrl: require('./images/public-datasets/public-dataset-icon-competitiveness.svg'),
-          defaultChecked: false,
+          name: 'PSA Population',
+          description: 'Population per barangay (as of August 2015)',
+          iconUrl: require('./images/public-datasets/public-dataset-icon-population.svg'),
+          defaultChecked: true,
           disabled: true
         }
       ]
