@@ -4,6 +4,7 @@ import {FilePond} from 'react-filepond'
 export default styled(FilePond)`
   z-index: 0;
   font-family: Barlow, sans-serif;
+  margin-bottom: 0;
   .filepond--drop-label label {
     font-size: 15px;
     padding-top: 0;

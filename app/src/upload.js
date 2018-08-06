@@ -20,6 +20,7 @@ import Page from './layouts/page'
 import Header from './components/header'
 import DatasetCard from './components/dataset-card'
 import UploadWidget from './components/upload-widget'
+import UploadNotice from './components/upload-notice'
 
 class Upload extends React.Component {
   constructor (props) {
@@ -86,23 +87,25 @@ class Upload extends React.Component {
           <Grid columns={12} gap='15px' height='100%' alignContent='center'>
             <Cell width={4} left={2} center middle>
               <img width='100%' src={tablemap} alt='map with pins' />
-              <UploadWidget
-                name='file'
-                server={`${window.API_HOST}/api/datasets/`}
-                allowRevert={false}
-                onprocessfile={this.handleProcessFile.bind(this)}
-                labelIdle={`
-                  ${this.renderInstruction()}
-                  <p class='note'>
-                    Locations file requirements:
-                    CSV file type, max 1000 rows with Barangay, City/Municipality, Province in separate columns
-                  </p>
-                  <p class='note -muted'>
-                    We need to temporarily save a copy of your data to process it.
-                    The copy will be deleted from our system within 24 hours of upload.
-                  </p>
-                `}
-              />
+              <UploadNotice>
+                <UploadWidget
+                  name='file'
+                  server={`${window.API_HOST}/api/datasets/`}
+                  allowRevert={false}
+                  onprocessfile={this.handleProcessFile.bind(this)}
+                  labelIdle={`
+                    ${this.renderInstruction()}
+                    <p class='note'>
+                      Locations file requirements:
+                      CSV file type, max 1000 rows with Barangay, City/Municipality, Province in separate columns
+                    </p>
+                    <p class='note -muted'>
+                      We need to temporarily save a copy of your data to process it.
+                      The copy will be deleted from our system within 24 hours of upload.
+                    </p>
+                  `}
+                />
+              </UploadNotice>
             </Cell>
             <Cell width={4} left={7}>
               <Title className='-light'>Expand your<br />data po<span className='dot'>i</span>nt of v<span className='dot'>i</span>ew</Title>
