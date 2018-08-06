@@ -26,22 +26,7 @@ class Upload extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      datasets: [
-        {
-          name: 'PSGC',
-          description: 'Philippine Standard Geographic Code (as of March 2018)',
-          iconUrl: require('./images/public-datasets/public-dataset-icon-psgc.svg'),
-          defaultChecked: true,
-          disabled: true
-        },
-        {
-          name: 'PSA Population',
-          description: 'Population per barangay (as of August 2015)',
-          iconUrl: require('./images/public-datasets/public-dataset-icon-population.svg'),
-          defaultChecked: true,
-          disabled: true
-        }
-      ]
+      datasetId: null
     }
   }
   handleProcessFile (err, file) {
@@ -100,12 +85,21 @@ class Upload extends React.Component {
                 />
               </UploadNotice>
             </Cell>
-            <Cell width={4} left={7}>
-              <Title className='-light'>Expand your<br />data po<span className='dot'>i</span>nt of v<span className='dot'>i</span>ew</Title>
+            <Cell width={4} left={7} className='hero-copy'>
+              <Title>
+                Clean up messy Philippine place names
+              </Title>
               <br />
-              <p className='subtitle -light'>Combine a list of locations with any of the following barangay-level datasets:</p>
-              <br />
-              {this.renderDatasetCards()}
+              <h2>
+                LinkSight matches barangay, city, municipality, and provincial names with their closest-matching items in the Philippine Standard Geographic Code (PSGC).
+              </h2>
+              <p>How to use it:</p>
+              <ol>
+                <li><strong>Upload</strong> a CSV that has separate columns for each administrative level: barangay, municipality or city, and province. For now we only take CSVs with fewer than 1000 rows.</li>
+                <li><strong>Preview</strong> the first 10 rows of your dataset. Indicate which columns refer to which administrative level.</li>
+                <li><strong>Match</strong> with the PSGC and view the results. For places that have more than one possible PSGC, select the best match from among the candidates presented. We use fuzzy matching and record linkage techniques to rank the closest matches, despite spelling differences.</li>
+                <li><strong>Export</strong> the dataset as a CSV file.</li>
+              </ol>
             </Cell>
           </Grid>
         </Cell>
@@ -133,5 +127,18 @@ export default styled(Upload)`
   .instruction {
     display: inline-block;
     line-height: 20px;
+  }
+  .hero-copy {
+    color: ${colors.monochrome[0]};
+  }
+  .hero-copy h2,
+  .hero-copy p {
+    margin-bottom: 20px;
+  }
+  .hero-copy ol {
+    padding-left: 0;
+  }
+  .hero-copy li {
+    margin-bottom: 10px;
   }
 `
