@@ -44,6 +44,38 @@ class Dataset(models.Model):
         return preview
 
 
+class Reference(models.Model):
+    code = models.CharField(max_length=256, blank=False)
+    interlevel = models.CharField(max_length=256, blank=False)
+    location = models.CharField(max_length=256, blank=False)
+    region_code = models.CharField(max_length=256, blank=False)
+    region = models.CharField(max_length=256, blank=False, null=True)
+    province_code = models.CharField(max_length=256, blank=False)
+    province = models.CharField(max_length=256, blank=False, null=True)
+    city_municipality_code = models.CharField(max_length=256, blank=False)
+    city_municipality = models.CharField(max_length=256, blank=False, null=True)
+    barangay_code = models.CharField(max_length=256, blank=False)
+    barangay = models.CharField(max_length=256, blank=False, null=True)
+    original = models.BooleanField(editable=True)
+
+    def preview(self):
+        preview = {
+            'code': self.code,
+            'interlevel': self.interlevel,
+            'location': self.location,
+            'region_code': self.region_code,
+            'region': self.region,
+            'province_code': self.province_code,
+            'province': self.province,
+            'city_municipality_code': self.city_municipality_code,
+            'city_municipality': self.city_municipality,
+            'barangay_code': self.barangay_code,
+            'barangay': self.barangay,
+            'original': self.original
+        }
+        return preview
+
+
 class Match(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4,
                           editable=False)
@@ -105,12 +137,15 @@ class Match(models.Model):
         ]
 
         matched_raw = pd.DataFrame()
+        matches_json = []
         for index, row in dataset_df.iterrows():
             matcher = LinkSightMatcher(dataset=pd.DataFrame([row]),
                                        dataset_index=index,
                                        reference=psgc_df,
                                        interlevels=interlevels)
             matched_raw = matched_raw.append(matcher.get_matches())
+            matches_json.append(matcher.get_matches_via_sql())
+        print(matches_json)
 
         matches = self.join_interlevels(matched_raw, dataset_df, interlevels)
 

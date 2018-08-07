@@ -27,6 +27,46 @@ class LinkSightMatcher:
         self.reference = reference
         self.interlevels = interlevels
 
+    def get_matches_via_sql(self):
+        from linksight.api.models import Reference
+
+        self.dataset.fillna("", inplace=True)
+
+        # TODO dynamically build the query bsed on available fields
+        query = """
+            SELECT
+              *
+            FROM
+              api_reference
+            WHERE
+              interlevel = 'Bgy'
+              AND city_municipality_code IN (
+              SELECT
+                code
+              FROM
+                api_reference
+              WHERE
+                interlevel IN ('City', 'Mun', 'SubMun')
+                AND province_code IN (
+                SELECT
+                  code
+                FROM
+                  api_reference
+                WHERE
+                  interlevel IN ('Prov', 'Dist')
+                ORDER BY similarity(%s,location) DESC
+                LIMIT 10 )
+              ORDER BY similarity(%s, location) DESC
+              LIMIT 10 )
+            ORDER BY similarity(%s, location) DESC
+            LIMIT 10
+        """
+        locations = [self.dataset.iloc[0][interlevel['dataset_field_name']] for interlevel in self.interlevels]
+        matches = Reference.objects.raw(query, locations)
+
+        matches_list = [match.preview() for match in matches]
+        return matches_list
+
     def get_matches(self):
         """Gets potential address matches based on the a dataset row
 
