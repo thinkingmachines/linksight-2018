@@ -229,7 +229,7 @@ class Match(models.Model):
         matches_df = pd.DataFrame(list(self.items.filter(
             Q(matched=True) | Q(chosen=True)
         ).values()))
-        matches_df.set_index('dataset_index')
+        matches_df.set_index('dataset_index', inplace=True)
 
         joined_df = dataset_df.join(matches_df[[
             'matched_barangay',
