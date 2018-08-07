@@ -61,9 +61,8 @@ class LinkSightMatcher:
             ORDER BY similarity(%s, location) DESC
             LIMIT 10
         """
-        matches = Reference.objects.raw(query,
-                                        [self.dataset.iloc[0][interlevel['dataset_field_name']]
-                                         for interlevel in self.interlevels])
+        locations = [self.dataset.iloc[0][interlevel['dataset_field_name']] for interlevel in self.interlevels]
+        matches = Reference.objects.raw(query, locations)
 
         matches_list = [match.preview() for match in matches]
         return matches_list
