@@ -70,7 +70,7 @@ class LinkSightMatcher:
 
     def _generate_base_query(self, interlevel, base=False):
         base_query = "select code from api_reference "
-        location = self.dataset.iloc[0][interlevel['dataset_field_name']]
+        location = self.dataset.iloc[0][interlevel['dataset_field_name']].replace("'", '')
         if base:
             base_query = "select * from api_reference "
         interlevel_condition = "where interlevel in ({}) ".format(', '.join("'{0}'".format(w) for w in interlevel['reference_fields']))

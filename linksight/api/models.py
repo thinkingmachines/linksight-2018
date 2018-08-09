@@ -145,7 +145,6 @@ class Match(models.Model):
                                        interlevels=interlevels)
             matched_raw = matched_raw.append(matcher.get_matches())
             matches_json.append(matcher.get_matches_via_sql())
-        print(matches_json)
 
         matches = self.join_interlevels(matched_raw, dataset_df, interlevels)
 
