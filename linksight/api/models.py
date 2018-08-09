@@ -60,20 +60,20 @@ class Reference(models.Model):
 
     def preview(self):
         preview = {
-            'code': self.code,
-            'interlevel': self.interlevel,
-            'location': self.location,
-            'region_code': self.region_code,
-            'region': self.region,
-            'province_code': self.province_code,
-            'province': self.province,
-            'city_municipality_code': self.city_municipality_code,
-            'city_municipality': self.city_municipality,
-            'barangay_code': self.barangay_code,
-            'barangay': self.barangay,
-            'original': self.original
+            'code': [self.code],
+            'interlevel': [self.interlevel],
+            'location': [self.location],
+            'region_code': [self.region_code],
+            'region': [self.region],
+            'province_code': [self.province_code],
+            'province': [self.province],
+            'city_municipality_code': [self.city_municipality_code],
+            'city_municipality': [self.city_municipality],
+            'barangay_code': [self.barangay_code],
+            'barangay': [self.barangay],
+            'original': [self.original]
         }
-        return preview
+        return pd.DataFrame.from_dict(preview)
 
 
 class Match(models.Model):

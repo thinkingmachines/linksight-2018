@@ -1,3 +1,5 @@
+from itertools import chain, islice, tee
+
 import numpy as np
 import pandas as pd
 from fuzzywuzzy import process
@@ -5,6 +7,13 @@ from fuzzywuzzy import process
 MAX_MATCHES = 7
 MAX_SCORE_DIFF = 9
 SCORE_CUTOFF = 80
+
+
+def previous_and_next(iterable):
+    prev, current, nxt = tee(iterable, 3)
+    prev = chain([None], prev)
+    nxt = chain(islice(nxt, 1, None), [None])
+    return zip(prev, current, nxt)
 
 
 class LinkSightMatcher:
@@ -33,39 +42,40 @@ class LinkSightMatcher:
         self.dataset.fillna("", inplace=True)
 
         # TODO dynamically build the query bsed on available fields
-        query = """
-            SELECT
-              *
-            FROM
-              api_reference
-            WHERE
-              interlevel = 'Bgy'
-              AND city_municipality_code IN (
-              SELECT
-                code
-              FROM
-                api_reference
-              WHERE
-                interlevel IN ('City', 'Mun', 'SubMun')
-                AND province_code IN (
-                SELECT
-                  code
-                FROM
-                  api_reference
-                WHERE
-                  interlevel IN ('Prov', 'Dist')
-                ORDER BY similarity(%s,location) DESC
-                LIMIT 10 )
-              ORDER BY similarity(%s, location) DESC
-              LIMIT 10 )
-            ORDER BY similarity(%s, location) DESC
-            LIMIT 10
-        """
-        locations = [self.dataset.iloc[0][interlevel['dataset_field_name']] for interlevel in self.interlevels]
-        matches = Reference.objects.raw(query, locations)
+        query = self._generate_query()
+        matches = Reference.objects.raw(query)
 
-        matches_list = [match.preview() for match in matches]
-        return matches_list
+        matches_df = pd.DataFrame()
+        for match in matches:
+            matches_df = matches_df.append(match.preview())
+        return matches_df
+
+    def _generate_query(self):
+        interlevels = [interlevel for interlevel in self.interlevels if interlevel['dataset_field_name']]
+
+        query = ""
+        for prev, interlevel, nxt in previous_and_next(interlevels):
+
+            if not prev:
+                query = ''.join(self._generate_base_query(interlevel))
+            elif not nxt:
+                (base_query, interlevel_condition, sort_condition) = self._generate_base_query(interlevel, base=True)
+                internal_query = 'and {}_code in ({}) '.format(prev['name'], query)
+                query = base_query + interlevel_condition + internal_query + sort_condition
+            else:
+                (base_query, interlevel_condition, sort_condition) = self._generate_base_query(interlevel)
+                internal_query = 'and {}_code in ({}) '.format(prev['name'], query)
+                query = base_query + interlevel_condition + internal_query + sort_condition
+        return query
+
+    def _generate_base_query(self, interlevel, base=False):
+        base_query = "select code from api_reference "
+        location = self.dataset.iloc[0][interlevel['dataset_field_name']]
+        if base:
+            base_query = "select * from api_reference "
+        interlevel_condition = "where interlevel in ({}) ".format(', '.join("'{0}'".format(w) for w in interlevel['reference_fields']))
+        sort_condition = "order by similarity('{}', location) desc limit 10 ".format(location)
+        return base_query, interlevel_condition, sort_condition
 
     def get_matches(self):
         """Gets potential address matches based on the a dataset row
