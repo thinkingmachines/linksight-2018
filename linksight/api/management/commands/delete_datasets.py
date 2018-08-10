@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 
-# from linksight.api.models import Dataset, Match
+from linksight.api.models import Dataset, Match
 
 
 class Command(BaseCommand):
