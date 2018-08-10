@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand, CommandError
 # from linksight.api.models import Dataset, Match
 
 
-class DeleteDatasets(BaseCommand):
+class Command(BaseCommand):
     help = 'Deletes the public datasets'
 
     def add_arguments(self, parser):
