@@ -112,12 +112,25 @@ class Match(models.Model):
 
         matches = self.join_interlevels(matched_raw, dataset_df, interlevels)
 
-        matches['matched'] = ~matches.duplicated('index', keep=False)
+        matches = self._mark_matched(matches)
+
         matches.rename(columns={'index': 'dataset_index'}, inplace=True)
         matches = self._add_total_score(matches)
 
         for _, row in matches.iterrows():
             MatchItem.objects.create(match=self, **row.to_dict(), chosen=False)
+
+    @staticmethod
+    def _mark_matched(df):
+        df['matched'] = ~df.duplicated('index', keep=False)
+
+        def has_no_match(row):
+            if not row['matched_barangay'] and not row['matched_city_municipality'] and \
+                    not row['matched_province']:
+                return False
+            return row['matched']
+        df['matched'] = df.apply(has_no_match, axis=1)
+        return df
 
     @staticmethod
     def _add_total_score(df):
