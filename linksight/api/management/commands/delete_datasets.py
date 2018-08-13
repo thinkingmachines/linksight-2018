@@ -1,13 +1,10 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
-from linksight.api.models import Dataset, Match
+from linksight.api.models import Dataset
 
 
 class Command(BaseCommand):
     help = 'Deletes the public datasets'
 
-    def add_arguments(self, parser):
-        pass
-
     def handle(self, *args, **options):
-        self.stdout.write('delete datasets')
+        Dataset.objects.filter(is_public_dataset=True).delete()
