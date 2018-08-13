@@ -22,7 +22,7 @@ class Dataset(models.Model):
                           editable=False)
     file = models.FileField(upload_to='datasets/')
     name = models.CharField(max_length=255, null=True)
-    is_public_dataset = models.BooleanField()
+    is_internal = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
