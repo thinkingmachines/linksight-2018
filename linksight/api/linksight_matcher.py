@@ -20,12 +20,11 @@ class LinkSightMatcher:
             reference_fields: list of interlevel values from the reference dataframe that are
                               considered as part of the interlevel
     """
-    def __init__(self, dataset, dataset_index,
-                 reference, interlevels):
+    def __init__(self, dataset, reference, interlevels):
         self.dataset = dataset
-        self.dataset_index = dataset_index
         self.reference = reference
         self.interlevels = interlevels
+        self.matched_locations = {}
 
     def get_matches(self):
         """Gets potential address matches based on the a dataset row
@@ -35,45 +34,49 @@ class LinkSightMatcher:
         """
 
         self.dataset.fillna("", inplace=True)
-        codes = []
-        missing_interlevels = []
-        previous_interlevel = ""
-        matches = pd.DataFrame()
+        matched_raw = pd.DataFrame()
 
-        for interlevel in self.interlevels:
-            field_name = interlevel["dataset_field_name"]
-            if not field_name:
-                missing_interlevels.append(interlevel)
-                continue
+        for index, row in self.dataset.iterrows():
+            codes = []
+            missing_interlevels = []
+            previous_interlevel = ""
+            matches = pd.DataFrame()
 
-            location = self.dataset.iloc[0][field_name]
+            for interlevel in self.interlevels:
+                field_name = interlevel["dataset_field_name"]
+                if not field_name:
+                    missing_interlevels.append(interlevel)
+                    continue
 
-            if location == "":
-                missing_interlevels.append(interlevel)
-                continue
+                location = row[field_name]
 
-            subset = self._get_reference_subset(interlevel, codes=codes, previous_interlevel=previous_interlevel)
-            partial_matches = self._get_matches(interlevel, subset)
+                if location == "":
+                    missing_interlevels.append(interlevel)
+                    continue
 
-            if len(partial_matches) == 0:
-                missing_interlevels.append(interlevel)
-                continue
+                subset = self._get_reference_subset(interlevel, codes=codes, previous_interlevel=previous_interlevel)
+                partial_matches = self._get_matches(row, interlevel, subset)
 
-            codes = list(partial_matches["code"])
-            matches = matches.append(partial_matches)
-            previous_interlevel = interlevel
+                if len(partial_matches) == 0:
+                    missing_interlevels.append(interlevel)
+                    continue
 
-        if matches.empty:
-            return matches
-        matches = pd.merge(matches[['code', 'score']].copy(),
-                           self.reference[self.reference.original == True].copy(),
-                           how='inner', on='code')
-        matches = self._populate_missing_interlevels(missing_interlevels, matches)
-        matches["index"] = self.dataset_index
-        matches.set_index("index", drop=True, inplace=True)
-        matches.drop(columns=['original'], inplace=True)
+                codes = list(partial_matches["code"])
+                matches = matches.append(partial_matches)
+                previous_interlevel = interlevel
 
-        return matches
+            if not matches.empty:
+                matches = pd.merge(matches[['code', 'score']].copy(),
+                                   self.reference[self.reference.original == True].copy(),
+                                   how='inner', on='code')
+                matches = self._populate_missing_interlevels(missing_interlevels, matches)
+                matches["index"] = index
+                matches.set_index("index", drop=True, inplace=True)
+                matches.drop(columns=['original'], inplace=True)
+
+            matched_raw = matched_raw.append(matches)
+
+        return matched_raw
 
     def _populate_missing_interlevels(self, missing_interlevels, matches):
         """Extracts missing higher-interlevel rows based on the matched lower-level ones. If the
@@ -141,7 +144,7 @@ class LinkSightMatcher:
 
         return self.reference.loc[self.reference.interlevel.isin(interlevel["reference_fields"])]
 
-    def _get_matches(self, interlevel, reference_subset):
+    def _get_matches(self, row, interlevel, reference_subset):
         """Returns a dataframe containing matches found on a certain interlevel in the following format:
         | code | interlevel | location | province_code | city_municipality_code | score
 
@@ -151,16 +154,25 @@ class LinkSightMatcher:
         :returns: a Pandas dataframe
         """
 
-        location = self.dataset.iloc[0][interlevel["dataset_field_name"]]
+        location = row[interlevel["dataset_field_name"]]
+
+        if location in self.matched_locations:
+            return self.matched_locations[location]
 
         choices = {}
         for index, row in reference_subset.reset_index().iterrows():
             if row["location"] not in choices:
                 choices[row["location"]] = {}
-            choices[row["location"]][row["index"]] = row.to_dict()
-
-        matched_tuples = process.extractBests(location, choices.keys(),
-                                              score_cutoff=SCORE_CUTOFF, limit=MAX_MATCHES)
+            if location.upper() in row["location"].upper():
+                matched_tuples = [(row["location"], 100)]
+                choices[row["location"]][row["index"]] = row.to_dict()
+                break
+            else:
+                choices[row["location"]][row["index"]] = row.to_dict()
+        else:
+            matched_tuples = process.extractBests(
+                location, choices.keys(), score_cutoff=SCORE_CUTOFF,
+                limit=MAX_MATCHES)
 
         prev_score = 0
         matches = pd.DataFrame()
@@ -175,6 +187,8 @@ class LinkSightMatcher:
             matches = matches.append(df)
 
         if len(matches) and len(matches[matches["score"] == 100]):
-            return matches[matches["score"] == 100].copy()
-        else:
-            return matches
+            matches = matches[matches["score"] == 100].copy()
+
+        self.matched_locations[location] = matches
+
+        return matches
