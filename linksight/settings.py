@@ -115,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Manila'
 
 USE_I18N = True
 
@@ -143,7 +143,7 @@ CORS_ORIGIN_WHITELIST = (
 
 # DRF
 REST_FRAMEWORK = {
-    'PAGE_SIZE': 100,
+    'PAGE_SIZE': 10000,
 }
 SILENCED_SYSTEM_CHECKS = [
     'rest_framework.W001',

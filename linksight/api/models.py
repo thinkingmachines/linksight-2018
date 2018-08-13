@@ -105,13 +105,10 @@ class Match(models.Model):
             },
         ]
 
-        matched_raw = pd.DataFrame()
-        for index, row in dataset_df.iterrows():
-            matcher = LinkSightMatcher(dataset=pd.DataFrame([row]),
-                                       dataset_index=index,
-                                       reference=psgc_df,
-                                       interlevels=interlevels)
-            matched_raw = matched_raw.append(matcher.get_matches())
+        matcher = LinkSightMatcher(dataset=dataset_df,
+                                   reference=psgc_df,
+                                   interlevels=interlevels)
+        matched_raw = matcher.get_matches()
 
         matches = self.join_interlevels(matched_raw, dataset_df, interlevels)
 
