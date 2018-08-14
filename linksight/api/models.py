@@ -63,72 +63,18 @@ class Match(models.Model):
     def __str__(self):
         return '{} ({})'.format(self.dataset.name, self.id)
 
-    def clean_matches(self, matches):
-        for col in matches:
-            if col.endswith('score'):
-                filler = 0
-            else:
-                filler = None
-            matches[col] = matches[col].where(pd.notnull(matches[col]),
-                                              filler)
-        return matches
-
-    def generate_match_items(self, **kwargs):
-        psgc = Dataset.objects.get(pk=settings.PSGC_DATASET_ID)
-        with psgc.file.open() as f:
-            psgc_df = pd.read_csv(f, dtype={'code': object})
-
-        with self.dataset.file.open() as f:
-            dataset_df = pd.read_csv(f)
-
-        psgc_df['province_code'] = (psgc_df['code']
-                                    .str.slice(stop=PROV_CODE_LEN)
-                                    .str.ljust(PSGC_LEN, '0'))
-        psgc_df['city_municipality_code'] = (psgc_df['code']
-                                             .str.slice(stop=CITY_MUN_CODE_LEN)
-                                             .str.ljust(PSGC_LEN, '0'))
-        interlevels = [
-            {
-                'name': 'province',
-                'dataset_field_name': kwargs.get('province_col'),
-                'reference_fields': ['Prov', 'Dist']
-            },
-            {
-                'name': 'city_municipality',
-                'dataset_field_name': kwargs.get('city_municipality_col'),
-                'reference_fields': ['City', 'Mun', 'SubMun']
-            },
-            {
-                'name': 'barangay',
-                'dataset_field_name': kwargs.get('barangay_col'),
-                'reference_fields': ['Bgy']
-            },
-        ]
-
-        matcher = LinkSightMatcher(dataset=dataset_df,
-                                   reference=psgc_df,
-                                   interlevels=interlevels)
-        matched_raw = matcher.get_matches()
-
-        matches = self.join_interlevels(matched_raw, dataset_df, interlevels)
-
-        matches = self._mark_matched(matches)
-
-        matches.rename(columns={'index': 'dataset_index'}, inplace=True)
-        matches = self._add_total_score(matches)
-
-        for _, row in matches.iterrows():
-            MatchItem.objects.create(match=self, **row.to_dict(), chosen=False)
-
     @staticmethod
     def _mark_matched(df):
         df['matched'] = ~df.duplicated('index', keep=False)
 
         def has_no_match(row):
-            if not row['matched_barangay'] and not row['matched_city_municipality'] and \
-                    not row['matched_province']:
-                return False
-            return row['matched']
+            if (
+                row['matched_barangay'] or
+                row['matched_city_municipality'] or
+                row['matched_province']
+            ):
+                return row['matched']
+
         df['matched'] = df.apply(has_no_match, axis=1)
         return df
 
@@ -141,7 +87,8 @@ class Match(models.Model):
 
         return df
 
-    def join_interlevels(self, matches, dataset, interlevels):
+    @staticmethod
+    def _join_interlevels(matches, dataset, interlevels):
         df = matches.copy().reset_index()
         merged = pd.DataFrame()
 
@@ -223,6 +170,52 @@ class Match(models.Model):
         }, inplace=True)
         return merged
 
+    def generate_match_items(self, **kwargs):
+        psgc = Dataset.objects.get(pk=settings.PSGC_DATASET_ID)
+        with psgc.file.open() as f:
+            psgc_df = pd.read_csv(f, dtype={'code': object})
+
+        with self.dataset.file.open() as f:
+            dataset_df = pd.read_csv(f)
+
+        psgc_df['province_code'] = (psgc_df['code']
+                                    .str.slice(stop=PROV_CODE_LEN)
+                                    .str.ljust(PSGC_LEN, '0'))
+        psgc_df['city_municipality_code'] = (psgc_df['code']
+                                             .str.slice(stop=CITY_MUN_CODE_LEN)
+                                             .str.ljust(PSGC_LEN, '0'))
+        interlevels = [
+            {
+                'name': 'province',
+                'dataset_field_name': kwargs.get('province_col'),
+                'reference_fields': ['Prov', 'Dist']
+            },
+            {
+                'name': 'city_municipality',
+                'dataset_field_name': kwargs.get('city_municipality_col'),
+                'reference_fields': ['City', 'Mun', 'SubMun']
+            },
+            {
+                'name': 'barangay',
+                'dataset_field_name': kwargs.get('barangay_col'),
+                'reference_fields': ['Bgy']
+            },
+        ]
+
+        matcher = LinkSightMatcher(dataset=dataset_df,
+                                   reference=psgc_df,
+                                   interlevels=interlevels)
+        matched_raw = matcher.get_matches()
+
+        matches = self._join_interlevels(matched_raw, dataset_df, interlevels)
+        matches = self._mark_matched(matches)
+
+        matches.rename(columns={'index': 'dataset_index'}, inplace=True)
+        matches = self._add_total_score(matches)
+
+        for _, row in matches.iterrows():
+            MatchItem.objects.create(match=self, **row.to_dict(), chosen=False)
+
     def save_choices(self, match_choices):
         # Save choices
 
@@ -278,7 +271,7 @@ class Match(models.Model):
 
         # Reorder so matched columns and merged datasets are in front
 
-        front_cols = [
+        front_cols = list(filter(bool, [
             self.barangay_col,
             'matched_barangay',
             self.city_municipality_col,
@@ -288,7 +281,7 @@ class Match(models.Model):
             'PSGC',
             'Population',
             'Administrative Level'
-        ]
+        ]))
         other_cols = [col for col in joined_df.columns.tolist()
                       if col not in front_cols]
         new_cols = front_cols + other_cols
@@ -351,7 +344,7 @@ class MatchItem(models.Model):
 
     total_score = models.FloatField(editable=False)
 
-    matched = models.BooleanField(editable=False)
+    matched = models.NullBooleanField(null=True, editable=False)
     chosen = models.BooleanField()
 
     class Meta:
