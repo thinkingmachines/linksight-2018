@@ -46,7 +46,7 @@ class Check extends React.Component {
   nestItems (items) {
     let prevIndex = null
     return items.reduce((matchItems, item) => {
-      if (item.matched === 'True') {
+      if (item.matched === 'True' || item.matched === null) {
         matchItems = [...matchItems, item]
       } else {
         if (item.dataset_index === prevIndex) {
@@ -77,13 +77,16 @@ class Check extends React.Component {
   }
   getMultipleCount () {
     return this.state.matchItems.filter(item => (
-      item.matched !== 'True' && !this.state.matchChoices[item.dataset_index]
+      !~['True', null].indexOf(item.matched) && !this.state.matchChoices[item.dataset_index]
     )).length
   }
   getCheckedCount () {
     return this.state.matchItems.filter(item => (
-      item.matched !== 'True' && this.state.matchChoices[item.dataset_index]
+      !~['True', null].indexOf(item.matched) && this.state.matchChoices[item.dataset_index]
     )).length
+  }
+  getNoMatchesCount () {
+    return this.state.matchItems.filter(item => item.matched === null).length
   }
   saveChoices () {
     const {matchChoices} = this.state
@@ -138,6 +141,11 @@ class Check extends React.Component {
                 toggled: true,
                 color: colors.yellow,
                 label: `Checked matches (${this.getCheckedCount()})`
+              },
+              {
+                toggled: true,
+                color: colors.purple,
+                label: `No matches (${this.getNoMatchesCount()})`
               }
             ]}
           />
