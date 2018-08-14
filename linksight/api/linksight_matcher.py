@@ -164,7 +164,7 @@ class LinkSightMatcher:
         for index, row in reference_subset.reset_index().iterrows():
             if row["location"] not in choices:
                 choices[row["location"]] = {}
-            if location.upper() in row["location"].upper():
+            if row["location"].upper() in location.upper():
                 matched_tuples = [(row["location"], 100)]
                 choices[row["location"]][row["index"]] = row.to_dict()
                 break
