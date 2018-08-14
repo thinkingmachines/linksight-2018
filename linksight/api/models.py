@@ -263,9 +263,19 @@ class Match(models.Model):
             'matched_province_psgc',
         ], axis='columns', inplace=True)
 
-        # Reorder so merged datasets are in front
+        # Reorder so matched columns and merged datasets are in front
 
-        front_cols = ['PSGC', 'Population', 'Administrative Level']
+        front_cols = [
+            self.barangay_col,
+            'matched_barangay',
+            self.city_municipality_col,
+            'matched_city_municipality',
+            self.province_col,
+            'matched_province',
+            'PSGC',
+            'Population',
+            'Administrative Level'
+        ]
         other_cols = [col for col in joined_df.columns.tolist()
                       if col not in front_cols]
         new_cols = front_cols + other_cols
