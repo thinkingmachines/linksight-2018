@@ -172,7 +172,7 @@ class Check extends React.Component {
                 </span>
               </Instruction>
               <MatchesTable
-                items={this.state.matchItems}
+                items={this.state.matchItems.filter(matchItem => matchItem.matched === 'False')}
                 matchChoices={this.state.matchChoices}
                 onChoose={this.handleChoice.bind(this)}
               />
