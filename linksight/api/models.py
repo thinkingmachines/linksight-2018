@@ -238,12 +238,6 @@ class Match(models.Model):
             'matched_province_psgc',
         ]])
 
-        joined_df.rename(columns={
-            'matched_barangay': 'Matched Barangay',
-            'matched_city_municipality': 'Matched City/Municipality',
-            'matched_province': 'Matched Province',
-        }, inplace=True)
-
         # Get deepest PSGC
 
         def get_deepest_code(row):
@@ -276,6 +270,14 @@ class Match(models.Model):
                       if col not in front_cols]
         new_cols = front_cols + other_cols
         joined_df = joined_df[new_cols]
+
+        # Rename some columns for display
+
+        joined_df.rename(columns={
+            'matched_barangay': 'Matched Barangay',
+            'matched_city_municipality': 'Matched City/Municipality',
+            'matched_province': 'Matched Province',
+        }, inplace=True)
 
         # Create matched dataset
 
