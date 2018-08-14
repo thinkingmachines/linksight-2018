@@ -71,6 +71,7 @@ class LinkSightMatcher:
                                    how='inner', on='code')
                 matches = self._populate_missing_interlevels(missing_interlevels, matches)
                 matches["index"] = index
+                matches.drop_duplicates(subset=['index', 'code', 'interlevel'], inplace=True)
                 matches.set_index("index", drop=True, inplace=True)
                 matches.drop(columns=['original'], inplace=True)
 
