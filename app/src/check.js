@@ -162,11 +162,14 @@ class Check extends React.Component {
           ) : null}
           <Grid columns={1} gap='0' height='calc(100vh - 30px)'>
             <Cell className='matches'>
-              <Instruction className='instruction -small'>
-                We've identified {this.getIdentifiedCount()} of the locations! For
-                records with multiple matches, select the correct location match
-                from the list below it. Unchecked records will be excluded from the
-                export.
+              <Instruction className='instruction'>
+                <strong>
+                  We've identified {this.getIdentifiedCount()} of the locations!
+                </strong> <span>
+                  For records with multiple matches, select the correct location
+                  match from the list below it. Unchecked records will be
+                  excluded from the export.
+                </span>
               </Instruction>
               <MatchesTable
                 items={this.state.matchItems}
