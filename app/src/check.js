@@ -97,11 +97,6 @@ class Check extends React.Component {
       item.matched === 'False' && !this.state.matchChoices[item.dataset_index]
     )).length
   }
-  getCheckedCount () {
-    return this.state.matchItems.filter(item => (
-      item.matched === 'False' && this.state.matchChoices[item.dataset_index]
-    )).length
-  }
   getNoMatchesCount () {
     return this.state.matchItems.filter(item => item.matched === null).length
   }
@@ -153,11 +148,6 @@ class Check extends React.Component {
                 toggled: true,
                 color: colors.orange,
                 label: `Multiple matches (${this.getMultipleCount()})`
-              },
-              {
-                toggled: true,
-                color: colors.yellow,
-                label: `Checked matches (${this.getCheckedCount()})`
               },
               {
                 toggled: true,
