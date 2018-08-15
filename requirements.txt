@@ -9,18 +9,18 @@ backcall==0.1.0           # via ipython
 decorator==4.3.0          # via ipython, traitlets
 dj-database-url==0.5.0
 django-cors-headers==2.4.0
-django==2.0.7
+django==2.1
 djangorestframework-csv==2.1.0
 djangorestframework-link-header-pagination==0.1.1
 djangorestframework==3.8.2
 fuzzywuzzy[speedup]==0.16.0
 gunicorn==19.9.0
 ipython-genutils==0.2.0   # via traitlets
-ipython==6.4.0
+ipython==6.5.0
 jedi==0.12.1              # via ipython
 jellyfish==0.6.1          # via recordlinkage
 numpy==1.15.0             # via pandas, recordlinkage, scipy
-pandas==0.23.3
+pandas==0.23.4
 parso==0.3.1              # via jedi
 pexpect==4.6.0            # via ipython
 pickleshare==0.7.4        # via ipython
@@ -29,10 +29,11 @@ psycopg2-binary==2.7.5
 ptyprocess==0.6.0         # via pexpect
 pygments==2.2.0           # via ipython
 python-dateutil==2.7.3    # via pandas
-python-dotenv==0.8.2
+python-dotenv==0.9.1
 python-levenshtein==0.12.0  # via fuzzywuzzy
 pytz==2018.5              # via django, pandas
-recordlinkage==0.11.2
+raven==6.9.0
+recordlinkage==0.12
 scikit-learn==0.19.2      # via recordlinkage
 scipy==1.1.0              # via recordlinkage
 simplegeneric==0.8.1      # via ipython

@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'corsheaders',
+    'raven.contrib.django.raven_compat',
 
     'linksight.api',
 ]
@@ -153,3 +154,7 @@ SILENCED_SYSTEM_CHECKS = [
 PSGC_DATASET_ID = os.environ['PSGC_DATASET_ID']
 POPULATION_DATASET_ID = os.environ['POPULATION_DATASET_ID']
 
+# Raven
+RAVEN_CONFIG = {
+    'dsn': os.getenv('SENTRY_DSN'),
+}
