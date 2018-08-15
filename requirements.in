@@ -1,6 +1,7 @@
 dj-database-url
 django
 django-cors-headers
+django-silk
 djangorestframework
 djangorestframework-csv
 djangorestframework-link-header-pagination
@@ -10,4 +11,5 @@ ipython
 pandas
 psycopg2-binary
 python-dotenv
+raven
 recordlinkage

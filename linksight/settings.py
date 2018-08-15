@@ -47,16 +47,19 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'corsheaders',
+    'raven.contrib.django.raven_compat',
+    'silk',
 
     'linksight.api',
 ]
 
 MIDDLEWARE = [
+    'silk.middleware.SilkyMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -128,7 +131,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'app/build/static')
 
 # Media files (Uploads)
 
@@ -144,6 +147,9 @@ CORS_ORIGIN_WHITELIST = (
 # DRF
 REST_FRAMEWORK = {
     'PAGE_SIZE': 10000,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+    ),
 }
 SILENCED_SYSTEM_CHECKS = [
     'rest_framework.W001',
@@ -153,3 +159,12 @@ SILENCED_SYSTEM_CHECKS = [
 PSGC_DATASET_ID = os.environ['PSGC_DATASET_ID']
 POPULATION_DATASET_ID = os.environ['POPULATION_DATASET_ID']
 
+# Raven
+RAVEN_CONFIG = {
+    'dsn': os.getenv('SENTRY_DSN'),
+}
+
+# Silk
+SILKY_AUTHENTICATION = True
+SILKY_AUTHORISATION = True
+SILKY_PERMISSIONS = lambda user: user.is_superuser
