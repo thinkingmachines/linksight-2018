@@ -10,4 +10,5 @@ ipython
 pandas
 psycopg2-binary
 python-dotenv
+raven
 recordlinkage
