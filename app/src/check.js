@@ -39,7 +39,8 @@ class Check extends React.Component {
       dynamicTyping: true,
       skipEmptyLines: true,
       complete: ({data, meta}) => {
-        this.setState({matchItems: this.nestItems(data)}, () => {
+        const {matchItems, matchChoices} = this.processItems(data)
+        this.setState({matchItems, matchChoices}, () => {
           // Go straight to export when there are no matches to check
           const multipleMatchesCount = this.state.matchItems
             .filter(item => item.matched === 'False')
@@ -51,26 +52,34 @@ class Check extends React.Component {
       }
     })
   }
-  nestItems (items) {
+  processItems (items) {
     let prevIndex = null
-    return items.reduce((matchItems, item) => {
+    return items.reduce((obj, item) => {
       if (item.matched === 'True' || item.matched === null) {
-        matchItems = [...matchItems, item]
+        obj.matchItems = [...obj.matchItems, item]
       } else {
         if (item.dataset_index === prevIndex) {
-          let n = matchItems.length
-          let lastItem = matchItems[n - 1]
-          matchItems[n - 1] = {
+          let n = obj.matchItems.length
+          let lastItem = obj.matchItems[n - 1]
+          obj.matchItems[n - 1] = {
             ...lastItem,
             choices: [...lastItem.choices, item]
           }
         } else {
-          matchItems = [...matchItems, {...item, choices: [item]}]
+          obj.matchItems = [
+            ...obj.matchItems,
+            {
+              ...item,
+              choices: [item]
+            }
+          ]
+          // Select first choice
+          obj.matchChoices[item.dataset_index] = item.id
         }
         prevIndex = item.dataset_index
       }
-      return matchItems
-    }, [])
+      return obj
+    }, {matchItems: [], matchChoices: {}})
   }
   handleChoice (item) {
     this.setState(prevState => ({
