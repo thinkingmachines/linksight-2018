@@ -55,9 +55,7 @@ class Check extends React.Component {
   processItems (items) {
     let prevIndex = null
     return items.reduce((obj, item) => {
-      if (item.matched === 'True' || item.matched === null) {
-        obj.matchItems = [...obj.matchItems, item]
-      } else {
+      if (item.matched === 'False') {
         if (item.dataset_index === prevIndex) {
           let n = obj.matchItems.length
           let lastItem = obj.matchItems[n - 1]
@@ -77,6 +75,8 @@ class Check extends React.Component {
           obj.matchChoices[item.dataset_index] = item.id
         }
         prevIndex = item.dataset_index
+      } else {
+        obj.matchItems = [...obj.matchItems, item]
       }
       return obj
     }, {matchItems: [], matchChoices: {}})
