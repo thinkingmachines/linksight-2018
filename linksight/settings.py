@@ -147,6 +147,9 @@ CORS_ORIGIN_WHITELIST = (
 # DRF
 REST_FRAMEWORK = {
     'PAGE_SIZE': 10000,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+    ),
 }
 SILENCED_SYSTEM_CHECKS = [
     'rest_framework.W001',
