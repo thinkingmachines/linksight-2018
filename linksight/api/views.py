@@ -31,9 +31,9 @@ def dataset_preview(request, id):
     return Response(serializer.data)
 
 
-@silk_profile(name='Match dataset')
 @api_view(['POST'])
 @parser_classes((JSONParser,))
+@silk_profile(name='Match dataset')
 def dataset_match(request, id):
     serializer = DatasetMatchSerializer(data=request.data)
     if serializer.is_valid():
