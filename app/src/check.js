@@ -39,7 +39,15 @@ class Check extends React.Component {
       dynamicTyping: true,
       skipEmptyLines: true,
       complete: ({data, meta}) => {
-        this.setState({matchItems: this.nestItems(data)})
+        this.setState({matchItems: this.nestItems(data)}, () => {
+          // Go straight to export when there are no matches to check
+          const multipleMatchesCount = this.state.matchItems
+            .filter(item => item.matched === 'False')
+            .length
+          if (multipleMatchesCount === 0) {
+            this.saveChoices()
+          }
+        })
       }
     })
   }
@@ -72,17 +80,17 @@ class Check extends React.Component {
       }
     }))
   }
-  getIdentifiedCount () {
+  getExactCount () {
     return this.state.matchItems.filter(item => item.matched === 'True').length
   }
   getMultipleCount () {
     return this.state.matchItems.filter(item => (
-      !~['True', null].indexOf(item.matched) && !this.state.matchChoices[item.dataset_index]
+      item.matched === 'False' && !this.state.matchChoices[item.dataset_index]
     )).length
   }
   getCheckedCount () {
     return this.state.matchItems.filter(item => (
-      !~['True', null].indexOf(item.matched) && this.state.matchChoices[item.dataset_index]
+      item.matched === 'False' && this.state.matchChoices[item.dataset_index]
     )).length
   }
   getNoMatchesCount () {
@@ -130,7 +138,7 @@ class Check extends React.Component {
               {
                 toggled: true,
                 color: colors.green,
-                label: `Identified locations (${this.getIdentifiedCount()})`
+                label: `Exact matches (${this.getExactCount()})`
               },
               {
                 toggled: true,
@@ -172,12 +180,12 @@ class Check extends React.Component {
             <Cell className='matches'>
               <Instruction className='instruction'>
                 <strong>
-                  We've identified {this.getIdentifiedCount()} of the locations!
-                </strong> <span>
-                  For records with multiple matches, select the correct location
-                  match from the list below it. Unchecked records will be
-                  excluded from the export.
-                </span>
+                  We've identified {this.getExactCount()} of the locations!
+                </strong>
+                &nbsp;
+                For records with multiple matches, select the correct location
+                match from the list below it. Unchecked records will be
+                excluded from the export.
               </Instruction>
               <MatchesTable
                 items={this.state.matchItems.filter(matchItem => matchItem.matched === 'False')}
