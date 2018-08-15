@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 from drf_link_header_pagination import LinkHeaderPagination
 from linksight.api.models import Dataset, Match
 from linksight.api.serializers import (DatasetMatchSerializer,
@@ -13,6 +14,7 @@ from rest_framework_csv.renderers import PaginatedCSVRenderer
 from silk.profiling.profiler import silk_profile
 
 
+@csrf_exempt
 @api_view(['POST'])
 @parser_classes((MultiPartParser,))
 def dataset_list(request):
@@ -32,6 +34,7 @@ def dataset_preview(request, id):
 
 
 @silk_profile(name='Match dataset')
+@csrf_exempt
 @api_view(['POST'])
 @parser_classes((JSONParser,))
 def dataset_match(request, id):
@@ -54,6 +57,7 @@ def match_items(request, id):
 
 
 @api_view(['POST'])
+@csrf_exempt
 @parser_classes((JSONParser,))
 def match_save_choices(request, id):
     serializer = MatchSaveChoicesSerializer(data=request.data)
