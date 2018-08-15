@@ -141,9 +141,10 @@ class LinkSightMatcher:
             code_field = "{}_code".format(previous_interlevel["name"])
             subset = self.reference.loc[self.reference[code_field].isin(codes) &
                                         self.reference.interlevel.isin(interlevel["reference_fields"])]
-            return subset
+        else:
+            subset = self.reference.loc[self.reference.interlevel.isin(interlevel["reference_fields"])]
 
-        return self.reference.loc[self.reference.interlevel.isin(interlevel["reference_fields"])]
+        return subset.reset_index()
 
     def _get_matches(self, row, interlevel, reference_subset):
         """Returns a dataframe containing matches found on a certain interlevel in the following format:
@@ -161,12 +162,14 @@ class LinkSightMatcher:
             return self.matched_locations[location]
 
         choices = {}
-        for index, row in reference_subset.reset_index().iterrows():
+        for index, row in reference_subset.iterrows():
             if row["location"] not in choices:
                 choices[row["location"]] = {}
             if row["location"].upper() in location.upper():
-                matched_tuples = [(row["location"], 100)]
-                choices[row["location"]][row["index"]] = row.to_dict()
+                matches_subset = reference_subset[reference_subset.location.str.contains(location.upper())]
+                for matched_index, matched_row in matches_subset.iterrows():
+                    matched_tuples = [(matched_row["location"], 100)]
+                    choices[matched_row["location"]][matched_row["index"]] = matched_row.to_dict()
                 break
             else:
                 choices[row["location"]][row["index"]] = row.to_dict()
