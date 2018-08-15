@@ -94,7 +94,7 @@ class Check extends React.Component {
   }
   getMultipleCount () {
     return this.state.matchItems.filter(item => (
-      item.matched === 'False' && !this.state.matchChoices[item.dataset_index]
+      item.matched === 'False' && this.state.matchChoices[item.dataset_index]
     )).length
   }
   getNoMatchesCount () {
