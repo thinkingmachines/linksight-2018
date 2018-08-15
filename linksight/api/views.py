@@ -10,6 +10,7 @@ from rest_framework.decorators import (api_view, parser_classes,
 from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework_csv.renderers import PaginatedCSVRenderer
+from silk.profiling.profiler import silk_profile
 
 
 @api_view(['POST'])
@@ -30,6 +31,7 @@ def dataset_preview(request, id):
     return Response(serializer.data)
 
 
+@silk_profile(name='Match dataset')
 @api_view(['POST'])
 @parser_classes((JSONParser,))
 def dataset_match(request, id):

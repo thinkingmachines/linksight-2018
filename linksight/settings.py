@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'raven.contrib.django.raven_compat',
+    'silk',
 
     'linksight.api',
 ]
@@ -158,3 +159,8 @@ POPULATION_DATASET_ID = os.environ['POPULATION_DATASET_ID']
 RAVEN_CONFIG = {
     'dsn': os.getenv('SENTRY_DSN'),
 }
+
+# Silk
+SILKY_AUTHENTICATION = True
+SILKY_AUTHORISATION = True
+SILKY_PERMISSIONS = lambda user: user.is_superuser

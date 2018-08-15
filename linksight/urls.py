@@ -6,6 +6,7 @@ from django.urls import include, path
 urlpatterns = [
     path('api/', include('linksight.api.urls')),
     path('admin/', admin.site.urls),
+    path('silk/', include('silk.urls', namespace='silk')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler500 = 'rest_framework.exceptions.server_error'
