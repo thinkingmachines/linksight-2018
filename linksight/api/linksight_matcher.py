@@ -24,7 +24,6 @@ class LinkSightMatcher:
         self.dataset = dataset
         self.reference = reference
         self.interlevels = interlevels
-        self.matched_locations = {}
 
     def get_matches(self):
         """Gets potential address matches based on the a dataset row
@@ -158,9 +157,6 @@ class LinkSightMatcher:
 
         location = row[interlevel["dataset_field_name"]]
 
-        if location in self.matched_locations:
-            return self.matched_locations[location]
-
         choices = {}
         for index, row in reference_subset.iterrows():
             if row["location"] not in choices:
@@ -194,7 +190,5 @@ class LinkSightMatcher:
 
         if len(matches) and len(matches[matches["score"] == 100]):
             matches = matches[matches["score"] == 100].copy()
-
-        self.matched_locations[location] = matches
 
         return matches
