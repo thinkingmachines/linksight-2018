@@ -138,6 +138,9 @@ export default styled(Upload)`
   .hero-copy ol {
     padding-left: 0;
   }
+  .hero-copy li strong {
+    border-bottom: 2px solid ${colors.yellow};
+  }
   .hero-copy li {
     margin-bottom: 10px;
   }
