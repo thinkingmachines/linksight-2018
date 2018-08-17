@@ -188,7 +188,7 @@ class Match(models.Model):
             {
                 'name': 'province',
                 'dataset_field_name': kwargs.get('province_col'),
-                'reference_fields': ['Prov', 'Dist']
+                'reference_fields': ['Prov', 'Dist', '']
             },
             {
                 'name': 'city_municipality',
