@@ -1,16 +1,14 @@
 import React from 'react'
 import styled from 'styled-components'
-import {Cell} from 'styled-css-grid'
 
 // Colors
 import * as colors from '../colors'
 
 const Choice = styled(props => (
-  <section className={'table-row -choice ' + props.className}>
-    <Cell
-      middle
-      width={4}
-      left={2}
+  <tr className={'-choice ' + props.className}>
+    <td colSpan='1' />
+    <td
+      colSpan='5'
       className='table-cell -choice-content'
       onClick={props.onChoose.bind(null, props.item)}
     >
@@ -20,12 +18,12 @@ const Choice = styled(props => (
         props.item.matched_province
       ].filter(v => v).join(', ')}
       {props.noChoice ? null : (
-        <span className='score'>
+        <div className='score'>
           {parseFloat(props.item.total_score).toFixed(2)}
-        </span>
+        </div>
       )}
-    </Cell>
-  </section>
+    </td>
+  </tr>
 ))`
   .table-cell.-choice-content {
     position: relative;
@@ -69,31 +67,33 @@ class MatchItem extends React.Component {
       'checked': require('../images/tags/identified.svg')
     }[tag]
     return (
-      <section className={'table-row ' + this.props.className}>
-        <Cell middle className='table-cell -index'>{item.dataset_index + 1}</Cell>
-        <Cell middle className='table-cell'>
-          <span className={'tag tag-' + tag}>
-            <img src={icon} alt={tag} />
-          </span>
-        </Cell>
-        <Cell middle className='table-cell'>
-          {item.source_barangay ? item.source_barangay : (
-            <span className='missing'>{item.matched_barangay}</span>
-          )}
-        </Cell>
-        <Cell middle className='table-cell'>
-          {item.source_city_municipality ? item.source_city_municipality : (
-            <span className='missing'>{item.matched_city_municipality}</span>
-          )}
-        </Cell>
-        <Cell middle className='table-cell'>
-          {item.source_province ? item.source_province : (
-            <span className='missing'>{item.matched_province}</span>
-          )}
-        </Cell>
+      <React.Fragment>
+        <tr className={this.props.className}>
+          <td className='table-cell -index'>{item.dataset_index + 1}</td>
+          <td className='table-cell -tag'>
+            <span className={'tag tag-' + tag}>
+              <img src={icon} alt={tag} />
+            </span>
+          </td>
+          <td className='table-cell'>
+            {item.source_barangay ? item.source_barangay : (
+              <span className='missing'>{item.matched_barangay}</span>
+            )}
+          </td>
+          <td className='table-cell'>
+            {item.source_city_municipality ? item.source_city_municipality : (
+              <span className='missing'>{item.matched_city_municipality}</span>
+            )}
+          </td>
+          <td className='table-cell'>
+            {item.source_province ? item.source_province : (
+              <span className='missing'>{item.matched_province}</span>
+            )}
+          </td>
+        </tr>
         {item.matched === 'True' ? null : this.renderChoices(item.choices)}
         {item.matched === 'True' ? null : this.renderNoChoice(item)}
-      </section>
+      </React.Fragment>
     )
   }
   renderChoices (choices) {
@@ -122,27 +122,24 @@ class MatchItem extends React.Component {
 }
 
 export default styled(MatchItem)`
-  .table-cell {
-    padding: 15px 0;
-    box-sizing: border-box;
-    background: ${colors.monochrome[0]};
-    border-bottom: 1px solid ${colors.monochrome[2]};
-    box-shadow: 0;
-    transition: box-shadow 0.2s ease-in-out;
-  }
   .table-cell.-index {
     font-size: 12px;
     color: ${colors.monochrome[3]};
     padding: 15px;
+    width: 1px;
   }
-  .table-cell .tag {
+  .table-cell.-tag {
+    width: 1px;
+  }
+  .table-cell.-tag .tag {
     display: inline-block;
     color: white;
     font-size: 12px;
     line-height: 20px;
     border-radius: 5px;
     text-align: center;
-    margin-right: 15px;
+    width: 20px;
+    margin: 0 15px 0 5px;
   }
   .tag img {
     width: 12px;
