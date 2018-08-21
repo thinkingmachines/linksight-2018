@@ -261,7 +261,8 @@ class Match(models.Model):
             population_df = pd.read_csv(f, dtype={'Code': object})
 
         joined_df = joined_df.merge(population_df, how='left',
-                                    left_on='PSGC', right_on='Code')
+                                    left_on='PSGC', right_on='Code',
+                                    suffixes=[' (Source)', ''])
         joined_df.drop([
             'Code',
             'matched_barangay_psgc',
@@ -271,17 +272,19 @@ class Match(models.Model):
 
         # Reorder so matched columns and merged datasets are in front
 
-        front_cols = list(filter(bool, [
-            self.barangay_col,
-            'matched_barangay',
-            self.city_municipality_col,
-            'matched_city_municipality',
-            self.province_col,
-            'matched_province',
+        front_cols = []
+        for source_col, matched_col in (
+            (self.barangay_col, 'matched_barangay'),
+            (self.city_municipality_col, 'matched_city_municipality'),
+            (self.province_col, 'matched_province'),
+        ):
+            if source_col:
+                front_cols.extend((source_col, matched_col))
+        front_cols.extend([
             'PSGC',
             'Population',
-            'Administrative Level'
-        ]))
+            'Administrative Level',
+        ])
         other_cols = [col for col in joined_df.columns.tolist()
                       if col not in front_cols]
         new_cols = front_cols + other_cols
