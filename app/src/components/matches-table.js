@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import {Grid, Cell} from 'styled-css-grid'
 
 // Colors
 import * as colors from '../colors'
@@ -10,37 +9,55 @@ import MatchItem from './match-item'
 
 class MatchesTable extends React.Component {
   render () {
-    const columns = `max-content 40px repeat(3, 1fr)`
     return (
-      <Grid columns={columns} gap='0' className={this.props.className}>
-        <Cell left={3} className='table-header'>Barangay</Cell>
-        <Cell className='table-header'>City/Municipality</Cell>
-        <Cell className='table-header'>Province</Cell>
-        {this.props.items.map((item, i) => (
-          <MatchItem
-            key={i}
-            onChoose={this.props.onChoose}
-            chosenItem={this.props.matchChoices[item.dataset_index]}
-            item={item}
-          />
-        ))}
-      </Grid>
+      <table cellSpacing='0' className={this.props.className}>
+        <thead>
+          <tr>
+            <th colSpan='2' />
+            <th>Barangay</th>
+            <th>City/Municipality</th>
+            <th>Province</th>
+          </tr>
+        </thead>
+        <tbody>
+          {this.props.items.map((item, i) => (
+            <MatchItem
+              key={i}
+              onChoose={this.props.onChoose}
+              chosenItem={this.props.matchChoices[item.dataset_index]}
+              item={item}
+            />
+          ))}
+        </tbody>
+      </table>
     )
   }
 }
 
 export default styled(MatchesTable)`
-  .table-header {
+  width: 100%;
+  thead {
     color: ${colors.monochrome[3]};
     font-size: 12px;
   }
-  .table-row {
-    display: contents;
+  thead th {
+    font-weight: normal;
+    text-align: left;
+    line-height: 40px;
   }
-  .table-row:hover > .table-cell:first-child {
+  tr:hover .table-cell.-index,
+  tr:hover .table-cell.-choice-content {
     box-shadow: inset 5px 0 0 0 ${colors.monochrome[2]};
   }
-  .table-row.-choice > .table-cell {
+  tr.-choice > .table-cell {
     cursor: pointer;
+  }
+  .table-cell {
+    padding: 15px 0;
+    box-sizing: border-box;
+    background: ${colors.monochrome[0]};
+    border-bottom: 1px solid ${colors.monochrome[2]};
+    box-shadow: 0;
+    transition: box-shadow 0.2s ease-in-out;
   }
 `
