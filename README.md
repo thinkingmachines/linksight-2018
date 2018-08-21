@@ -90,3 +90,12 @@ to contribute, please send us an email at
 ```sh
 npm run catalog-start
 ```
+
+### Testing
+
+```sh
+gunzip data/clean-psgc.csv.gz
+python manage.py test
+```
+
+You can run specific subsets of tests [like so](https://docs.djangoproject.com/en/2.1/topics/testing/overview/#running-tests).
