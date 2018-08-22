@@ -7,7 +7,8 @@ import * as colors from '../colors'
 const Topbar = styled(({ className }) => (
   <div className={className}>
     This is alpha software! How can we make this tool better?
-    <a href='https://airtable.com/shr7b1eauaxFWw1et'>
+    <a href='https://airtable.com/shr7b1eauaxFWw1et' target='_blank'
+      rel='noopener noreferrer'>
       Share your feedback!
     </a>
   </div>
