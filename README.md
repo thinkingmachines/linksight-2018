@@ -11,7 +11,10 @@ This web app takes a list of barangay, municipality, city, and province names an
 
 ## Feedback
 
-This app is in active development! Your feedback will help us improve it. If you have any suggestions for features, enhancements, or find any bugs, or just want to contribute, please e-mail us linksight@thinkingmachin.es.
+This app is in active development! Your feedback will help us improve it. If you
+have any suggestions for features, enhancements, or find any bugs, or just want
+to contribute, please send us an email at
+[linksight@thinkingmachin.es](mailto:linksight@thinkingmachin.es).
 
 ## Development
 
