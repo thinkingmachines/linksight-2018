@@ -65,17 +65,30 @@ class Match(models.Model):
 
     @staticmethod
     def _mark_matched(df):
-        df['matched'] = ~df.duplicated('index', keep=False)
 
-        def has_no_match(row):
+        #check which columns have multiple matches.
+
+        df['has_multiple_matches'] = df.duplicated('index', keep=False)
+    
+        def has_exact_match(row):
+
+            # if the source data perfectly matches the matched values on all available interlevels
+            # classify this as an "exact match"
+
             if (
-                row['matched_barangay'] or
-                row['matched_city_municipality'] or
-                row['matched_province']
-            ):
-                return row['matched']
+                row['source_barangay'] == row['matched_barangay'] and
+                row['source_city_municipality'] == row['matched_city_municipality'] and
+                row['source_province'] == row['matched_province']
+                ):
+                    return True
 
-        df['matched'] = df.apply(has_no_match, axis=1)
+            # mark multiple near matches
+
+            elif:
+                row['has_multiple_matches'] = True
+                    return False
+                    
+        df['matched'] = df.apply(classify_match, axis=1)
         return df
 
     @staticmethod
