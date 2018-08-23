@@ -166,8 +166,8 @@ class LinkSightMatcher:
                 row["location"].upper() in location.upper()
                ):
                 matches_subset = pd.concat([
-                    reference_subset[reference_subset.location.str.contains(row["location"].upper())],
-                    reference_subset[reference_subset.location.str.contains(location.upper())],
+                    reference_subset[reference_subset.location.str.contains(row["location"].upper(), regex=False)],
+                    reference_subset[reference_subset.location.str.contains(location.upper(), regex=False)],
                 ])
                 matched_tuples = []
                 for matched_index, matched_row in matches_subset.iterrows():
