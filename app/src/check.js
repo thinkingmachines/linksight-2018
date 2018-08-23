@@ -43,7 +43,7 @@ class Check extends React.Component {
         this.setState({matchItems, matchChoices}, () => {
           // Go straight to export when there are no matches to check
           const multipleMatchesCount = this.state.matchItems
-            .filter(item => item.matched === 'False')
+            .filter(item => item.match_type === 'near')
             .length
           if (multipleMatchesCount === 0) {
             this.saveChoices()
@@ -55,7 +55,7 @@ class Check extends React.Component {
   processItems (items) {
     let prevIndex = null
     return items.reduce((obj, item) => {
-      if (item.matched === 'False') {
+      if (item.match_type === 'near') {
         if (item.dataset_index === prevIndex) {
           let n = obj.matchItems.length
           let lastItem = obj.matchItems[n - 1]
@@ -90,15 +90,15 @@ class Check extends React.Component {
     }))
   }
   getExactCount () {
-    return this.state.matchItems.filter(item => item.matched === 'True').length
+    return this.state.matchItems.filter(item => item.match_type === 'exact').length
   }
   getMultipleCount () {
     return this.state.matchItems.filter(item => (
-      item.matched === 'False' && this.state.matchChoices[item.dataset_index]
+      item.match_type === 'near' && this.state.matchChoices[item.dataset_index]
     )).length
   }
   getNoMatchesCount () {
-    return this.state.matchItems.filter(item => item.matched === null).length
+    return this.state.matchItems.filter(item => item.match_type === 'no_match').length
   }
   saveChoices () {
     const {matchChoices} = this.state
@@ -187,7 +187,7 @@ class Check extends React.Component {
                 excluded from the export.
               </Instruction>
               <MatchesTable
-                items={this.state.matchItems.filter(matchItem => matchItem.matched === 'False')}
+                items={this.state.matchItems.filter(matchItem => matchItem.match_type === 'near')}
                 matchChoices={this.state.matchChoices}
                 onChoose={this.handleChoice.bind(this)}
               />
