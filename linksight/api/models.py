@@ -64,18 +64,29 @@ class Match(models.Model):
         return '{} ({})'.format(self.dataset.name, self.id)
 
     @staticmethod
-    def _mark_matched(df):
+    def _mark_matched(df, interlevels):
         df['matched'] = ~df.duplicated('index', keep=False)
 
-        def has_no_match(row):
+        def adjust_matched_field(row):
             if (
-                row['matched_barangay'] or
-                row['matched_city_municipality'] or
-                row['matched_province']
+                not row['matched_barangay'] and
+                not row['matched_city_municipality'] and
+                not row['matched_province']
             ):
-                return row['matched']
+                return 'no_match'
+            for interlevel in interlevels:
+                if (
+                    row['source_{}'.format(interlevel['name'])] and
+                    not row['matched_{}'.format(interlevel['name'])]
+                ):
+                    return 'near'
 
-        df['matched'] = df.apply(has_no_match, axis=1)
+            if row['matched']:
+                return 'exact'
+            else:
+                return 'near'
+
+        df['match_type'] = df.apply(adjust_matched_field, axis=1)
         return df
 
     @staticmethod
@@ -208,7 +219,7 @@ class Match(models.Model):
         matched_raw = matcher.get_matches()
 
         matches = self._join_interlevels(matched_raw, dataset_df, interlevels)
-        matches = self._mark_matched(matches)
+        matches = self._mark_matched(matches, interlevels)
 
         matches.rename(columns={'index': 'dataset_index'}, inplace=True)
         matches = self._add_total_score(matches)
@@ -349,6 +360,17 @@ class MatchItem(models.Model):
     total_score = models.FloatField(editable=False)
 
     matched = models.NullBooleanField(null=True, editable=False)
+
+    match_types = (
+        ('no_match', 'No Match'),
+        ('near', 'Partial/Near Match'),
+        ('exact', 'Exact Match'),
+    )
+    match_type = models.CharField(
+        max_length=25,
+        choices=match_types,
+        default='no_match'
+    )
     chosen = models.BooleanField()
 
     class Meta:
