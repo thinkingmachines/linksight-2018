@@ -161,6 +161,16 @@ class LinkSightMatcher:
         for index, row in reference_subset.iterrows():
             if row["location"] not in choices:
                 choices[row["location"]] = {}
+
+            exact_matches = reference_subset[reference_subset.location == location.upper()]
+            if not exact_matches.empty:
+                matched_tuples = []
+                for matched_index, matched_row in exact_matches.iterrows():
+                    if matched_row["location"] not in choices:
+                        choices[matched_row["location"]] = {}
+                    matched_tuples.append((matched_row["location"], 100))
+                    choices[matched_row["location"]][matched_row["index"]] = matched_row.to_dict()
+                break
             if (
                 location.upper() in row["location"].upper() or
                 row["location"].upper() in location.upper()
