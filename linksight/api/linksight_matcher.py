@@ -166,10 +166,8 @@ class LinkSightMatcher:
             if not exact_matches.empty:
                 matched_tuples = []
                 for matched_index, matched_row in exact_matches.iterrows():
-                    if matched_row["location"] not in choices:
-                        choices[matched_row["location"]] = {}
+                    choices = self._add_to_choices(matched_row, choices)
                     matched_tuples.append((matched_row["location"], 100))
-                    choices[matched_row["location"]][matched_row["index"]] = matched_row.to_dict()
                 break
             if (
                 location.upper() in row["location"].upper() or
@@ -181,10 +179,8 @@ class LinkSightMatcher:
                 ])
                 matched_tuples = []
                 for matched_index, matched_row in matches_subset.iterrows():
-                    if matched_row["location"] not in choices:
-                        choices[matched_row["location"]] = {}
+                    choices = self._add_to_choices(matched_row, choices)
                     matched_tuples.append((matched_row["location"], 100))
-                    choices[matched_row["location"]][matched_row["index"]] = matched_row.to_dict()
                 break
             else:
                 choices[row["location"]][row["index"]] = row.to_dict()
@@ -209,3 +205,10 @@ class LinkSightMatcher:
             matches = matches[matches["score"] == 100].copy()
 
         return matches
+
+    @staticmethod
+    def _add_to_choices(matched_row, choices):
+        if matched_row["location"] not in choices:
+            choices[matched_row["location"]] = {}
+        choices[matched_row["location"]][matched_row["index"]] = matched_row.to_dict()
+        return choices
