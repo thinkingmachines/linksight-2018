@@ -87,6 +87,7 @@ class Match(models.Model):
                 return 'near'
 
         df['match_type'] = df.apply(adjust_matched_field, axis=1)
+        df.drop(columns=['matched'], inplace=True)
         return df
 
     @staticmethod
@@ -358,8 +359,6 @@ class MatchItem(models.Model):
         editable=False)
 
     total_score = models.FloatField(editable=False)
-
-    matched = models.NullBooleanField(null=True, editable=False)
 
     match_types = (
         ('no_match', 'No Match'),
