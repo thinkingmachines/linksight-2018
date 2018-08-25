@@ -58,9 +58,9 @@ class MatchItem extends React.Component {
     const tag = this.props.chosenItem
       ? 'checked'
       : {
-        'True': 'identified',
-        'False': 'multiple'
-      }[item.matched]
+        'exact': 'identified',
+        'near': 'multiple'
+      }[item.match_type]
     const icon = {
       'identified': require('../images/tags/identified.svg'),
       'multiple': require('../images/tags/multiple.svg'),
@@ -91,8 +91,8 @@ class MatchItem extends React.Component {
             )}
           </td>
         </tr>
-        {item.matched === 'True' ? null : this.renderChoices(item.choices)}
-        {item.matched === 'True' ? null : this.renderNoChoice(item)}
+        {item.match_type === 'near' ? this.renderChoices(item.choices) : null}
+        {item.match_type === 'near' ? this.renderNoChoice(item) : null}
       </React.Fragment>
     )
   }
