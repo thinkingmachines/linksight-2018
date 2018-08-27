@@ -30,7 +30,7 @@ class Dataset(models.Model):
 
     def preview(self, n=10):
         with self.file.open() as f:
-            df = pd.read_csv(f)
+            df = pd.read_csv(f, dtype=str)
             preview = json.loads(
                 df.head(n).to_json(orient='table')
             )
@@ -228,7 +228,7 @@ class Match(models.Model):
         # Merge matches
 
         with self.dataset.file.open() as f:
-            dataset_df = pd.read_csv(f)
+            dataset_df = pd.read_csv(f, dtype=str)
 
         matches_df = pd.DataFrame(list(self.items.filter(
             Q(matched=True) | Q(chosen=True)
@@ -252,7 +252,8 @@ class Match(models.Model):
                 if row.get(key):
                     return row[key]
 
-        joined_df['PSGC'] = joined_df.apply(get_deepest_code, axis=1)
+        joined_df['PSGC'] = joined_df.apply(
+            get_deepest_code, axis=1).astype(str)
 
         # Merge population
 
