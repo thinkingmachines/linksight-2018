@@ -243,7 +243,7 @@ class Match(models.Model):
             dataset_df = pd.read_csv(f, dtype=str)
 
         matches_df = pd.DataFrame(list(self.items.filter(
-            Q(matched=True) | Q(chosen=True)
+            Q(match_type='exact') | Q(chosen=True)
         ).values()))
         matches_df.set_index('dataset_index', inplace=True)
 
