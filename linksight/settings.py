@@ -10,14 +10,18 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
-import ast
 import os
 
-import dj_database_url
-from dotenv import find_dotenv, load_dotenv
+import environ
 
 # Load .env file
-load_dotenv(find_dotenv())
+env = environ.Env(
+    DEBUG=(bool, False),
+    ALLOWED_HOSTS=(list, ['127.0.0.1', 'localhost']),
+    EMAIL_PORT=(int, 25),
+    SENTRY_DSN=(str, None),
+)
+env.read_env('.env')
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -27,12 +31,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = ast.literal_eval(os.getenv('DEBUG', 'False'))
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
 
 # Application definition
@@ -45,12 +49,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'linksight.accounts',
+    'linksight.api',
+
     'rest_framework',
     'corsheaders',
     'raven.contrib.django.raven_compat',
     'silk',
-
-    'linksight.api',
+    'registration',
 ]
 
 MIDDLEWARE = [
@@ -90,7 +96,7 @@ WSGI_APPLICATION = 'linksight.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(conn_max_age=600),
+    'default': env.db(),
 }
 
 
@@ -131,7 +137,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'app/build/static')
 if DEBUG:
     STATICFILES_DIRS = [
         os.path.join(BASE_DIR, 'app/build/static')
@@ -162,15 +167,35 @@ SILENCED_SYSTEM_CHECKS = [
 ]
 
 # Datasets
-PSGC_DATASET_ID = os.environ['PSGC_DATASET_ID']
-POPULATION_DATASET_ID = os.environ['POPULATION_DATASET_ID']
+PSGC_DATASET_ID = env('PSGC_DATASET_ID')
+POPULATION_DATASET_ID = env('POPULATION_DATASET_ID')
 
 # Raven
 RAVEN_CONFIG = {
-    'dsn': os.getenv('SENTRY_DSN'),
+    'dsn': env('SENTRY_DSN'),
 }
 
 # Silk
 SILKY_AUTHENTICATION = True
 SILKY_AUTHORISATION = True
 SILKY_PERMISSIONS = lambda user: user.is_superuser
+
+# Registration
+LOGIN_REDIRECT_URL = '/'
+ACCOUNT_ACTIVATION_DAYS = 1
+REGISTRATION_ADMINS = [
+    ('Steve', 'marksteve@thinkingmachin.es'),
+    ('Pia', 'pia@thinkingmachin.es'),
+]
+
+# Email
+DEFAULT_FROM_EMAIL = 'linksight@thinkingmachin.es'
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_HOST = 'smtp.mailgun.org'
+    EMAIL_PORT = env('EMAIL_PORT')
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_USER')
+

@@ -1,0 +1,75 @@
+.accounts {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.accounts > .accounts-form {
+  width: 25em;
+  margin: 30px 150px;
+}
+
+.accounts-form:before {
+  content: ' ';
+  display: block;
+  background: url(/static/images/logo-light.svg) no-repeat center;
+  background-size: contain;
+  width: 100%;
+  height: 46px;
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 20px);
+  transform: translateX(-50%);
+}
+
+.accounts-form {
+  position: relative;
+  background: white;
+  padding: 30px;
+}
+
+.accounts-form form > p {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.helptext {
+  flex: none;
+  width: 100%;
+}
+
+.helptext:empty {
+  display: none;
+}
+
+.accounts-form form > ul:not(.errorlist),
+.helptext {
+  color: #b4b4b4;
+  font-size: 12px;
+  line-height: 15px;
+  margin: 5px 0 15px;
+}
+
+.accounts-form form > ul:not(.errorlist) {
+  padding-left: 20px;
+}
+
+.accounts-form form > .errorlist {
+  list-style: none;
+  padding: 0;
+  color: #ff6633;
+  margin-bottom: 20px;
+}
+
+.accounts-form form > input[type=submit] {
+  border: 0;
+  background: #f7bb09;
+  color: white;
+  padding: 0 1em;
+  line-height: 35px;
+  border-radius: 10px;
+  width: 100%;
+  margin: 20px 0;
+}
