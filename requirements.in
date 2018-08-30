@@ -1,6 +1,7 @@
-dj-database-url
 django
 django-cors-headers
+django-environ
+django-registration-redux
 django-silk
 djangorestframework
 djangorestframework-csv
@@ -10,6 +11,5 @@ gunicorn
 ipython
 pandas
 psycopg2-binary
-python-dotenv
 raven
 recordlinkage
