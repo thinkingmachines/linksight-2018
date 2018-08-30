@@ -32,7 +32,19 @@
 .accounts-form form > p {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   flex-wrap: wrap;
+  margin-bottom: 5px;
+}
+
+.accounts-form form > p > label {
+  flex: 1 0;
+}
+
+.accounts-form form > p > input {
+  flex: none;
+  width: 60%;
+  box-sizing: border-box;
 }
 
 .helptext {
@@ -63,13 +75,17 @@
   margin-bottom: 20px;
 }
 
-.accounts-form form > input[type=submit] {
-  border: 0;
-  background: #f7bb09;
-  color: white;
+.accounts-form form input {
   padding: 0 1em;
   line-height: 35px;
+  border: 1px solid #b4b4b4;
+}
+
+.accounts-form form > input[type=submit] {
+  border: 0;
   border-radius: 10px;
+  background: #f7bb09;
+  color: white;
   width: 100%;
   margin: 20px 0;
 }
