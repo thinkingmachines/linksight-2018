@@ -158,6 +158,7 @@ class LinkSightMatcher:
         location = row[interlevel["dataset_field_name"]]
 
         choices = {}
+        matched_tuples = []
         for index, row in reference_subset.iterrows():
             if row["location"] not in choices:
                 choices[row["location"]] = {}
@@ -177,17 +178,16 @@ class LinkSightMatcher:
                     reference_subset[reference_subset.location.str.contains(row["location"].upper(), regex=False)],
                     reference_subset[reference_subset.location.str.contains(location.upper(), regex=False)],
                 ])
-                matched_tuples = []
                 for matched_index, matched_row in matches_subset.iterrows():
                     choices = self._add_to_choices(matched_row, choices)
                     matched_tuples.append((matched_row["location"], 100))
-                break
             else:
                 choices[row["location"]][row["index"]] = row.to_dict()
         else:
-            matched_tuples = process.extractBests(
-                location, choices.keys(), score_cutoff=SCORE_CUTOFF,
-                limit=MAX_MATCHES)
+            if not matched_tuples:
+                matched_tuples = process.extractBests(
+                    location, choices.keys(), score_cutoff=SCORE_CUTOFF,
+                    limit=MAX_MATCHES)
 
         prev_score = 0
         matches = pd.DataFrame()
