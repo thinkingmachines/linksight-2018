@@ -31,6 +31,8 @@ class Upload extends React.Component {
   }
   handleProcessFile (err, file) {
     if (err) {
+      // TODO: Differentiate between invalid CSVs and those that are too big
+      alert("LinkSight's freemium version currently processes up to 3000 rows. Need to clean bigger datasets? Email us at linksight@thinkingmachin.es")
       return
     }
     let datasetId = JSON.parse(file.serverId).id
@@ -81,7 +83,7 @@ class Upload extends React.Component {
                     ${this.renderInstruction()}
                     <p class='note'>
                       Locations file requirements:
-                      CSV file type, max 1000 rows with Barangay, City/Municipality, Province in separate columns
+                      CSV file type, max 3000 rows with Barangay, City/Municipality, Province in separate columns
                     </p>
                     <p class='note -muted'>
                       We need to temporarily save a copy of your data to process it.
