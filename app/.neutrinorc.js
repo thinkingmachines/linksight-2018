@@ -14,9 +14,10 @@ module.exports = {
       '@neutrinojs/react',
       {
         html: {
+          title: 'LinkSight',
           appMountId: 'app-root',
           appMountIds: ['modal-root'],
-          title: 'LinkSight',
+          baseHref: '/',
           googleAnalytics: {
             trackingId: 'UA-123415402-1'
           },
