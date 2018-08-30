@@ -112,7 +112,7 @@ class Check extends React.Component {
         isSaving: false,
         isSaved: true
       }))
-      .catch(error => this.setState({
+      .catch(_ => this.setState({
         isSaving: false,
         error: <p>
           Uh oh! An unexpected error has occured.<br />

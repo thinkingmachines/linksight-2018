@@ -6,16 +6,13 @@ import {Link} from 'react-router-dom'
 // Colors
 import * as colors from '../colors'
 
-// Images
-import logoLight from '../images/logo-light.svg'
-
 const Sidebar = styled(props => (
   <Cell width={2} className={props.className}>
     <div className='sidebar'>
       <Grid columns={1} rows='1fr min-content' height='100%'>
         <Cell>
           <div className='logo'>
-            <Link to='/'><img src={logoLight} alt='logo' /></Link>
+            <Link to='/'><img src='/static/images/logo-light.svg' alt='logo' /></Link>
           </div>
           <div className='tags'>
             {props.children}

@@ -3,9 +3,6 @@ import {Route, Switch} from 'react-router-dom'
 import styled from 'styled-components'
 
 // Stylesheets
-import './css/base.css'
-import './css/typography.css'
-import './css/react-toggle.css'
 import 'filepond/dist/filepond.min.css'
 
 // Images

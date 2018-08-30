@@ -2,9 +2,6 @@ import React from 'react'
 import styled from 'styled-components'
 import {Grid, Cell} from 'styled-css-grid'
 
-// Images
-import logo from '../images/logo.svg'
-
 // Fragments
 import About from '../fragments/about'
 
@@ -34,7 +31,7 @@ class Header extends React.Component {
         ) : null}
         <Grid columns={10} gap='15px' alignContent='center'>
           <Cell width={9} className='logo'>
-            <img src={logo} alt='logo' />
+            <img src='/static/images/logo.svg' alt='logo' />
           </Cell>
           <Cell width={1}>
             <ul className='links -light'>
