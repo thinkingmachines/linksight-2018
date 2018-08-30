@@ -3,12 +3,12 @@ import ReactDOM from 'react-dom'
 import { Catalog, pageLoader } from 'catalog'
 
 // Stylesheets
-import typographyStyles from '../src/css/typography.css'
-import toggleStyles from '../src/css/react-toggle.css'
+import typographyStyles from '../src/static/css/typography.css'
+import toggleStyles from '../src/static/css/react-toggle.css'
 import filepondStyles from 'filepond/dist/filepond.min.css'
 
 // Images
-import logo from '../src/images/logo.svg'
+import logo from '../src/static/images/logo.svg'
 import datasetCardIconUrl from '../src/images/public-datasets/public-dataset-icon-population.svg'
 
 // Colors

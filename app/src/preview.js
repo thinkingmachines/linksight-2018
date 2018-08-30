@@ -93,7 +93,7 @@ class Preview extends React.Component {
         province_col: selectedLocationColumns.province
       })
       .then(resp => this.setState({matchId: resp.data.id}))
-      .catch(error => this.setState({
+      .catch(_ => this.setState({
         isMatching: false,
         error: <p>
           Uh oh! An unexpected error has occured.<br />

@@ -4,7 +4,7 @@ import styled from 'styled-components'
 // Colors
 import * as colors from '../colors'
 
-const Topbar = styled(({ className }) => (
+const Topbar = styled(({className}) => (
   <div className={className}>
     This is alpha software! How can we make this tool better?
     <a href='https://airtable.com/shr7b1eauaxFWw1et' target='_blank'
