@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import axios from 'axios'
 import {Cell} from 'styled-css-grid'
 
 // Colors
@@ -17,6 +16,9 @@ import Sidebar from './components/sidebar'
 import ToggleList from './components/toggle-list'
 import PreviewTable from './components/preview-table'
 
+// API
+import api from './api'
+
 class Export extends React.Component {
   constructor (props) {
     super(props)
@@ -26,7 +28,7 @@ class Export extends React.Component {
   }
   componentDidMount () {
     const {id} = this.props.match.params
-    axios.get(`${window.API_HOST}/api/matches/${id}/preview`, {
+    api.get(`/matches/${id}/preview`, {
       params: {
         'rowsShown': 100
       }

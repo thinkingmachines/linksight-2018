@@ -68,7 +68,10 @@ class Upload extends React.Component {
               <UploadNotice>
                 <UploadWidget
                   name='file'
-                  server={`${window.API_HOST}/api/datasets/`}
+                  server={{
+                    url: `${window.API_HOST}/api/datasets/`,
+                    process: {withCredentials: true}
+                  }}
                   allowRevert={false}
                   onprocessfile={this.handleProcessFile.bind(this)}
                   labelIdle={`

@@ -12,6 +12,7 @@ import backgroundCircle from './images/background-circle.svg'
 import * as colors from './colors'
 
 // Components
+import LoadingOverlay from './components/loading-overlay'
 import Topbar from './components/topbar'
 
 // Pages
@@ -21,15 +22,33 @@ import Check from './check'
 import Export from './export'
 import MobileNotice from './mobile-notice'
 
+// API
+import api from './api'
+
 class App extends React.Component {
   constructor (props) {
     super(props)
     const mql = window.matchMedia('(max-width: 1000px)')
     this.state = {
+      isLoading: true,
       isMobile: !!mql.matches
     }
   }
+  componentDidMount () {
+    api.get('/users/me')
+      .then(() => {
+        this.setState({isLoading: false})
+      })
+      .catch(error => {
+        if (error.response.status === 403) {
+          window.location.href = '/accounts/login'
+        }
+      })
+  }
   render () {
+    if (this.state.isLoading) {
+      return <LoadingOverlay />
+    }
     if (this.state.isMobile) {
       return <MobileNotice />
     }
