@@ -1,4 +1,4 @@
 from django.contrib import admin
-from linksight.api import models
+from linksight.api.models import Dataset
 
-admin.site.register(models.Dataset)
+admin.site.register(Dataset)

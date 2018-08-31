@@ -1,0 +1,9 @@
+Hi {{ user.username }},
+
+Thanks for signing up as a contributor for LinkSight!
+
+Click on this link to confirm your email address:
+https://linksight.thinkingmachin.es{% url 'registration_activate' activation_key %}
+
+- LinkSight Team
+

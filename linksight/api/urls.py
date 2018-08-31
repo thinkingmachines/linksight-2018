@@ -2,6 +2,7 @@ from django.urls import path
 from linksight.api import views
 
 urlpatterns = [
+    path('users/<id>', views.user_detail),
     path('datasets/', views.dataset_list),
     path('datasets/<uuid:id>/preview', views.dataset_preview),
     path('datasets/<uuid:id>/match', views.dataset_match),

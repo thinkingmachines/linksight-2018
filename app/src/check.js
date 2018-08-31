@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import axios from 'axios'
 import Papa from 'papaparse'
 import {Grid, Cell} from 'styled-css-grid'
 import {Redirect} from 'react-router-dom'
@@ -21,6 +20,9 @@ import MatchesTable from './components/matches-table'
 import LoadingOverlay from './components/loading-overlay'
 import ErrorOverlay from './components/error-overlay'
 
+// API
+import api from './api'
+
 class Check extends React.Component {
   constructor (props) {
     super(props)
@@ -38,6 +40,7 @@ class Check extends React.Component {
       header: true,
       dynamicTyping: true,
       skipEmptyLines: true,
+      withCredentials: true,
       complete: ({data, meta}) => {
         const {matchItems, matchChoices} = this.processItems(data)
         this.setState({matchItems, matchChoices}, () => {
@@ -104,8 +107,8 @@ class Check extends React.Component {
     const {matchChoices} = this.state
     const {id} = this.props.match.params
     this.setState({isSaving: true})
-    axios.post(
-      `${window.API_HOST}/api/matches/${id}/save-choices`, {
+    api.post(
+      `/matches/${id}/save-choices`, {
         match_choices: matchChoices
       })
       .then(resp => this.setState({

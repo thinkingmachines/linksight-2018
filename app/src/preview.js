@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import axios from 'axios'
 import {Grid, Cell} from 'styled-css-grid'
 import {Redirect} from 'react-router-dom'
 
@@ -19,6 +18,9 @@ import ErrorOverlay from './components/error-overlay'
 
 // Elements
 import {Button, Instruction} from './elements'
+
+// API
+import api from './api'
 
 // Constants
 const highlightColors = {
@@ -39,7 +41,7 @@ class Preview extends React.Component {
   }
   componentDidMount () {
     const {id} = this.props.match.params
-    axios.get(`${window.API_HOST}/api/datasets/${id}/preview`)
+    api.get(`/datasets/${id}/preview`)
       .then(resp => {
         this.setState({preview: resp.data})
       })
@@ -86,8 +88,8 @@ class Preview extends React.Component {
     this.setState({isMatching: true})
     const {selectedLocationColumns} = this.state
     const {id} = this.props.match.params
-    axios.post(
-      `${window.API_HOST}/api/datasets/${id}/match`, {
+    api.post(
+      `/datasets/${id}/match`, {
         barangay_col: selectedLocationColumns.barangay,
         city_municipality_col: selectedLocationColumns.city_municipality,
         province_col: selectedLocationColumns.province

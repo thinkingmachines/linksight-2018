@@ -9,16 +9,12 @@
   <link href="https://fonts.googleapis.com/css?family=Barlow:400,400i,700" rel="stylesheet"/>
   <link href="{% static 'css/base.css' %}" rel="stylesheet"/>
   <link href="{% static 'css/typography.css' %}" rel="stylesheet"/>
-  <link href="{% static 'accounts/css/base.css' %}" rel="stylesheet"/>
+  {% block css %}{% endblock %}
   <link rel="manifest" href="{% static 'manifest.json' %}"/>
   <link rel="short icon" href="{% static 'favicon.ico' %}"/>
 </head>
 <body>
-  <div class="accounts">
-    <div class="accounts-form">
-    {% block content %}{% endblock %}
-    </div>
-  </div>
+  {% block body %}{% endblock %}
   <script type="text/javascript">
     window.GoogleAnalyticsObject='ga';window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
     ga('create','UA-123415402-1','auto');

@@ -1,16 +1,26 @@
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from drf_link_header_pagination import LinkHeaderPagination
 from linksight.api.models import Dataset, Match
 from linksight.api.serializers import (DatasetMatchSerializer,
                                        DatasetPreviewSerializer,
                                        DatasetSerializer, MatchItemSerializer,
-                                       MatchSaveChoicesSerializer)
+                                       MatchSaveChoicesSerializer,
+                                       UserSerializer)
 from rest_framework.decorators import (api_view, parser_classes,
                                        renderer_classes)
 from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework_csv.renderers import PaginatedCSVRenderer
 from silk.profiling.profiler import silk_profile
+
+
+@api_view(['GET'])
+def user_detail(request, id):
+    if id == 'me':
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+    raise PermissionDenied()
 
 
 @api_view(['POST'])

@@ -1,7 +1,15 @@
 import os.path
 
+from django.contrib.auth import get_user_model
 from linksight.api.models import Dataset, Match, MatchItem
 from rest_framework import serializers
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = get_user_model()
+        fields = ('username', 'email', 'first_name', 'last_name')
 
 
 class DatasetSerializer(serializers.ModelSerializer):

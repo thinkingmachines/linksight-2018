@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'linksight.accounts',
+    'linksight.accounts.apps.AccountsConfig',
     'linksight.api',
 
     'rest_framework',
@@ -154,11 +154,16 @@ CORS_ORIGIN_WHITELIST = (
     'localhost:3000',
     'linksight.thinkingmachin.es',
 )
+CORS_ALLOW_CREDENTIALS = True
 
 # DRF
 REST_FRAMEWORK = {
     'PAGE_SIZE': 10000,
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'linksight.api.authentication.CsrfExemptSessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
 }
@@ -186,7 +191,9 @@ ACCOUNT_ACTIVATION_DAYS = 1
 REGISTRATION_ADMINS = [
     ('Steve', 'marksteve@thinkingmachin.es'),
     ('Pia', 'pia@thinkingmachin.es'),
+    ('Dani', 'danielle@thinkingmachin.es'),
 ]
+REGISTRATION_FORM = 'linksight.accounts.forms.RegistrationWithSurveyForm'
 
 # Email
 DEFAULT_FROM_EMAIL = 'linksight@thinkingmachin.es'

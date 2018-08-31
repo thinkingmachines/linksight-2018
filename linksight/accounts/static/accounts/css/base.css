@@ -7,7 +7,7 @@
 
 .accounts > .accounts-form {
   width: 25em;
-  margin: 30px 150px;
+  margin: 120px 150px;
 }
 
 .accounts-form:before {
@@ -21,6 +21,13 @@
   left: 50%;
   bottom: calc(100% + 20px);
   transform: translateX(-50%);
+}
+
+.accounts-form hr {
+  height: 1px;
+  border: 0;
+  background: #dbdbdb;
+  margin: 15px 0;
 }
 
 .accounts-form {
@@ -38,13 +45,16 @@
 }
 
 .accounts-form form > p > label {
+  position: relative;
   flex: 1 0;
 }
 
-.accounts-form form > p > input {
-  flex: none;
-  width: 60%;
-  box-sizing: border-box;
+.accounts-form form > p.required > label:before {
+  color: #f7bb09;
+  content: '*';
+  display: block;
+  position: absolute;
+  left: -0.75em;
 }
 
 .helptext {
@@ -75,10 +85,39 @@
   margin-bottom: 20px;
 }
 
-.accounts-form form input {
+.accounts-form form input,
+.accounts-form form textarea {
   padding: 0 1em;
-  line-height: 35px;
   border: 1px solid #b4b4b4;
+}
+
+.accounts-form form input {
+  line-height: 35px;
+}
+
+.accounts-form form textarea {
+  padding-top: 1em;
+  padding-height: 1em;
+}
+
+.accounts-form form > ul[id] {
+  color: black;
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+.accounts-form form > p > input {
+  flex: none;
+  width: 60%;
+  box-sizing: border-box;
+}
+
+.accounts-form form > p > textarea {
+  flex: none;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 5px 0;
 }
 
 .accounts-form form > input[type=submit] {
