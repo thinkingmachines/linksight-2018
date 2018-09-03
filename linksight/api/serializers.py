@@ -20,7 +20,11 @@ class DatasetSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         name = os.path.basename(validated_data['file'].name)
-        return super().create({'name': name, **validated_data})
+        return super().create({
+            'name': name,
+            'uploader': self.context['uploader'],
+            **validated_data,
+        })
 
 
 class DatasetPreviewSerializer(serializers.BaseSerializer):

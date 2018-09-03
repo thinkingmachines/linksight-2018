@@ -12,7 +12,8 @@ from silk.profiling.profiler import silk_profile
 @api_view(['POST'])
 @parser_classes((MultiPartParser,))
 def dataset_list(request):
-    serializer = DatasetSerializer(data=request.data)
+    context = {'uploader': request.user}
+    serializer = DatasetSerializer(data=request.data, context=context)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=201)
