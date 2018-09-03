@@ -20,6 +20,10 @@ PSGC_LEN = 9
 class Dataset(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4,
                           editable=False)
+    uploader = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                 on_delete=models.CASCADE,
+                                 related_name='datasets',
+                                 null=True)
     file = models.FileField(upload_to='datasets/')
     name = models.CharField(max_length=255, null=True)
     is_internal = models.BooleanField(default=False)
