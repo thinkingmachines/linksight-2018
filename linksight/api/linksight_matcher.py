@@ -1,10 +1,12 @@
 import numpy as np
 import pandas as pd
+import re
 from fuzzywuzzy import process
 
 MAX_MATCHES = 7
 MAX_SCORE_DIFF = 9
 SCORE_CUTOFF = 80
+REFERENCE_THRESHOLD = 5000
 
 
 class LinkSightMatcher:
@@ -159,6 +161,19 @@ class LinkSightMatcher:
 
         choices = {}
         matched_tuples = []
+
+        substring_locations = re.split(",\s|,|\s", location.upper())
+        substring_matches = pd.DataFrame()
+        for substring_loc in substring_locations:
+            substring_match = reference_subset[reference_subset.location.str.contains(substring_loc.strip('.'))]
+            substring_matches = substring_matches.append(substring_match)
+
+        if not substring_matches.empty:
+            reference_subset = substring_matches
+
+        if len(reference_subset) > REFERENCE_THRESHOLD:
+            return pd.DataFrame()
+
         for index, row in reference_subset.iterrows():
             if row["location"] not in choices:
                 choices[row["location"]] = {}
