@@ -165,7 +165,8 @@ class LinkSightMatcher:
         substring_locations = re.split(",\s|,|\s", location.upper())
         substring_matches = pd.DataFrame()
         for substring_loc in substring_locations:
-            substring_match = reference_subset[reference_subset.location.str.contains(substring_loc.strip('.'))]
+            substring_match = reference_subset[reference_subset.location.str.contains(substring_loc.strip('.[\*\(\)]'),
+                                                                                      regex=False)]
             substring_matches = substring_matches.append(substring_match)
 
         if not substring_matches.empty:
