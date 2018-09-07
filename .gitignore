@@ -10,7 +10,7 @@ venv/
 node_modules/
 
 # Config
-.env
+*.env
 
 # PyCharm
 /.idea/

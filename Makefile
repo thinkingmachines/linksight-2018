@@ -1,4 +1,4 @@
-.PHONY: install ssh
+.PHONY: install ssh encrypt-env
 install: venv requirements.txt
 	venv/bin/pip-sync
 venv:
@@ -7,4 +7,15 @@ venv:
 requirements.txt: requirements.in
 	venv/bin/pip-compile requirements.in > requirements.txt
 ssh:
-	gcloud compute --project "linksight-208514" ssh --zone "asia-southeast1-b" "linksight"
+	gcloud compute --project linksight-208514 \
+		ssh \
+		--zone asia-southeast1-b \
+		linksight
+encrypt-env:
+	gcloud kms --project linksight-208514 \
+		encrypt \
+		--plaintext-file=prod.env \
+		--ciphertext-file=prod.env.enc \
+		--location=global \
+		--keyring=linksight \
+		--key=linksight

@@ -1,7 +1,5 @@
-accesslog = '/deploy/gunicorn-access.log'
-errorlog = '/deploy/gunicorn-error.log'
+accesslog = '/var/log/gunicorn-access.log'
+errorlog = '/var/log/gunicorn-error.log'
 proc_name = 'linksight'
-daemon = True
-pidfile = '/deploy/gunicorn.pid'
 workers = 2
 timeout = 360

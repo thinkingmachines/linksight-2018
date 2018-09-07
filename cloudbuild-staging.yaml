@@ -1,0 +1,28 @@
+steps:
+- name: gcr.io/cloud-builders/gcloud
+  args:
+  - kms
+  - decrypt
+  - --ciphertext-file=staging.env.enc
+  - --plaintext-file=.env
+  - --location=global
+  - --keyring=linksight
+  - --key=linksight
+- name: 'gcr.io/cloud-builders/npm'
+  dir: 'app'
+  args: ['install']
+- name: 'gcr.io/cloud-builders/npm'
+  dir: 'app'
+  args: ['run', 'build']
+  env:
+    - PUBLIC_URL=https://linksight.thinkingmachin.es
+- name: 'python:3.6-stretch'
+  args: ['python3', '-m', 'venv', 'venv']
+- name: 'python:3.6-stretch'
+  args: ['/workspace/venv/bin/pip', 'install', '-r', 'requirements.txt']
+- name: 'python:3.6-stretch'
+  args: ['/workspace/venv/bin/python', 'manage.py', 'collectstatic', '--no-input']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/linksight', '.']
+images:
+- 'gcr.io/$PROJECT_ID/linksight'
