@@ -1,6 +1,3 @@
-import csv
-from io import TextIOWrapper
-
 from django.shortcuts import get_object_or_404
 from linksight.api.models import Dataset
 from linksight.api.serializers import (DatasetMatchSerializer,
@@ -15,16 +12,6 @@ from silk.profiling.profiler import silk_profile
 @api_view(['POST'])
 @parser_classes((MultiPartParser,))
 def dataset_list(request):
-    try:
-        file = request.data['file']
-        csv_data = TextIOWrapper(file)
-        row_count = sum(1 for row in csv.DictReader(csv_data))
-        if row_count > 3000:
-            return Response('too many rows', status=400)
-    except Exception as exc:
-        print(exc)
-        return Response('invalid csv', status=400)
-
     context = {'uploader': request.user}
     serializer = DatasetSerializer(data=request.data, context=context)
     if serializer.is_valid():

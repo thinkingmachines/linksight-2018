@@ -11,5 +11,6 @@ gunicorn
 ipython
 pandas
 psycopg2-binary
+python-magic
 raven
 recordlinkage

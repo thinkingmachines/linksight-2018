@@ -5,7 +5,7 @@
 #    pip-compile --output-file requirements.txt requirements.in
 #
 appnope==0.1.0            # via ipython
-autopep8==1.3.5           # via django-silk
+autopep8==1.4             # via django-silk
 backcall==0.1.0           # via ipython
 certifi==2018.8.24        # via requests
 chardet==3.0.4            # via requests
@@ -14,7 +14,7 @@ django-cors-headers==2.4.0
 django-environ==0.4.5
 django-registration-redux==2.4
 django-silk==3.0.1
-django==2.1
+django==2.1.1
 djangorestframework-csv==2.1.0
 djangorestframework-link-header-pagination==0.1.1
 djangorestframework==3.8.2
@@ -40,6 +40,7 @@ pycodestyle==2.4.0        # via autopep8
 pygments==2.2.0           # via django-silk, ipython
 python-dateutil==2.7.3    # via django-silk, pandas
 python-levenshtein==0.12.0  # via fuzzywuzzy
+python-magic==0.4.15
 pytz==2018.5              # via django, django-silk, pandas
 raven==6.9.0
 recordlinkage==0.12

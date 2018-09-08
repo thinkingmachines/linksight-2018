@@ -31,8 +31,6 @@ class Upload extends React.Component {
   }
   handleProcessFile (err, file) {
     if (err) {
-      // TODO: Differentiate between invalid CSVs and those that are too big
-      alert("LinkSight's freemium version currently processes up to 3000 rows. Need to clean bigger datasets? Email us at linksight@thinkingmachin.es")
       return
     }
     let datasetId = JSON.parse(file.serverId).id
@@ -72,13 +70,17 @@ class Upload extends React.Component {
                   name='file'
                   server={{
                     url: `${window.API_HOST}/api/datasets/`,
-                    process: {withCredentials: true}
+                    process: {
+                      withCredentials: true,
+                      onerror: JSON.parse
+                    }
                   }}
                   allowRevert={false}
                   onprocessfile={this.handleProcessFile.bind(this)}
                   acceptedFileTypes={['text/csv']}
                   fileValidateTypeLabelExpectedTypesMap={{'text/csv': '.csv'}}
                   fileValidateTypeLabelExpectedTypes='LinkSight currently only handles CSV files.'
+                  labelFileProcessingError={error => error.body.file[0]}
                   labelIdle={`
                     ${this.renderInstruction()}
                     <p class='note'>
