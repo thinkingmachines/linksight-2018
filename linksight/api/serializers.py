@@ -1,5 +1,7 @@
+import csv
 import os.path
 
+import magic
 from django.contrib.auth import get_user_model
 from linksight.api.models import Dataset, Match, MatchItem
 from rest_framework import serializers
@@ -17,6 +19,22 @@ class DatasetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dataset
         fields = '__all__'
+
+    def validate_file(self, value):
+        mime = magic.from_buffer(value.read(1024), mime=True)
+        if mime not in ('text/plain', 'text/csv'):
+            raise serializers.ValidationError(
+                'LinkSight currently only handles CSV files.',
+            )
+
+        row_count = sum(1 for row in csv.reader(map(str, value.open())))
+        if row_count > 3000:
+            raise serializers.ValidationError(
+                'LinkSight can only handle max 3000 rows at the moment.',
+            )
+
+        # NOTE: Re-opening the file does `seek(0)`
+        return value.open()
 
     def create(self, validated_data):
         name = os.path.basename(validated_data['file'].name)
