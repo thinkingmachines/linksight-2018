@@ -77,9 +77,6 @@ class Upload extends React.Component {
                   }}
                   allowRevert={false}
                   onprocessfile={this.handleProcessFile.bind(this)}
-                  acceptedFileTypes={['text/csv']}
-                  fileValidateTypeLabelExpectedTypesMap={{'text/csv': '.csv'}}
-                  fileValidateTypeLabelExpectedTypes='LinkSight currently only handles CSV files.'
                   labelFileProcessingError={error => error.body.file[0]}
                   labelIdle={`
                     ${this.renderInstruction()}
