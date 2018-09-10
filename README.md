@@ -73,10 +73,18 @@ to contribute, please send us an email at
     python manage.py runserver
     ```
 
+1. Create a superuser
+
+    ```sh
+    python manage.py createsuperuser
+    ```
+
+1. Go to [http://localhost:8000/accounts/login](http://localhost:8000/accounts/login) and log in manually
+
 1. Upload the dataset files
 
     - Download the files from [this bucket](https://console.cloud.google.com/storage/browser/linksight?project=linksight-208514&organizationId=301224238109).
-    - Go to `http://localhost:3000/` on your browser and upload them one at a time.
+    - Go to [http://localhost:3000/](http://localhost:3000/) on your browser and upload them one at a time.
         - After uploading `clean-psgc.csv`, use the ID in the post-upload URL to fill in `PSGC_DATASET_ID` in `.env`
         - After uploading `population.csv`, use the ID in the post-upload URL to fill in `POPULATION_DATASET_ID` in `.env`
     - After updating `.env`, restart your server.
