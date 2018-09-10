@@ -14,4 +14,12 @@ export default styled(FilePond)`
     font-size: 12px;
     margin-top: 5px;
   }
+  .filepond--drop-label label .reqs {
+    font-size: 14px;
+    margin-bottom: 0px;
+    text-align: left;
+  }
+  .filepond--drop-label label p.reqs {
+    margin-left: 25px;
+  }
 `

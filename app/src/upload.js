@@ -76,14 +76,16 @@ class Upload extends React.Component {
                   onprocessfile={this.handleProcessFile.bind(this)}
                   labelIdle={`
                     ${this.renderInstruction()}
-                    <p class='note'>
-                      Locations file requirements:
-                      CSV file type, max 1000 rows with Barangay, City/Municipality, Province in separate columns
+                    <p class='note reqs'>File requirements:</p>
+                    <ul class='note reqs'>
+                      <li>CSV file type</li>
+                      <li>Maximum 3000 rows</li>
+                      <li>Barangay, City/Municipality, Province in separate columns</li>
+                    </ul>
                     </p>
                     <p class='note -muted'>
                       We need to temporarily save a copy of your data to process it.
                       The copy will be deleted from our system within 24 hours of upload.
-                    </p>
                   `}
                 />
               </UploadNotice>
