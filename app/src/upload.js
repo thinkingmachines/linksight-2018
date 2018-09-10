@@ -90,18 +90,16 @@ class Upload extends React.Component {
             </Cell>
             <Cell width={4} left={7} className='hero-copy'>
               <Title>
-                Clean up messy Philippine place names
+                Messy Philippine place names?
               </Title>
               <br />
               <h2>
-                LinkSight matches barangay, city, municipality, and provincial names with their closest-matching items in the Philippine Standard Geographic Code (PSGC).
+                Automatically standardize the names of barangays, municipalities, cities, and provinces in just three easy steps:
               </h2>
-              <p>How to use it:</p>
               <ol>
-                <li><strong>Upload</strong> a CSV that has separate columns for each administrative level: barangay, municipality or city, and province. For now we only take CSVs with fewer than 1000 rows.</li>
-                <li><strong>Preview</strong> the first 10 rows of your dataset. Indicate which columns refer to which administrative level.</li>
-                <li><strong>Match</strong> with the PSGC and view the results. For places that have more than one possible PSGC, select the best match from among the candidates presented. We use fuzzy matching and record linkage techniques to rank the closest matches, despite spelling differences.</li>
-                <li><strong>Export</strong> the dataset as a CSV file.</li>
+                <li className='subtitle'><strong>Upload and prep your data.</strong></li>
+                <li className='subtitle'><strong>Let LinkSight clean your data.</strong></li>
+                <li className='subtitle'><strong>Check and export the results.</strong></li>
               </ol>
             </Cell>
           </Grid>
@@ -141,10 +139,8 @@ export default styled(Upload)`
   .hero-copy ol {
     padding-left: 0;
   }
-  .hero-copy li strong {
-    border-bottom: 2px solid ${colors.yellow};
-  }
   .hero-copy li {
     margin-bottom: 10px;
+    margin-left: 20px;
   }
 `
