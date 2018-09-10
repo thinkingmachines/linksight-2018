@@ -181,13 +181,7 @@ class Check extends React.Component {
           <Grid columns={1} gap='0' height='calc(100vh - 30px)'>
             <Cell className='matches'>
               <Instruction className='instruction'>
-                <strong>
-                  We've identified {this.getExactCount()} of the locations!
-                </strong>
-                &nbsp;
-                For records with multiple matches, select the correct location
-                match from the list below it. Unchecked records will be
-                excluded from the export.
+                Out of the {this.state.matchItems.length} records in your dataset, <strong> {this.getMultipleCount()} </strong> needs your review.
               </Instruction>
               <MatchesTable
                 items={this.state.matchItems.filter(matchItem => matchItem.match_type === 'near')}
