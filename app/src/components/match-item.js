@@ -12,7 +12,7 @@ const Choice = styled(props => (
       className='table-cell -choice-content'
       onClick={props.onChoose.bind(null, props.item)}
     >
-      {props.noChoice ? 'No correct match' : [
+      {props.noChoice ? 'No correct match/Not sure' : [
         props.item.matched_barangay,
         props.item.matched_city_municipality,
         props.item.matched_province
