@@ -1,7 +1,5 @@
 import styled from 'styled-components'
-import {FilePond, registerPlugin} from 'react-filepond'
-import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
-registerPlugin(FilePondPluginFileValidateType)
+import {FilePond} from 'react-filepond'
 
 export default styled(FilePond)`
   z-index: 0;
