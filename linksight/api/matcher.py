@@ -14,41 +14,50 @@ class Matcher:
         self.dataset = dataset
         self.reference = reference
 
-    @staticmethod
-    def _mark_matched(df, interlevels):
-        df['matched'] = ~df.duplicated('index', keep=False)
+    def get_match_items(self, **kwargs):
 
-        def adjust_matched_field(row):
-            if (
-                not row['matched_barangay'] and
-                not row['matched_city_municipality'] and
-                not row['matched_province']
-            ):
-                return 'no_match'
-            for interlevel in interlevels:
-                if (
-                    row['source_{}'.format(interlevel['name'])] and
-                    not row['matched_{}'.format(interlevel['name'])]
-                ):
-                    return 'near'
+        with self.reference.file.open() as f:
+            psgc_df = pd.read_csv(f, dtype={'code': object})
 
-            if row['matched']:
-                return 'exact'
-            else:
-                return 'near'
+        with self.dataset.file.open() as f:
+            dataset_df = pd.read_csv(f)
 
-        df['match_type'] = df.apply(adjust_matched_field, axis=1)
-        df.drop(columns=['matched'], inplace=True)
-        return df
+        psgc_df['province_code'] = (psgc_df['code']
+                                    .str.slice(stop=PROV_CODE_LEN)
+                                    .str.ljust(PSGC_LEN, '0'))
+        psgc_df['city_municipality_code'] = (psgc_df['code']
+                                             .str.slice(stop=CITY_MUN_CODE_LEN)
+                                             .str.ljust(PSGC_LEN, '0'))
+        interlevels = [
+            {
+                'name': 'province',
+                'dataset_field_name': kwargs.get('province_col'),
+                'reference_fields': ['Prov', 'Dist', '']
+            },
+            {
+                'name': 'city_municipality',
+                'dataset_field_name': kwargs.get('city_municipality_col'),
+                'reference_fields': ['City', 'Mun', 'SubMun']
+            },
+            {
+                'name': 'barangay',
+                'dataset_field_name': kwargs.get('barangay_col'),
+                'reference_fields': ['Bgy']
+            },
+        ]
 
-    @staticmethod
-    def _add_total_score(df):
-        regex = re.compile(r'score', re.IGNORECASE)
-        score_columns = list(filter(regex.search, list(df.columns)))
+        matcher = LinkSightMatcher(dataset=dataset_df,
+                                   reference=psgc_df,
+                                   interlevels=interlevels)
+        matched_raw = matcher.get_matches()
 
-        df['total_score'] = df[score_columns].sum(axis=1)
+        matches = self._join_interlevels(matched_raw, dataset_df, interlevels)
+        matches = self._mark_matched(matches, interlevels)
 
-        return df
+        matches.rename(columns={'index': 'dataset_index'}, inplace=True)
+        matches = self._add_total_score(matches)
+
+        return matches
 
     @staticmethod
     def _join_interlevels(matches, dataset, interlevels):
@@ -133,47 +142,38 @@ class Matcher:
         }, inplace=True)
         return merged
 
-    def get_match_items(self, **kwargs):
+    @staticmethod
+    def _mark_matched(df, interlevels):
+        df['matched'] = ~df.duplicated('index', keep=False)
 
-        with self.reference.file.open() as f:
-            psgc_df = pd.read_csv(f, dtype={'code': object})
+        def adjust_matched_field(row):
+            if (
+                not row['matched_barangay'] and
+                not row['matched_city_municipality'] and
+                not row['matched_province']
+            ):
+                return 'no_match'
+            for interlevel in interlevels:
+                if (
+                    row['source_{}'.format(interlevel['name'])] and
+                    not row['matched_{}'.format(interlevel['name'])]
+                ):
+                    return 'near'
 
-        with self.dataset.file.open() as f:
-            dataset_df = pd.read_csv(f)
+            if row['matched']:
+                return 'exact'
+            else:
+                return 'near'
 
-        psgc_df['province_code'] = (psgc_df['code']
-                                    .str.slice(stop=PROV_CODE_LEN)
-                                    .str.ljust(PSGC_LEN, '0'))
-        psgc_df['city_municipality_code'] = (psgc_df['code']
-                                             .str.slice(stop=CITY_MUN_CODE_LEN)
-                                             .str.ljust(PSGC_LEN, '0'))
-        interlevels = [
-            {
-                'name': 'province',
-                'dataset_field_name': kwargs.get('province_col'),
-                'reference_fields': ['Prov', 'Dist', '']
-            },
-            {
-                'name': 'city_municipality',
-                'dataset_field_name': kwargs.get('city_municipality_col'),
-                'reference_fields': ['City', 'Mun', 'SubMun']
-            },
-            {
-                'name': 'barangay',
-                'dataset_field_name': kwargs.get('barangay_col'),
-                'reference_fields': ['Bgy']
-            },
-        ]
+        df['match_type'] = df.apply(adjust_matched_field, axis=1)
+        df.drop(columns=['matched'], inplace=True)
+        return df
 
-        matcher = LinkSightMatcher(dataset=dataset_df,
-                                   reference=psgc_df,
-                                   interlevels=interlevels)
-        matched_raw = matcher.get_matches()
+    @staticmethod
+    def _add_total_score(df):
+        regex = re.compile(r'score', re.IGNORECASE)
+        score_columns = list(filter(regex.search, list(df.columns)))
 
-        matches = self._join_interlevels(matched_raw, dataset_df, interlevels)
-        matches = self._mark_matched(matches, interlevels)
+        df['total_score'] = df[score_columns].sum(axis=1)
 
-        matches.rename(columns={'index': 'dataset_index'}, inplace=True)
-        matches = self._add_total_score(matches)
-
-        return matches
+        return df
