@@ -6,22 +6,16 @@ import * as colors from '../colors'
 
 const Choice = styled(props => (
   <tr className={'-choice ' + props.className}>
-    <td colSpan='1' />
     <td
       colSpan='5'
       className='table-cell -choice-content'
       onClick={props.onChoose.bind(null, props.item)}
     >
-      {props.noChoice ? 'No correct match/Not sure' : [
+      {props.noChoice ? 'No Correct Match/Not Sure' : [
         props.item.matched_barangay,
         props.item.matched_city_municipality,
         props.item.matched_province
       ].filter(v => v).join(', ')}
-      {props.noChoice ? null : (
-        <div className='score'>
-          {parseFloat(props.item.total_score).toFixed(2)}
-        </div>
-      )}
     </td>
   </tr>
 ))`
@@ -55,40 +49,14 @@ const Choice = styled(props => (
 class MatchItem extends React.Component {
   render () {
     const {item} = this.props
-    const tag = this.props.chosenItem
-      ? 'checked'
-      : {
-        'exact': 'identified',
-        'near': 'multiple'
-      }[item.match_type]
-    const icon = {
-      'identified': require('../images/tags/identified.svg'),
-      'multiple': require('../images/tags/multiple.svg'),
-      'checked': require('../images/tags/identified.svg')
-    }[tag]
     return (
       <React.Fragment>
         <tr className={this.props.className}>
-          <td className='table-cell -index'>{item.dataset_index + 1}</td>
-          <td className='table-cell -tag'>
-            <span className={'tag tag-' + tag}>
-              <img src={icon} alt={tag} />
-            </span>
-          </td>
-          <td className='table-cell'>
-            {item.source_barangay ? item.source_barangay : (
-              <span className='missing'>{item.matched_barangay}</span>
-            )}
-          </td>
-          <td className='table-cell'>
-            {item.source_city_municipality ? item.source_city_municipality : (
-              <span className='missing'>{item.matched_city_municipality}</span>
-            )}
-          </td>
-          <td className='table-cell'>
-            {item.source_province ? item.source_province : (
-              <span className='missing'>{item.matched_province}</span>
-            )}
+          <td className='table-cell -index' rowSpan={item.choices.length + 2}>{this.props.index + 1}</td>
+          <td className='table-cell' rowSpan={item.choices.length + 2}>
+            {[item.source_barangay,
+              item.source_city_municipality,
+              item.source_province].filter(v => v).join(', ')}
           </td>
         </tr>
         {item.match_type === 'near' ? this.renderChoices(item.choices) : null}
