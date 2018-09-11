@@ -25,9 +25,11 @@ class Matcher(abc.ABC):
                     Ex: we find the correct province and city, but no match for barangay
             'exact': if it's an exact match for all interlevels
 
+        The matched_* fields can be blank NULL/blank if we didn't find a match for the specific interlevel
+
         Attributes:
-            dataset: a Dataset object containing the dataset uploaded by the user
-            reference: the Dataset object containing the PSGC reference file
+            dataset: the path of the file containing the dataset uploaded by the user
+            reference: the path of the file containing the PSGC reference file
     """
 
     def __init__(self, dataset, reference):
