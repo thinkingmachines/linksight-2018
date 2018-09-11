@@ -13,10 +13,9 @@ class MatchesTable extends React.Component {
       <table cellSpacing='0' className={this.props.className}>
         <thead>
           <tr>
-            <th colSpan='2' />
-            <th>Barangay</th>
-            <th>City/Municipality</th>
-            <th>Province</th>
+            <th colSpan='1' />
+            <th>Original Locations</th>
+            <th>Candidate Matches</th>
           </tr>
         </thead>
         <tbody>
@@ -26,6 +25,7 @@ class MatchesTable extends React.Component {
               onChoose={this.props.onChoose}
               chosenItem={this.props.matchChoices[item.dataset_index]}
               item={item}
+              index={i}
             />
           ))}
         </tbody>
