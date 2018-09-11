@@ -8,7 +8,7 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import Q
-from linksight.api.matcher import Matcher
+from linksight.api.fuzzywuzzymatcher import FuzzyWuzzyMatcher
 
 
 class Dataset(models.Model):
@@ -63,7 +63,7 @@ class Match(models.Model):
 
     def generate_match_items(self, **kwargs):
         psgc = Dataset.objects.get(pk=settings.PSGC_DATASET_ID)
-        matcher = Matcher(dataset=self.dataset,
+        matcher = FuzzyWuzzyMatcher(dataset=self.dataset,
                           reference=psgc)
         matches = matcher.get_match_items(**kwargs)
 
