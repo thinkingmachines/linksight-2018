@@ -13,7 +13,7 @@ class MatchesTable extends React.Component {
       <table cellSpacing='0' className={this.props.className}>
         <thead>
           <tr>
-            <th colSpan='1' />
+            <th colSpan='2' />
             <th>Original Locations</th>
             <th>Candidate Matches</th>
           </tr>
