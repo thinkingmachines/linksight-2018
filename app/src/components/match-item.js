@@ -52,11 +52,13 @@ class MatchItem extends React.Component {
     return (
       <React.Fragment>
         <tr className={this.props.className}>
-          <td className='table-cell -index' rowSpan={item.choices.length + 2}>{this.props.index + 1}</td>
-          <td className='table-cell' rowSpan={item.choices.length + 2}>
-            {[item.source_barangay,
+          <td className='table-cell -index' colSpan='2' rowSpan={item.choices.length + 2}>
+            <div className='circle'>{this.props.index + 1}</div>
+          </td>
+          <td className='table-cell source' rowSpan={item.choices.length + 2}>
+            <div className='bg-hidden'>{[item.source_barangay,
               item.source_city_municipality,
-              item.source_province].filter(v => v).join(', ')}
+              item.source_province].filter(v => v).join(', ')}</div>
           </td>
         </tr>
         {item.match_type === 'near' ? this.renderChoices(item.choices) : null}
@@ -91,10 +93,12 @@ class MatchItem extends React.Component {
 
 export default styled(MatchItem)`
   .table-cell.-index {
-    font-size: 12px;
-    color: ${colors.monochrome[3]};
+    font-size: 15px;
+    color: ${colors.monochrome[0]};
+    font-weight: bold;
     padding: 15px;
     width: 1px;
+    vertical-align: top;
   }
   .table-cell.-tag {
     width: 1px;
@@ -108,6 +112,26 @@ export default styled(MatchItem)`
     text-align: center;
     width: 20px;
     margin: 0 15px 0 5px;
+  }
+  .source {
+    vertical-align: top;
+  }
+  .circle {
+    height: 35px;
+    width: 35px;
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 50%; /* may require vendor prefixes */
+    background: ${colors.indigo};
+  }
+  .bg-hidden {
+    height: 35px;
+    width: 100%;
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    background: ${colors.monochrome[0]};
   }
   .tag img {
     width: 12px;
