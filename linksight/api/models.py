@@ -63,8 +63,8 @@ class Match(models.Model):
 
     def generate_match_items(self, **kwargs):
         psgc = Dataset.objects.get(pk=settings.PSGC_DATASET_ID)
-        matcher = FuzzyWuzzyMatcher(dataset=self.dataset,
-                          reference=psgc)
+        matcher = FuzzyWuzzyMatcher(dataset=self.dataset.file,
+                                    reference=psgc.file)
         matches = matcher.get_match_items(**kwargs)
 
         for _, row in matches.iterrows():
