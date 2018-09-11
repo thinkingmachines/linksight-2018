@@ -13,10 +13,10 @@ PSGC_LEN = 9
 class FuzzyWuzzyMatcher(Matcher):
     def get_match_items(self, **kwargs):
 
-        with self.reference.open() as f:
+        with open(self.reference) as f:
             psgc_df = pd.read_csv(f, dtype={'code': object})
 
-        with self.dataset.open() as f:
+        with open(self.dataset) as f:
             dataset_df = pd.read_csv(f)
 
         psgc_df['province_code'] = (psgc_df['code']
