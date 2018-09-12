@@ -44,6 +44,7 @@ export default styled(MatchesTable)`
     font-weight: normal;
     text-align: left;
     line-height: 40px;
+    padding: 0 15px;
   }
   tr:hover .table-cell.-index,
   tr:hover .table-cell.-choice-content {
@@ -53,7 +54,7 @@ export default styled(MatchesTable)`
     cursor: pointer;
   }
   .table-cell {
-    padding: 15px 0;
+    padding: 15px 15px;
     box-sizing: border-box;
     background: ${colors.monochrome[0]};
     border-bottom: 1px solid ${colors.monochrome[2]};
