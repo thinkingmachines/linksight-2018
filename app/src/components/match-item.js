@@ -53,7 +53,7 @@ class MatchItem extends React.Component {
       <React.Fragment>
         <tr className={this.props.className}>
           <td className='table-cell -index' colSpan='2' rowSpan={item.choices.length + 2}>
-            <div className='circle'>{this.props.index + 1}</div>
+            {this.props.index + 1}
           </td>
           <td className='table-cell source' rowSpan={item.choices.length + 2}>
             <div className='bg-hidden'>{[item.source_barangay,
@@ -93,12 +93,12 @@ class MatchItem extends React.Component {
 
 export default styled(MatchItem)`
   .table-cell.-index {
-    font-size: 15px;
-    color: ${colors.monochrome[0]};
+    color: ${colors.indigo};
     font-weight: bold;
     padding: 15px;
     width: 1px;
     vertical-align: top;
+    text-align: center;
   }
   .table-cell.-tag {
     width: 1px;
