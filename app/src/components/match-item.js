@@ -126,14 +126,14 @@ export default styled(MatchItem)`
     width: 12px;
     height: 12px;
   }
-  .tag-identified {
+  .tag-match {
     background: ${colors.green};
-  }
-  .tag-multiple {
-    background: ${colors.orange};
   }
   .tag-checked {
     background: ${colors.yellow};
+  }
+  .tag-no-match {
+    background: ${colors.orange};
   }
   .table-cell .missing {
     font-style: italic;
