@@ -8,7 +8,7 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import Q
-from linksight.api.fuzzywuzzymatcher import FuzzyWuzzyMatcher
+from linksight.api.matcher import get_matches
 
 
 class Dataset(models.Model):
@@ -68,13 +68,17 @@ class Match(models.Model):
         return '{} ({})'.format(self.dataset.name, self.id)
 
     def generate_match_items(self, **kwargs):
-        psgc = Dataset.objects.get(pk=settings.PSGC_DATASET_ID)
-        matcher = FuzzyWuzzyMatcher(dataset=self.dataset.file.path,
-                                    reference=psgc.file.path)
-        matches = matcher.get_match_items(**kwargs)
-
-        for _, row in matches.iterrows():
-            MatchItem.objects.create(match=self, **row.to_dict(), chosen=False)
+        with self.dataset.file.open() as f:
+            dataset_df = pd.read_csv(f)
+        columns = {
+            'bgy': self.barangay_col,
+            'city': self.city_municipality_col,
+            'prov': self.province_col,
+        }
+        MatchItem.objects.bulk_create([
+            MatchItem(**match_item, match=self, chosen=False)
+            for match_item in get_matches(dataset_df, columns=columns)
+        ])
 
     def save_choices(self, match_choices):
         # Save choices
@@ -184,25 +188,13 @@ class MatchItem(models.Model):
 
     matched_barangay = models.CharField(
         max_length=256, editable=False, null=True)
-    matched_barangay_psgc = models.CharField(
-        max_length=10, editable=False, null=True)
-    matched_barangay_score = models.FloatField(
-        editable=False)
-
     matched_city_municipality = models.CharField(
         max_length=256, editable=False, null=True)
-    matched_city_municipality_psgc = models.CharField(
-        max_length=10, editable=False, null=True)
-    matched_city_municipality_score = models.FloatField(
-        editable=False)
-
     matched_province = models.CharField(
         max_length=256, editable=False, null=True)
-    matched_province_psgc = models.CharField(
-        max_length=10, editable=False, null=True)
-    matched_province_score = models.FloatField(
-        editable=False)
 
+    code = models.CharField(
+        max_length=256, editable=False, null=True)
     total_score = models.FloatField(editable=False)
 
     match_types = (
