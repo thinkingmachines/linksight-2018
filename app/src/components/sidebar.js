@@ -32,6 +32,7 @@ const Sidebar = styled(props => (
     overflow: hidden;
     height: 100%;
     box-sizing: border-box;
+    padding-right: 25px;
   }
   .sidebar:before {
     display: block;
@@ -53,6 +54,22 @@ const Sidebar = styled(props => (
   }
   .logo img {
     width: 100%;
+  }
+  .steps {
+    color: ${colors.monochrome[3]};
+    font-size: 16px;
+    line-height: 30px;
+  }
+  .steps .current {
+    color: ${colors.monochrome[0]};   
+  }
+  .steps .current .step-desc {
+    font-size: 14px;
+    padding-left: 10px;
+    line-height: 20px;
+  }
+  .steps .current .step-li {
+    margin-bottom: 10px;
   }
 `
 
