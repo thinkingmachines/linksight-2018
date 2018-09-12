@@ -56,9 +56,9 @@ class MatchItem extends React.Component {
             {this.props.index + 1}
           </td>
           <td className='table-cell source' rowSpan={item.choices.length + 2}>
-            <div className='bg-hidden'>{[item.source_barangay,
+            {[item.source_barangay,
               item.source_city_municipality,
-              item.source_province].filter(v => v).join(', ')}</div>
+              item.source_province].filter(v => v).join(', ')}
           </td>
         </tr>
         {item.match_type === 'near' ? this.renderChoices(item.choices) : null}
@@ -115,23 +115,6 @@ export default styled(MatchItem)`
   }
   .source {
     vertical-align: top;
-  }
-  .circle {
-    height: 35px;
-    width: 35px;
-    display: table-cell;
-    text-align: center;
-    vertical-align: middle;
-    border-radius: 50%; /* may require vendor prefixes */
-    background: ${colors.indigo};
-  }
-  .bg-hidden {
-    height: 35px;
-    width: 100%;
-    display: table-cell;
-    text-align: center;
-    vertical-align: middle;
-    background: ${colors.monochrome[0]};
   }
   .tag img {
     width: 12px;
