@@ -99,7 +99,10 @@ class Check extends React.Component {
       item.match_type === 'near')).length
   }
   getNoMatchesCount () {
-    return this.state.matchItems.filter(item => item.match_type === 'no_match').length
+    return this.state.matchItems.filter(item => item.match_type === 'no_match').length +
+      this.state.matchItems.filter(item => (
+        item.match_type === 'near' && !this.state.matchChoices[item.dataset_index]
+      )).length
   }
   saveChoices () {
     const {matchChoices} = this.state
