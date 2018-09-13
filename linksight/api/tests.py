@@ -42,6 +42,23 @@ class LinkSightMatcherTest(TestCase):
 
         assert len(result)
 
+    def test_return_possible_matches(self):
+        '''
+        If there are no exact matches, return the possible matches. The
+        possible matches should be sorted with the nearest match at the top.
+        '''
+
+        dataset = pd.DataFrame([
+            ['NATIONAL CAPITAL REGION', 'QUEZON CITY', 'TEACHERS VILLAGE WST'],
+        ], columns=['Province', 'Municipality', 'Barangay'])
+        matcher = self.create_matcher(dataset)
+        result = matcher.get_matches()
+
+        bgys = result.loc[result['interlevel'] == 'Bgy']['location']
+        assert bgys.iloc[0] == 'TEACHERS VILLAGE WEST'
+        assert bgys.iloc[1] == 'TEACHERS VILLAGE EAST'
+        assert bgys.iloc[2] == 'U.P. VILLAGE'
+
     def create_matcher(self, dataset):
         return LinkSightMatcher(
             dataset=dataset,
