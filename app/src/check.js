@@ -203,7 +203,6 @@ export default styled(Check)`
   }
   .instruction {
     margin: 0 30px 20px;
-    font-size: 17px;
   }
   .matches {
     background: ${colors.monochrome[1]};
