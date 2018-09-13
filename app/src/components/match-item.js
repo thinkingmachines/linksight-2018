@@ -11,7 +11,7 @@ const Choice = styled(props => (
       className='table-cell -choice-content'
       onClick={props.onChoose.bind(null, props.item)}
     >
-      {props.noChoice ? 'No Correct Match/Not Sure' : [
+      {props.noChoice ? 'No correct match / Unsure' : [
         props.item.matched_barangay,
         props.item.matched_city_municipality,
         props.item.matched_province
@@ -22,6 +22,7 @@ const Choice = styled(props => (
   .table-cell.-choice-content {
     position: relative;
     padding-left: 40px;
+    border-left: 1px solid ${colors.monochrome[1]};
   }
   .table-cell.-choice-content:before {
     display: block;
@@ -55,7 +56,7 @@ class MatchItem extends React.Component {
           <td className='table-cell -index' colSpan='2' rowSpan={item.choices.length + 2}>
             {this.props.index + 1}
           </td>
-          <td className='table-cell source' rowSpan={item.choices.length + 2}>
+          <td className='table-cell -source' rowSpan={item.choices.length + 2}>
             {[item.source_barangay,
               item.source_city_municipality,
               item.source_province].filter(v => v).join(', ')}
@@ -113,7 +114,7 @@ export default styled(MatchItem)`
     width: 20px;
     margin: 0 15px 0 5px;
   }
-  .source {
+  .table-cell.-source {
     vertical-align: top;
   }
   .tag img {
