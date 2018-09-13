@@ -86,6 +86,7 @@ class Upload extends React.Component {
                     <p class='note -muted'>
                       We need to temporarily save a copy of your data to process it.
                       The copy will be deleted from our system within 24 hours of upload.
+                    </p>
                   `}
                 />
               </UploadNotice>
