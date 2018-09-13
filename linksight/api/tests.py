@@ -59,6 +59,23 @@ class LinkSightMatcherTest(TestCase):
         assert bgys.iloc[1] == 'TEACHERS VILLAGE EAST'
         assert bgys.iloc[2] == 'U.P. VILLAGE'
 
+    def test_infer_higher_interlevels(self):
+        '''
+        If a higher interlevel has no match or was not provided, the matcher
+        should be able to infer it from the lower interlevel match. Example:
+        If only Dasmarinas (city) was provided, the resulting dataset should
+        include Cavite (province)
+        '''
+
+        dataset = pd.DataFrame([
+            [None, 'DASMARINAS', None],
+        ], columns=['Province', 'Municipality', 'Barangay'])
+        matcher = self.create_matcher(dataset)
+        result = matcher.get_matches()
+
+        assert result.loc[result['interlevel'] == 'City']['location'][0] == 'CITY OF DASMARIÑAS'
+        assert result.loc[result['interlevel'] == 'Prov']['location'][0] == 'CAVITE'
+
     def create_matcher(self, dataset):
         return LinkSightMatcher(
             dataset=dataset,
