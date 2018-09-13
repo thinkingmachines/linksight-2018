@@ -1,4 +1,6 @@
 import pandas as pd
+import csv
+from pprint import pprint
 from django.core.files import File
 from django.test import TestCase
 from linksight.api.linksight_matcher import LinkSightMatcher
@@ -75,6 +77,45 @@ class LinkSightMatcherTest(TestCase):
 
         assert result.loc[result['interlevel'] == 'City']['location'][0] == 'CITY OF DASMARIÑAS'
         assert result.loc[result['interlevel'] == 'Prov']['location'][0] == 'CAVITE'
+
+    def test_edge_cases(self):
+        with open('data/edge-cases.csv') as f:
+            for edge_case in csv.DictReader(f):
+                self._test_edge_case(edge_case)
+
+    def _test_edge_case(self, edge_case):
+
+        print('Testing {}...'.format(edge_case['name']))
+
+        dataset = pd.DataFrame([
+            [
+                edge_case['source_pro'],
+                edge_case['source_mun'],
+                edge_case['source_bgy']
+            ],
+        ], columns=['Province', 'Municipality', 'Barangay'])
+        matcher = self.create_matcher(dataset)
+        result = matcher.get_matches()
+
+        expectations = {
+            'expected_pro_psgc': ['Prov', 'code'],
+            'expected_mun_psgc': ['City', 'code'],
+            'expected_bgy_psgc': ['Bgy', 'code'],
+            'expected_pro': ['Prov', 'location'],
+            'expected_mun': ['City', 'location'],
+            'expected_bgy': ['Bgy', 'location']
+        }
+
+        for expectation, (interlevel, field) in expectations.items():
+            expected_val = edge_case[expectation]
+            if expected_val:
+                subset = result.loc[result['interlevel'] == interlevel][field]
+                if expected_val == 'MULTIPLE':
+                    pass
+                    # TODO: add working test for multiple values
+                    # assert len(subset) > 1
+                else:
+                    assert subset[0] == expected_val
 
     def create_matcher(self, dataset):
         return LinkSightMatcher(
