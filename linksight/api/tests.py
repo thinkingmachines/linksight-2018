@@ -1,33 +1,35 @@
-import pandas as pd
 import csv
-from pprint import pprint
-from django.core.files import File
+import os
 from django.test import TestCase
-from linksight.api.linksight_matcher import LinkSightMatcher
-from linksight.api.models import Dataset
+from linksight.api.fuzzywuzzymatcher import FuzzyWuzzyMatcher
+from tempfile import NamedTemporaryFile
+
+REFERENCE_FILE = 'data/clean-psgc.csv'
 
 
 class LinkSightMatcherTest(TestCase):
 
     def setUp(self):
-        self.reference = self.get_psgc_df()
-        self.interlevels = self.get_interlevels(
-            'Province',
-            'Municipality',
-            'Barangay')
+        self.reference = REFERENCE_FILE
 
     def test_exact_match(self):
 
-        dataset = pd.DataFrame([
-            ['ILOCOS NORTE', 'ADAMS', 'ADAMS'],
-        ], columns=['Province', 'Municipality', 'Barangay'])
-        matcher = self.create_matcher(dataset)
-        result = matcher.get_matches()
+        test = '''pro,mun,bgy\nILOCOS NORTE,ADAMS,ADAMS'''
+        dataset_path = self.create_test_file(test)
 
-        assert len(result) == 3
-        assert result.loc[result['interlevel'] == 'Prov']['location'][0] == 'ILOCOS NORTE'
-        assert result.loc[result['interlevel'] == 'Mun']['location'][0] == 'ADAMS'
-        assert result.loc[result['interlevel'] == 'Bgy']['location'][0] == 'ADAMS (POB.)'
+        matcher = self.create_matcher(dataset_path)
+        result = matcher.get_match_items(
+            province_col='pro',
+            city_municipality_col='mun',
+            barangay_col='bgy'
+        )
+
+        os.remove(dataset_path)
+
+        assert len(result) == 1
+        assert result['matched_province'].to_string(index=False) == 'ILOCOS NORTE'
+        assert result['matched_city_municipality'].to_string(index=False) == 'ADAMS'
+        assert result['matched_barangay'].to_string(index=False) == 'ADAMS (POB.)'
 
     def test_works_with_missing_fields(self):
         '''
@@ -36,11 +38,17 @@ class LinkSightMatcherTest(TestCase):
         fields are available.
         '''
 
-        dataset = pd.DataFrame([
-            [None, None, 'SOCORRO'],
-        ], columns=['Province', 'Municipality', 'Barangay'])
-        matcher = self.create_matcher(dataset)
-        result = matcher.get_matches()
+        test = '''pro,mun,bgy\n,,SOCORRO'''
+        dataset_path = self.create_test_file(test)
+
+        matcher = self.create_matcher(dataset_path)
+        result = matcher.get_match_items(
+            province_col='pro',
+            city_municipality_col='mun',
+            barangay_col='bgy'
+        )
+
+        os.remove(dataset_path)
 
         assert len(result)
 
@@ -50,13 +58,16 @@ class LinkSightMatcherTest(TestCase):
         possible matches should be sorted with the nearest match at the top.
         '''
 
-        dataset = pd.DataFrame([
-            ['NATIONAL CAPITAL REGION', 'QUEZON CITY', 'TEACHERS VILLAGE WST'],
-        ], columns=['Province', 'Municipality', 'Barangay'])
-        matcher = self.create_matcher(dataset)
-        result = matcher.get_matches()
+        test = '''pro,mun,bgy\nNATIONAL CAPITAL REGION,QUEZON CITY,TEACHERS VILLAGE WST'''
+        dataset_path = self.create_test_file(test)
+        matcher = self.create_matcher(dataset_path)
+        result = matcher.get_match_items(
+            province_col='pro',
+            city_municipality_col='mun',
+            barangay_col='bgy'
+        )
 
-        bgys = result.loc[result['interlevel'] == 'Bgy']['location']
+        bgys = result['matched_barangay']
         assert bgys.iloc[0] == 'TEACHERS VILLAGE WEST'
         assert bgys.iloc[1] == 'TEACHERS VILLAGE EAST'
         assert bgys.iloc[2] == 'U.P. VILLAGE'
@@ -69,14 +80,18 @@ class LinkSightMatcherTest(TestCase):
         include Cavite (province)
         '''
 
-        dataset = pd.DataFrame([
-            [None, 'DASMARINAS', None],
-        ], columns=['Province', 'Municipality', 'Barangay'])
-        matcher = self.create_matcher(dataset)
-        result = matcher.get_matches()
+        test = '''pro,mun,bgy\n,DASMARINAS,'''
+        dataset_path = self.create_test_file(test)
+        matcher = self.create_matcher(dataset_path)
+        result = matcher.get_match_items(
+            province_col='pro',
+            city_municipality_col='mun',
+            barangay_col='bgy'
+        )
 
-        assert result.loc[result['interlevel'] == 'City']['location'][0] == 'CITY OF DASMARIÑAS'
-        assert result.loc[result['interlevel'] == 'Prov']['location'][0] == 'CAVITE'
+        r = result.iloc[0]
+        assert r['matched_city_municipality'] == 'CITY OF DASMARIÑAS'
+        assert r['matched_province'] == 'CAVITE'
 
     def test_edge_cases(self):
         with open('data/edge-cases.csv') as f:
@@ -87,80 +102,48 @@ class LinkSightMatcherTest(TestCase):
 
         print('Testing {}...'.format(edge_case['name']))
 
-        dataset = pd.DataFrame([
-            [
-                edge_case['source_pro'],
-                edge_case['source_mun'],
-                edge_case['source_bgy']
-            ],
-        ], columns=['Province', 'Municipality', 'Barangay'])
-        matcher = self.create_matcher(dataset)
-        result = matcher.get_matches()
+        test = '''pro,mun,bgy\n{},{},{}'''.format(
+            edge_case['source_pro'],
+            edge_case['source_mun'],
+            edge_case['source_bgy']
+        )
+        dataset_path = self.create_test_file(test)
+        matcher = self.create_matcher(dataset_path)
+        result = matcher.get_match_items(
+            province_col='pro',
+            city_municipality_col='mun',
+            barangay_col='bgy'
+        )
 
         expectations = {
-            'expected_pro_psgc': ['Prov', 'code'],
-            'expected_mun_psgc': ['City', 'code'],
-            'expected_bgy_psgc': ['Bgy', 'code'],
-            'expected_pro': ['Prov', 'location'],
-            'expected_mun': ['City', 'location'],
-            'expected_bgy': ['Bgy', 'location']
+            'expected_pro_psgc': 'matched_province_psgc',
+            'expected_mun_psgc': 'matched_city_municipality_psgc',
+            'expected_bgy_psgc': 'matched_barangay_psgc',
+            'expected_pro': 'matched_province',
+            'expected_mun': 'matched_city_municipality',
+            'expected_bgy': 'matched_barangay'
         }
 
-        for expectation, (interlevel, field) in expectations.items():
+        for expectation, field in expectations.items():
             expected_val = edge_case[expectation]
             if expected_val:
-                subset = result.loc[result['interlevel'] == interlevel][field]
+                subset = result[field]
                 if expected_val == 'MULTIPLE':
-                    pass
-                    # TODO: add working test for multiple values
-                    # assert len(subset) > 1
+                    assert len(subset) > 1
+                elif expected_val == 'NONE':
+                    assert not len(subset)
                 else:
                     assert subset[0] == expected_val
 
+    @staticmethod
+    def create_test_file(content):
+        temp = NamedTemporaryFile(delete=False, mode='w')
+        temp.write(content)
+        temp.close
+        return temp.name
+
     def create_matcher(self, dataset):
-        return LinkSightMatcher(
+        return FuzzyWuzzyMatcher(
             dataset=dataset,
-            reference=self.reference,
-            interlevels=self.interlevels)
-
-    @staticmethod
-    def get_psgc_df():
-
-        CITY_MUN_CODE_LEN = 6
-        PROV_CODE_LEN = 4
-        PSGC_LEN = 9
-
-        psgc_file = open('data/clean-psgc.csv')
-
-        psgc = Dataset.objects.create(name='psgc', file=File(psgc_file))
-        with psgc.file.open() as f:
-            psgc_df = pd.read_csv(f, dtype={'code': object})
-
-        psgc_df['province_code'] = (psgc_df['code']
-                                    .str.slice(stop=PROV_CODE_LEN)
-                                    .str.ljust(PSGC_LEN, '0'))
-        psgc_df['city_municipality_code'] = (psgc_df['code']
-                                             .str.slice(stop=CITY_MUN_CODE_LEN)
-                                             .str.ljust(PSGC_LEN, '0'))
-
-        return psgc_df
-
-    @staticmethod
-    def get_interlevels(prov_col, mul_col, brgy_col):
-        return [
-            {
-                'name': 'province',
-                'dataset_field_name': prov_col,
-                'reference_fields': ['Prov', 'Dist']
-            },
-            {
-                'name': 'city_municipality',
-                'dataset_field_name': mul_col,
-                'reference_fields': ['City', 'Mun', 'SubMun']
-            },
-            {
-                'name': 'barangay',
-                'dataset_field_name': brgy_col,
-                'reference_fields': ['Bgy']
-            },
-        ]
+            reference=self.reference
+        )
