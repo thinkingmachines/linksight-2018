@@ -102,7 +102,7 @@ npm run catalog-start
 ### Testing
 
 ```sh
-gunzip data/clean-psgc.csv.gz
+gunzip -k data/clean-psgc.csv.gz
 python manage.py test
 ```
 
