@@ -27,6 +27,21 @@ class LinkSightMatcherTest(TestCase):
         assert result.loc[result['interlevel'] == 'Mun']['location'][0] == 'ADAMS'
         assert result.loc[result['interlevel'] == 'Bgy']['location'][0] == 'ADAMS (POB.)'
 
+    def test_works_with_missing_fields(self):
+        '''
+        The client should not be required to upload all fields so the matcher
+        should be able to provide the most accurate results based on which
+        fields are available.
+        '''
+
+        dataset = pd.DataFrame([
+            [None, None, 'SOCORRO'],
+        ], columns=['Province', 'Municipality', 'Barangay'])
+        matcher = self.create_matcher(dataset)
+        result = matcher.get_matches()
+
+        assert len(result)
+
     def create_matcher(self, dataset):
         return LinkSightMatcher(
             dataset=dataset,
