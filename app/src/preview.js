@@ -120,7 +120,7 @@ class Preview extends React.Component {
             <Cell width={10} left={2} className='box'>
               {this.state.isMatching ? (
                 <LoadingOverlay>Cleaning your dataset. Don't leave!<br />
-                This will take around 5-10 minutes.</LoadingOverlay>
+                This will take a few minutes.</LoadingOverlay>
               ) : null}
               {this.state.error ? (
                 <ErrorOverlay>
