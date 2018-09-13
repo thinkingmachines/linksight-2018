@@ -17,3 +17,6 @@ node_modules/
 
 # Jupyter
 .ipynb_checkpoints
+
+# Testing
+clean-psgc.csv
