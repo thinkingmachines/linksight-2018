@@ -25,7 +25,7 @@ class LinkSightMatcherTest(TestCase):
         assert len(result) == 3
         assert result.loc[result['interlevel'] == 'Prov']['location'][0] == 'ILOCOS NORTE'
         assert result.loc[result['interlevel'] == 'Mun']['location'][0] == 'ADAMS'
-        assert result.loc[result['interlevel'] == 'Bgy']['location'][0] == 'ADAMS'
+        assert result.loc[result['interlevel'] == 'Bgy']['location'][0] == 'ADAMS (POB.)'
 
     def create_matcher(self, dataset):
         return LinkSightMatcher(
