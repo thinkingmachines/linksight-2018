@@ -15,7 +15,6 @@ import Page from './layouts/page'
 
 // Components
 import Sidebar from './components/sidebar'
-import ToggleList from './components/toggle-list'
 import MatchesTable from './components/matches-table'
 import LoadingOverlay from './components/loading-overlay'
 import ErrorOverlay from './components/error-overlay'
