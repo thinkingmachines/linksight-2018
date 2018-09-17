@@ -51,9 +51,10 @@ const Sidebar = styled(props => (
   }
   .logo {
     margin-bottom: 60px;
+    text-align: center;
   }
   .logo img {
-    width: 100%;
+    width: 200px;
   }
   .steps {
     color: ${colors.monochrome[3]};
@@ -61,15 +62,11 @@ const Sidebar = styled(props => (
     line-height: 50px;
   }
   .steps .current {
-    color: ${colors.monochrome[0]};   
+    color: ${colors.monochrome[0]};
   }
   .steps .current .step-desc {
     font-size: 15px;
-    padding-left: 10px;
     line-height: 20px;
-  }
-  .steps .current .step-li {
-    margin-bottom: 10px;
   }
 `
 
