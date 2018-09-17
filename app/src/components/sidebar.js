@@ -54,6 +54,22 @@ const Sidebar = styled(props => (
   .logo img {
     width: 100%;
   }
+  .steps {
+    color: ${colors.monochrome[3]};
+    font-size: 20px;
+    line-height: 50px;
+  }
+  .steps .current {
+    color: ${colors.monochrome[0]};   
+  }
+  .steps .current .step-desc {
+    font-size: 15px;
+    padding-left: 10px;
+    line-height: 20px;
+  }
+  .steps .current .step-li {
+    margin-bottom: 10px;
+  }
 `
 
 export default Sidebar
