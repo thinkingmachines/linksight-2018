@@ -4,23 +4,18 @@ import styled from 'styled-components'
 import {Grid, Cell} from 'styled-css-grid'
 import {Redirect} from 'react-router-dom'
 
-// Images
-import tablemap from './images/tablemap.svg'
-
 // Colors
 import * as colors from './colors'
 
 // Elements
-import {Title, Instruction} from './elements'
+import Instruction from './elements'
 
 // Layouts
 import Page from './layouts/page'
 
 // Components
-import Header from './components/header'
 import DatasetCard from './components/dataset-card'
 import UploadWidget from './components/upload-widget'
-import UploadNotice from './components/upload-notice'
 
 class Upload extends React.Component {
   constructor (props) {
