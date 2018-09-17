@@ -14,6 +14,7 @@ import Instruction from './elements'
 import Page from './layouts/page'
 
 // Components
+import Sidebar from './components/sidebar'
 import DatasetCard from './components/dataset-card'
 import UploadWidget from './components/upload-widget'
 
@@ -83,6 +84,17 @@ class Upload extends React.Component {
             </Cell>
           </Grid>
         </Cell>
+        <Sidebar>
+          <ol className='steps'>
+            <li className='current'>
+              <p>Upload your data.</p>
+              <p className='step-desc'>Upload a dataset that meets the file requirements.</p>
+            </li>
+            <li>Prep your data.</li>
+            <li>Clean your data.</li>
+            <li>Check and export.</li>
+          </ol>
+        </Sidebar>
       </Page>
     )
   }
