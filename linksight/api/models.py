@@ -101,39 +101,41 @@ class Match(models.Model):
 
         joined_df = dataset_df.join(matches_df[[
             'matched_barangay',
-            'matched_barangay_psgc',
+            #'matched_barangay_psgc',
             'matched_city_municipality',
-            'matched_city_municipality_psgc',
+            #'matched_city_municipality_psgc',
             'matched_province',
-            'matched_province_psgc',
+            #'matched_province_psgc',
+            'code',
+            'total_score'
         ]])
 
         # Get deepest PSGC
 
-        def get_deepest_code(row):
-            for field in ['barangay', 'city_municipality', 'province']:
-                key = 'matched_{}_psgc'.format(field)
-                if row.get(key):
-                    return row[key]
+        # def get_deepest_code(row):
+        #     for field in ['barangay', 'city_municipality', 'province']:
+        #         key = 'matched_{}_psgc'.format(field)
+        #         if row.get(key):
+        #             return row[key]
 
-        joined_df['PSGC'] = joined_df.apply(
-            get_deepest_code, axis=1).astype(str)
+        # joined_df['PSGC'] = joined_df.apply(
+        #     get_deepest_code, axis=1).astype(str)
 
         # Merge population
 
-        population = Dataset.objects.get(pk=settings.POPULATION_DATASET_ID)
-        with population.file.open() as f:
-            population_df = pd.read_csv(f, dtype={'Code': object})
+        # population = Dataset.objects.get(pk=settings.POPULATION_DATASET_ID)
+        # with population.file.open() as f:
+        #     population_df = pd.read_csv(f, dtype={'Code': object})
 
-        joined_df = joined_df.merge(population_df, how='left',
-                                    left_on='PSGC', right_on='Code',
-                                    suffixes=[' (Source)', ''])
-        joined_df.drop([
-            'Code',
-            'matched_barangay_psgc',
-            'matched_city_municipality_psgc',
-            'matched_province_psgc',
-        ], axis='columns', inplace=True)
+        # joined_df = joined_df.merge(population_df, how='left',
+        #                             left_on='PSGC', right_on='Code',
+        #                             suffixes=[' (Source)', ''])
+        # joined_df.drop([
+        #     'Code',
+        #     'matched_barangay_psgc',
+        #     'matched_city_municipality_psgc',
+        #     'matched_province_psgc',
+        # ], axis='columns', inplace=True)
 
         # Reorder so matched columns and merged datasets are in front
 
@@ -143,13 +145,13 @@ class Match(models.Model):
             (self.city_municipality_col, 'matched_city_municipality'),
             (self.province_col, 'matched_province'),
         ):
-            if source_col:
-                front_cols.extend((source_col, matched_col))
-        front_cols.extend([
-            'PSGC',
-            'Population',
-            'Administrative Level',
-        ])
+             if source_col:
+                 front_cols.extend((source_col, matched_col))
+        # front_cols.extend([
+        #     'PSGC',
+        #     'Population',
+        #     'Administrative Level',
+        # ])
         other_cols = [col for col in joined_df.columns.tolist()
                       if col not in front_cols]
         new_cols = front_cols + other_cols
