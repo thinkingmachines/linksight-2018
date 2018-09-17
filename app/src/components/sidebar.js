@@ -7,7 +7,7 @@ import {Link} from 'react-router-dom'
 import * as colors from '../colors'
 
 const Sidebar = styled(props => (
-  <Cell width={2} className={props.className}>
+  <Cell width={3} className={props.className}>
     <div className='sidebar'>
       <Grid columns={1} rows='1fr min-content' height='100%'>
         <Cell>
