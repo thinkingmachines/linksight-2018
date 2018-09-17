@@ -14,3 +14,4 @@ psycopg2-binary
 python-magic
 raven
 recordlinkage
+social-auth-app-django
