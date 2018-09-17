@@ -7,8 +7,7 @@ export default styled(FilePond)`
   margin-bottom: 0;
   .filepond--drop-label label {
     font-size: 15px;
-    padding-top: 0;
-    padding-bottom: 5px;
+    padding: 30px;
   }
   .filepond--drop-label label .note {
     font-size: 12px;
