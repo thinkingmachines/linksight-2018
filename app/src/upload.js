@@ -57,8 +57,8 @@ class Upload extends React.Component {
     return (
       <Page>
         <Cell width={9} className={this.props.className}>
-          <Grid columns={12} gap='15px' height='100%' className='upload-bg'>
-            <Cell width={8} left={3} alignContent='center' middle>
+          <Grid columns={12} gap='15px' height='100%' className='upload'>
+            <Cell width={6} left={4} alignContent='center' middle>
               <UploadWidget
                 name='file'
                 server={{
@@ -87,12 +87,14 @@ class Upload extends React.Component {
         <Sidebar>
           <ol className='steps'>
             <li className='current'>
-              <p>Upload your data.</p>
-              <p className='step-desc'>Upload a dataset that meets the file requirements.</p>
+              <p>Upload your data</p>
+              <p className='step-desc'>
+                Upload a dataset that meets the file requirements.
+              </p>
             </li>
-            <li>Prep your data.</li>
-            <li>Clean your data.</li>
-            <li>Check and export.</li>
+            <li>Prep your data</li>
+            <li>Clean your data</li>
+            <li>Check and export</li>
           </ol>
         </Sidebar>
       </Page>
@@ -106,16 +108,16 @@ export default styled(Upload)`
     display: inline-block;
     line-height: 20px;
   }
-  .upload-desc {
-    margin: 20px;
-  }
-  .upload-bg {
+  .upload {
     background: ${colors.monochrome[1]};
     padding: 30px;
     box-sizing: border-box;
     overflow-y: auto;
   }
-  .upload-desc .note{
+  .upload-desc {
+    margin: 20px;
+  }
+  .upload-desc .note {
     color: ${colors.monochrome[4]};
   }
 `
