@@ -20,6 +20,7 @@ env = environ.Env(
     ALLOWED_HOSTS=(list, ['127.0.0.1', 'localhost']),
     EMAIL_PORT=(int, 25),
     SENTRY_DSN=(str, None),
+    LOGIN_REDIRECT_URL=(str, 'http://localhost:3000/upload'),
 )
 env.read_env('.env')
 
@@ -187,7 +188,7 @@ SILKY_AUTHORISATION = True
 SILKY_PERMISSIONS = lambda user: user.is_superuser
 
 # Registration
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = env('LOGIN_REDIRECT_URL')
 ACCOUNT_ACTIVATION_DAYS = 1
 REGISTRATION_ADMINS = [
     ('Steve', 'marksteve@thinkingmachin.es'),
@@ -213,7 +214,7 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = LOGIN_REDIRECT_URL
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = ['thinkingmachin.es']

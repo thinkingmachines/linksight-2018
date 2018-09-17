@@ -12,43 +12,25 @@ import backgroundCircle from './images/background-circle.svg'
 import * as colors from './colors'
 
 // Components
-import LoadingOverlay from './components/loading-overlay'
 import Topbar from './components/topbar'
 
 // Pages
+import Home from './home'
 import Upload from './upload'
 import Preview from './preview'
 import Check from './check'
 import Export from './export'
 import MobileNotice from './mobile-notice'
 
-// API
-import api from './api'
-
 class App extends React.Component {
   constructor (props) {
     super(props)
     const mql = window.matchMedia('(max-width: 1000px)')
     this.state = {
-      isLoading: true,
       isMobile: !!mql.matches
     }
   }
-  componentDidMount () {
-    api.get('/users/me')
-      .then(() => {
-        this.setState({isLoading: false})
-      })
-      .catch(error => {
-        if (error.response.status === 403) {
-          window.location.href = '/accounts/login'
-        }
-      })
-  }
   render () {
-    if (this.state.isLoading) {
-      return <LoadingOverlay />
-    }
     if (this.state.isMobile) {
       return <MobileNotice />
     }
@@ -56,7 +38,8 @@ class App extends React.Component {
       <div className={'app ' + this.props.className}>
         <Topbar />
         <Switch>
-          <Route exact path='/' component={Upload} />
+          <Route exact path='/' component={Home} />
+          <Route exact path='/upload' component={Upload} />
           <Route exact path='/datasets/:id/preview' component={Preview} />
           <Route exact path='/matches/:id/check' component={Check} />
           <Route exact path='/matches/:id/export' component={Export} />
