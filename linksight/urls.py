@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
+    path('', include('social_django.urls', namespace='social')),
     path('accounts/', include('registration.backends.admin_approval.urls')),
     path('api/', include('linksight.api.urls')),
     path('admin/', admin.site.urls),

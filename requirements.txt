@@ -10,6 +10,7 @@ backcall==0.1.0           # via ipython
 certifi==2018.8.24        # via requests
 chardet==3.0.4            # via requests
 decorator==4.3.0          # via ipython, traitlets
+defusedxml==0.5.0         # via python3-openid, social-auth-core
 django-cors-headers==2.4.0
 django-environ==0.4.5
 django-registration-redux==2.4
@@ -29,6 +30,7 @@ jellyfish==0.6.1          # via recordlinkage
 jinja2==2.10              # via django-silk
 markupsafe==1.0           # via jinja2
 numpy==1.15.1             # via pandas, recordlinkage, scipy
+oauthlib==2.1.0           # via requests-oauthlib, social-auth-core
 pandas==0.23.4
 parso==0.3.1              # via jedi
 pexpect==4.6.0            # via ipython
@@ -38,17 +40,22 @@ psycopg2-binary==2.7.5
 ptyprocess==0.6.0         # via pexpect
 pycodestyle==2.4.0        # via autopep8
 pygments==2.2.0           # via django-silk, ipython
+pyjwt==1.6.4              # via social-auth-core
 python-dateutil==2.7.3    # via django-silk, pandas
 python-levenshtein==0.12.0  # via fuzzywuzzy
 python-magic==0.4.15
+python3-openid==3.1.0     # via social-auth-core
 pytz==2018.5              # via django, django-silk, pandas
 raven==6.9.0
 recordlinkage==0.12
-requests==2.19.1          # via django-silk
+requests-oauthlib==1.0.0  # via social-auth-core
+requests==2.19.1          # via django-silk, requests-oauthlib, social-auth-core
 scikit-learn==0.19.2      # via recordlinkage
 scipy==1.1.0              # via recordlinkage
 simplegeneric==0.8.1      # via ipython
-six==1.11.0               # via djangorestframework-csv, prompt-toolkit, python-dateutil, recordlinkage, traitlets
+six==1.11.0               # via djangorestframework-csv, prompt-toolkit, python-dateutil, recordlinkage, social-auth-app-django, social-auth-core, traitlets
+social-auth-app-django==2.1.0
+social-auth-core==1.7.0   # via social-auth-app-django
 sqlparse==0.2.4           # via django-silk
 traitlets==4.3.2          # via ipython
 unicodecsv==0.14.1        # via djangorestframework-csv
