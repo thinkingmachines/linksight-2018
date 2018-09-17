@@ -77,8 +77,6 @@ class Check extends React.Component {
           obj.matchChoices[item.dataset_index] = item.id
         }
         prevIndex = item.dataset_index
-      } else {
-        obj.matchItems = [...obj.matchItems, item]
       }
       return obj
     }, {matchItems: [], matchChoices: {}})
