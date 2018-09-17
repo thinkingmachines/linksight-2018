@@ -10,7 +10,7 @@ import * as colors from './colors'
 import Page from './layouts/page'
 
 // Components
-import Header from './components/header'
+import Sidebar from './components/sidebar'
 import PreviewTable from './components/preview-table'
 import LocationColumn from './components/location-column'
 import LoadingOverlay from './components/loading-overlay'
