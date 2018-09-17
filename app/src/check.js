@@ -133,43 +133,7 @@ class Check extends React.Component {
     }
     return (
       <Page>
-        <Sidebar
-          button={
-            <Button onClick={this.saveChoices.bind(this)}>Proceed</Button>
-          }
-        >
-          <ToggleList
-            title='Tags'
-            bullet='square'
-            items={[
-              {
-                toggled: true,
-                color: colors.green,
-                label: `Exact matches (${this.getExactCount()})`
-              },
-              {
-                toggled: true,
-                color: colors.orange,
-                label: `Multiple matches (${this.getMultipleCount()})`
-              },
-              {
-                toggled: true,
-                color: colors.purple,
-                label: `No matches (${this.getNoMatchesCount()})`
-              }
-            ]}
-          />
-          <ToggleList
-            title='Columns'
-            bullet='circle'
-            items={[
-              {toggled: true, label: 'Barangay'},
-              {toggled: true, label: 'City/Municipality'},
-              {toggled: true, label: 'Province'}
-            ]}
-          />
-        </Sidebar>
-        <Cell width={10} className={this.props.className}>
+        <Cell width={9} className={this.props.className}>
           {this.state.isSaving ? (
             <LoadingOverlay>Saving choices&hellip;</LoadingOverlay>
           ) : null}
@@ -191,6 +155,28 @@ class Check extends React.Component {
             </Cell>
           </Grid>
         </Cell>
+        <Sidebar
+          backButton={
+            <Button className='btn -back' onClick={this.props.history.goBack}>Back</Button>
+          }
+          nextButton={
+            <Button className='btn' onClick={this.saveChoices.bind(this)}>Export</Button>
+          }
+        >
+          <ol className='steps'>
+            <li>Upload your data</li>
+            <li>Prep your data</li>
+            <li>Clean your data</li>
+            <li className='current'>
+              <p>Check and export</p>
+              <ul className='step-desc'>
+                <li>For locations with more than one possible match, select the one you think is correct.</li>
+                <li>If none of the candidates are the right match, please select "No correct match/Unsure."</li>
+                <li>When you’re finished checking, export the results as a CSV.</li>
+              </ul>
+            </li>
+          </ol>
+        </Sidebar>
       </Page>
     )
   }
