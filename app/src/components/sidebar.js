@@ -32,6 +32,7 @@ const Sidebar = styled(props => (
     overflow: hidden;
     height: 100%;
     box-sizing: border-box;
+    padding-right: 25px;
   }
   .sidebar:before {
     display: block;
