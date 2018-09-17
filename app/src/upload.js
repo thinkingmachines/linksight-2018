@@ -54,54 +54,32 @@ class Upload extends React.Component {
       return <Redirect push to={`/datasets/${this.state.datasetId}/preview`} />
     }
     return (
-      <Page withHeader>
-        <Header />
-        <Cell width={12} className={this.props.className}>
-          <Grid columns={12} gap='15px' height='100%' alignContent='center'>
-            <Cell width={4} left={2} center middle>
-              <img width='100%' src={tablemap} alt='map with pins' />
-              <UploadNotice>
-                <UploadWidget
-                  name='file'
-                  server={{
-                    url: `${window.API_HOST}/api/datasets/`,
-                    process: {
-                      withCredentials: true,
-                      onerror: JSON.parse
-                    }
-                  }}
-                  allowRevert={false}
-                  onprocessfile={this.handleProcessFile.bind(this)}
-                  labelFileProcessingError={error => error.body.file[0]}
-                  labelIdle={`
-                    ${this.renderInstruction()}
-                    <p class='note'>
-                      Locations file requirements:
-                      CSV file type, max 3000 rows with Barangay, City/Municipality, Province in separate columns
-                    </p>
-                    <p class='note -muted'>
-                      We need to temporarily save a copy of your data to process it.
-                      The copy will be deleted from our system within 24 hours of upload.
-                    </p>
-                  `}
-                />
-              </UploadNotice>
-            </Cell>
-            <Cell width={4} left={7} className='hero-copy'>
-              <Title>
-                Clean up messy Philippine place names
-              </Title>
-              <br />
-              <h2>
-                LinkSight matches barangay, city, municipality, and provincial names with their closest-matching items in the Philippine Standard Geographic Code (PSGC).
-              </h2>
-              <p>How to use it:</p>
-              <ol>
-                <li><strong>Upload</strong> a CSV that has separate columns for each administrative level: barangay, municipality or city, and province. For now we only take CSVs with fewer than 1000 rows.</li>
-                <li><strong>Preview</strong> the first 10 rows of your dataset. Indicate which columns refer to which administrative level.</li>
-                <li><strong>Match</strong> with the PSGC and view the results. For places that have more than one possible PSGC, select the best match from among the candidates presented. We use fuzzy matching and record linkage techniques to rank the closest matches, despite spelling differences.</li>
-                <li><strong>Export</strong> the dataset as a CSV file.</li>
-              </ol>
+      <Page>
+        <Cell width={9} className={this.props.className}>
+          <Grid columns={12} gap='15px' height='100%' className='upload-bg'>
+            <Cell width={8} left={3} alignContent='center' middle>
+              <UploadWidget
+                name='file'
+                server={{
+                  url: `${window.API_HOST}/api/datasets/`,
+                  process: {withCredentials: true}
+                }}
+                allowRevert={false}
+                onprocessfile={this.handleProcessFile.bind(this)}
+                labelIdle={`
+                  ${this.renderInstruction()}
+                `}
+              />
+              <div className='upload-desc'>
+                <p className='note reqs'>File requirements:</p>
+                <ul className='note reqs'>
+                  <li>CSV file</li>
+                  <li>Maximum 3000 rows</li>
+                  <li>Barangay, Municipality or City, or Province (whichever is available) should be in separate columns.</li>
+                </ul>
+                <br />
+                <p className='note -important'><strong>Important</strong>: Linksight needs to save a copy of your data to process it. The copy will be deleted from our system within 24 hours of upload.</p>
+              </div>
             </Cell>
           </Grid>
         </Cell>
