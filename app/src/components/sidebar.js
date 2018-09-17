@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import {Grid, Cell} from 'styled-css-grid'
 import {Link} from 'react-router-dom'
+import chroma from 'chroma-js'
 
 // Colors
 import * as colors from '../colors'
@@ -70,6 +71,16 @@ const Sidebar = styled(props => (
   .steps .current .step-desc {
     font-size: 15px;
     line-height: 20px;
+  }
+  .buttons .btn {
+    padding: 0 2.5em;
+  }
+  .buttons .btn.-back {
+    background: ${colors.monochrome[2]};
+    color: ${colors.monochrome[5]};
+    &:hover {
+      background: ${chroma(colors.monochrome[2]).brighten(0.5)};
+    }
   }
 `
 
