@@ -8,7 +8,7 @@ import {Redirect} from 'react-router-dom'
 import * as colors from './colors'
 
 // Elements
-import Instruction from './elements'
+import {Instruction} from './elements'
 
 // Layouts
 import Page from './layouts/page'
