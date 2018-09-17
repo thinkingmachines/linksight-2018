@@ -136,6 +136,19 @@ class Preview extends React.Component {
             </Cell>
           </Grid>
         </Cell>
+        <Sidebar>
+          <ol className='steps'>
+            <li>Upload your data</li>
+            <li className='current'>
+              <p>Prep your data</p>
+              <p className='step-desc'>
+                Select the columns in your dataset that refer to locations for cleaning. If you need to standardize either barangays or municipalities/cities, please choose at least two columns (ex: barangay & municipality, municipality & province).
+              </p>
+            </li>
+            <li>Clean your data</li>
+            <li>Check and export</li>
+          </ol>
+        </Sidebar>
       </Page>
     )
   }
