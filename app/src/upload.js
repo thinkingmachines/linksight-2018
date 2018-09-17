@@ -102,38 +102,8 @@ class Upload extends React.Component {
 
 export default styled(Upload)`
   position: relative;
-  .dot {
-    position: relative;
-  }
-  .dot:before {
-    content: ' ';
-    display: block;
-    position: absolute;
-    width: 0.25em;
-    height: 0.25em;
-    border-radius: 50%;
-    background-color: ${colors.yellow};
-    top: 0.2em;
-    left: 0;
-  }
   .instruction {
     display: inline-block;
     line-height: 20px;
-  }
-  .hero-copy {
-    color: ${colors.monochrome[0]};
-  }
-  .hero-copy h2,
-  .hero-copy p {
-    margin-bottom: 20px;
-  }
-  .hero-copy ol {
-    padding-left: 0;
-  }
-  .hero-copy li strong {
-    border-bottom: 2px solid ${colors.yellow};
-  }
-  .hero-copy li {
-    margin-bottom: 10px;
   }
 `
