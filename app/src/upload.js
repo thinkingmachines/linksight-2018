@@ -106,4 +106,16 @@ export default styled(Upload)`
     display: inline-block;
     line-height: 20px;
   }
+  .upload-desc {
+    margin: 20px;
+  }
+  .upload-bg {
+    background: ${colors.monochrome[1]};
+    padding: 30px;
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+  .upload-desc .note{
+    color: ${colors.monochrome[4]};
+  }
 `
