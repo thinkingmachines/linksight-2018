@@ -18,8 +18,11 @@ const Sidebar = styled(props => (
             {props.children}
           </div>
         </Cell>
-        <Cell center>
-          {props.button}
+        <Cell className='buttons' center>
+          <Grid columns={2} rows='1fr min-content' height='100%'>
+            <Cell>{props.backButton}</Cell>
+            <Cell>{props.nextButton}</Cell>
+          </Grid>
         </Cell>
       </Grid>
     </div>
