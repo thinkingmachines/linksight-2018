@@ -13,7 +13,6 @@ import Page from './layouts/page'
 
 // Components
 import Sidebar from './components/sidebar'
-import ToggleList from './components/toggle-list'
 import PreviewTable from './components/preview-table'
 
 // API
