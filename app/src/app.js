@@ -20,6 +20,7 @@ import Upload from './upload'
 import Preview from './preview'
 import Check from './check'
 import Export from './export'
+import Feedback from './feedback'
 import MobileNotice from './mobile-notice'
 
 class App extends React.Component {

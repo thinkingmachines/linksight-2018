@@ -1,22 +1,25 @@
 import React from 'react'
 import styled from 'styled-components'
-import {Cell} from 'styled-css-grid'
+import {Grid, Cell} from 'styled-css-grid'
+
+// Colors
+import * as colors from './colors'
 
 // Layouts
 import Page from './layouts/page'
+
+// Components
+import Sidebar from './components/sidebar'
 
 class Feedback extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      preview: null
+      feedback: null
     }
   }
 
   render () {
-    if (!this.state.preview) {
-      return null
-    }
     return (
       <Page>
         <Cell width={9} className={this.props.className}>
@@ -34,9 +37,11 @@ class Feedback extends React.Component {
           </ol>
         </Sidebar>
       </Page>
+    )
   }
 }
 
 export default styled(Feedback)`
-
+  background: ${colors.monochrome[0]};
+  
 `
