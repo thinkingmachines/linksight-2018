@@ -1,9 +1,13 @@
 import React from 'react'
 import styled from 'styled-components'
 import {Grid, Cell} from 'styled-css-grid'
+import {Redirect} from 'react-router-dom'
 
 // Colors
 import * as colors from './colors'
+
+// Elements
+import {Button} from './elements'
 
 // Layouts
 import Page from './layouts/page'
@@ -15,19 +19,37 @@ class Feedback extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      feedback: null
+      isDone: null
     }
   }
+  componentDidMount () {
+    const script = document.createElement('script')
+    script.src = 'https://static.airtable.com/js/embed/embed_snippet_v1.js'
+    script.async = true
 
+    document.body.appendChild(script)
+  }
+  uploadNewDataset () {
+    this.setState({isDone: true})
+  }
   render () {
+    if (this.state.isDone) {
+      return <Redirect push to={`/upload`} />
+    }
     return (
       <Page>
         <Cell width={9} className={this.props.className}>
-          <Grid columns={12} gap='15px' height='100%' className='upload'>
-            <Cell width={6} left={4} alignContent='center' middle />
+          <Grid columns={12} gap='15px' height='100%' className='feedback' middle>
+            <Cell width={8} left={3} alignContent='center' middle>
+              <iframe className='airtable-embed airtable-dynamic-height' src='https://airtable.com/embed/shr7b1eauaxFWw1et?backgroundColor=teal' onWheel={(e) => this.wheel(e)} />
+            </Cell>
           </Grid>
         </Cell>
-        <Sidebar>
+        <Sidebar
+          button={
+            <Button className='btn' onClick={this.uploadNewDataset.bind(this)}>Upload new dataset</Button>
+          }
+        >
           <ol className='steps'>
             <li>Upload your data</li>
             <li>Prep your data</li>
@@ -43,5 +65,10 @@ class Feedback extends React.Component {
 
 export default styled(Feedback)`
   background: ${colors.monochrome[0]};
-  
+  .feedback .airtable-embed {
+    width: 100%;
+    height: 80%;
+    background: transparent;
+    border: 2px solid ${colors.monochrome[1]};
+  }
 `
