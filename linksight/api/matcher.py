@@ -74,8 +74,6 @@ locations_df['loc_tuple'] = (locations_df['loc_tuple']
 locations_df = locations_df.set_index(locations_df['loc_tuple'].apply(to_index))
 locations = locations_df.loc_tuple.tolist()
 ngram_table = generate_ngram_table(locations, NGRAM_SIZE)
-print (len(ngram_table.keys()))
-print (ngram_table['ba'])
 
 def score_matches(pair, first_item_ratio_weight=.80, other_items_ratio_weight=.15,
                   adm_level_match_weight=.05):
@@ -88,6 +86,7 @@ def score_matches(pair, first_item_ratio_weight=.80, other_items_ratio_weight=.1
 
     # split first and remaining terms
     (first_search_term, *other_search_terms) = search_terms
+
     (first_candidate_term, *other_candidate_terms) = candidate_terms
 
     # check on jw distance ratio between the very first items in searchString
@@ -164,6 +163,11 @@ def search_shortlist(search_tuple, shortlist):
 
 def search_reference(search_tuple, ngram_table, nresults):
 
+    if len(search_tuple) == 1:
+
+        return search_tuple, tuple()
+ 
+
     # turn the first item in the search string into ngrams
 
     ss_ngrams = list(set(make_ngram(search_tuple[0], NGRAM_SIZE)))
@@ -207,8 +211,11 @@ def search_reference(search_tuple, ngram_table, nresults):
 
 def get_matches(dataset_df, columns):
 
+    #dataset_df.dropna(subset=list(columns.values()),inplace=True)
+
     def create_search_tuple(row):
         locations = (
+            #row[columns]
             row[list(columns.values())]
                 .dropna()
                 .str.replace('BGY|BRGY|BARANGAY||NOT A PROVINCE|CAPITAL|\(|\)|CITY OF|CITY|', '',
@@ -225,6 +232,7 @@ def get_matches(dataset_df, columns):
             col = columns.get(lowest_interlevel)
             if col and row.dropna().get(col):
                 break
+
         return tuple(values + [lowest_interlevel])
 
     #first, create search tuples for the dataset provided by the user
@@ -235,6 +243,8 @@ def get_matches(dataset_df, columns):
      .set_index(dataset_df['search_tuple'].apply(to_index),
                 inplace=True))
 
+    #get lowest interlevel selected
+
     start_time = time.time()
 
     search_func = partial(search_reference, ngram_table=ngram_table, nresults=5)
@@ -243,14 +253,19 @@ def get_matches(dataset_df, columns):
 
     #for each search tuple, find its top matches
 
+    print (columns)
+
     for i, (search_tuple, results) in enumerate(map(search_func, search_tuples)):
         source = dataset_df.loc[to_index(search_tuple)].fillna('')
+
+        
         match = {
             'dataset_index': i,
-            'source_province': source[columns['prov']],
-            'source_city_municipality': source[columns['city']],
-            'source_barangay': source[columns['bgy']],
+            'source_province': source.get(columns.get('prov')),
+            'source_city_municipality': source.get(columns.get('city')),
+            'source_barangay': source.get(columns.get('bgy')),
         }
+#        print (match)
         if len(results) > 0:
             for (
                 candidate_tuple,
