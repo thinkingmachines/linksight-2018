@@ -159,7 +159,7 @@ class Check extends React.Component {
             <Button className='btn -back' onClick={this.props.history.goBack}>Back</Button>
           }
           nextButton={
-            <Button className='btn' onClick={this.saveChoices.bind(this)}>Export</Button>
+            <Button className='btn' onClick={this.saveChoices.bind(this)}>Next</Button>
           }
         >
           <ol className='steps'>
