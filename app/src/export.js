@@ -94,6 +94,7 @@ class Export extends React.Component {
             <li>Prep your data</li>
             <li>Review matches</li>
             <li className='current'>Check new columns and export</li>
+            <p className='step-desc'>You may now export your expanded dataset in CSV. Check out the new columns containing the cleaned location names.</p>
             <li>Give feedback</li>
           </ol>
         </Sidebar>
