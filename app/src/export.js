@@ -54,42 +54,30 @@ class Export extends React.Component {
     }
     return (
       <Page>
-        <Sidebar button={
-          <a href={`${window.API_HOST}${this.state.preview.file.url}`}>
-            <Button>Export</Button>
-          </a>
-        }>
-          <ToggleList
-            title='Datasets'
-            bullet='square'
-            items={[
-              {
-                toggled: true,
-                color: colors.green,
-                label: 'PSGC'
-              },
-              {
-                toggled: true,
-                color: colors.orange,
-                label: 'Population'
-              }
-            ]}
-          />
-          <ToggleList
-            title='Columns'
-            bullet='circle'
-            items={this.getFields().map(field => ({
-              toggled: true,
-              label: field.name
-            }))}
-          />
-        </Sidebar>
-        <Cell width={10} className={this.props.className}>
+        <Cell width={9} className={this.props.className}>
           <PreviewTable
             preview={this.state.preview}
             columnHighlights={this.getColumnHighlights()}
           />
         </Cell>
+        <Sidebar
+          backButton={
+            <Button className='btn -back' onClick={this.props.history.goBack}>Back</Button>
+          }
+          nextButton={
+            <a href={`${window.API_HOST}${this.state.preview.file.url}`}>
+              <Button className='btn'>Export</Button>
+            </a>
+          }
+        >
+          <ol className='steps'>
+            <li>Upload your data</li>
+            <li>Prep your data</li>
+            <li>Review matches</li>
+            <li className='current'>Check new columns and export</li>
+            <li>Give feedback</li>
+          </ol>
+        </Sidebar>
       </Page>
     )
   }
