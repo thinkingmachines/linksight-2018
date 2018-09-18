@@ -20,6 +20,7 @@ const Sidebar = styled(props => (
           </div>
         </Cell>
         <Cell className='buttons' center>
+          {props.button}
           <Grid columns={2} rows='1fr min-content' height='100%'>
             <Cell>{props.backButton}</Cell>
             <Cell>{props.nextButton}</Cell>
