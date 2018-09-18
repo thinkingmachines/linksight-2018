@@ -75,8 +75,8 @@ locations_df = locations_df.set_index(locations_df['loc_tuple'].apply(to_index))
 locations = locations_df.loc_tuple.tolist()
 ngram_table = generate_ngram_table(locations, NGRAM_SIZE)
 
-def score_matches(pair, first_item_ratio_weight=.80, other_items_ratio_weight=.15,
-                  adm_level_match_weight=.05):
+def score_matches(pair, first_item_ratio_weight=.6, other_items_ratio_weight=.30,
+                  adm_level_match_weight=0.2):
     search_tuple, candidate_tuple = pair
 
     # split both the search_tuple and candidate_tuple into their name and
@@ -86,21 +86,20 @@ def score_matches(pair, first_item_ratio_weight=.80, other_items_ratio_weight=.1
 
     # split first and remaining terms
     (first_search_term, *other_search_terms) = search_terms
-
     (first_candidate_term, *other_candidate_terms) = candidate_terms
 
     # check on jw distance ratio between the very first items in searchString
-    # and candidateStrings
+    # and candidateStrings. multiply by 100 since jellyfish returns a decimal between 0 to 1.
     first_item_ratio = jellyfish.jaro_winkler(first_search_term,
-                                              first_candidate_term) * 100
+                                              first_candidate_term) * 100 
 
     # check on edit distance ratio between remaining search terms
-    other_items_ratio = fuzz.ratio(' '.join(other_search_terms),
+    other_items_ratio = fuzz.partial_ratio(' '.join(other_search_terms),
                                    ' '.join(other_candidate_terms))
 
     # if a search and the candidate have the same administrative level,
     # this improves the resulting score
-    adm_level_match = search_adm == candidate_adm
+    adm_level_match = search_adm in candidate_adm
     adm_level_match_score = (1 if adm_level_match else 0)
 
 
@@ -163,12 +162,14 @@ def search_shortlist(search_tuple, shortlist):
 
 def search_reference(search_tuple, ngram_table, nresults):
 
+    # if the search tuple only has one element (brgy, prov, municity), it means it is actually empty. return an empty result
+
     if len(search_tuple) == 1:
 
         return search_tuple, tuple()
  
 
-    # turn the first item in the search string into ngrams
+    # otherwise, fi the search tuple has at least one element, turn the first item in the search string into ngrams
 
     ss_ngrams = list(set(make_ngram(search_tuple[0], NGRAM_SIZE)))
 
@@ -189,7 +190,7 @@ def search_reference(search_tuple, ngram_table, nresults):
 
     #calculate similarity scores of search tuples with candidate among possible matches
 
-    #shortlist_results = pd.DataFrame(search_shortlist(search_tuple,possible_matches)).rename(columns={0:'candidate',1:'score',2:'code'})
+    #for each unique psgc code, get the match phrase with the highest score:
 
     scored_shortlist = {
         code: (*result, code)
@@ -228,7 +229,7 @@ def get_matches(dataset_df, columns):
 
         # Check lowest interlevel with values to determine lowest interlevel
 
-        for lowest_interlevel in 'bgy', 'city', 'prov':
+        for lowest_interlevel in 'bgy', 'municity', 'prov':
             col = columns.get(lowest_interlevel)
             if col and row.dropna().get(col):
                 break
@@ -253,8 +254,6 @@ def get_matches(dataset_df, columns):
 
     #for each search tuple, find its top matches
 
-    print (columns)
-
     for i, (search_tuple, results) in enumerate(map(search_func, search_tuples)):
         source = dataset_df.loc[to_index(search_tuple)].fillna('')
 
@@ -262,16 +261,13 @@ def get_matches(dataset_df, columns):
         match = {
             'dataset_index': i,
             'source_province': source.get(columns.get('prov')),
-            'source_city_municipality': source.get(columns.get('city')),
+            'source_city_municipality': source.get(columns.get('municity')),
             'source_barangay': source.get(columns.get('bgy')),
         }
-#        print (match)
+
         if len(results) > 0:
             for (
                 candidate_tuple,
-                #first_item_ratio,
-                #other_items_ratio,
-                #adm_level_match,
                 score,
                 candidate_code
             ) in results:
@@ -279,7 +275,7 @@ def get_matches(dataset_df, columns):
                 yield {
                     **match,
                     'matched_province': matched['prov'],
-                    'matched_city_municipality': matched['city'],
+                    'matched_city_municipality': matched['municity'],
                     'matched_barangay': matched['bgy'],
                     'code': candidate_code,
                     'total_score': score,
