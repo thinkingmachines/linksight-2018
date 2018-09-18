@@ -20,6 +20,10 @@ export const Button = styled.button`
   &:hover {
     background: ${chroma(colors.yellow).brighten(0.5)};
   }
+  &:disabled {
+    background: ${colors.monochrome[2]};
+    color: ${colors.monochrome[5]};
+  }
 `
 
 export const PrimaryButton = Button.extend`
