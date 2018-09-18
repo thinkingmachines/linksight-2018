@@ -93,8 +93,9 @@ class Upload extends React.Component {
               </p>
             </li>
             <li>Prep your data</li>
-            <li>Clean your data</li>
-            <li>Check and export</li>
+            <li>Review matches</li>
+            <li>Check new columns and export</li>
+            <li>Give feedback</li>
           </ol>
         </Sidebar>
       </Page>
@@ -104,12 +105,12 @@ class Upload extends React.Component {
 
 export default styled(Upload)`
   position: relative;
+  background: ${colors.monochrome[0]};
   .instruction {
     display: inline-block;
     line-height: 20px;
   }
   .upload {
-    background: ${colors.monochrome[1]};
     padding: 30px;
     box-sizing: border-box;
     overflow-y: auto;
