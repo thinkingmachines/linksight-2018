@@ -75,7 +75,7 @@ class Match(models.Model):
         
         columns = {
             'bgy': self.barangay_col,
-            'city': self.city_municipality_col,
+            'municity': self.city_municipality_col,
             'prov': self.province_col,
         }
 
@@ -113,6 +113,7 @@ class Match(models.Model):
             'code',
             'total_score'
         ]])
+
 
         # Get deepest PSGC
 
