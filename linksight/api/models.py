@@ -58,6 +58,7 @@ class Match(models.Model):
                                         related_name='+', null=True)
 
     barangay_col = models.CharField(max_length=256, blank=False, null=True)
+
     city_municipality_col = models.CharField(max_length=256, blank=False,
                                              null=True)
     province_col = models.CharField(max_length=256, blank=False, null=True)
@@ -70,11 +71,14 @@ class Match(models.Model):
     def generate_match_items(self, **kwargs):
         with self.dataset.file.open() as f:
             dataset_df = pd.read_csv(f)
+
+        
         columns = {
             'bgy': self.barangay_col,
             'city': self.city_municipality_col,
             'prov': self.province_col,
         }
+
         MatchItem.objects.bulk_create([
             MatchItem(**match_item, match=self, chosen=False)
             for match_item in get_matches(dataset_df, columns=columns)
