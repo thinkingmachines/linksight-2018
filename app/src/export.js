@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import {Cell} from 'styled-css-grid'
+import {Redirect} from 'react-router-dom'
 
 // Colors
 import * as colors from './colors'
@@ -22,7 +23,8 @@ class Export extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      preview: null
+      preview: null,
+      isExported: null
     }
   }
   componentDidMount () {
@@ -47,9 +49,15 @@ class Export extends React.Component {
       'Administrative Level': colors.orange
     }
   }
+  askFeedback () {
+    this.setState({isExported: true})
+  }
   render () {
     if (!this.state.preview) {
       return null
+    }
+    if (this.state.isExported) {
+      return <Redirect push to={`/feedback`} />
     }
     return (
       <Page>
@@ -77,7 +85,7 @@ class Export extends React.Component {
           }
           nextButton={
             <a href={`${window.API_HOST}${this.state.preview.file.url}`}>
-              <Button className='btn'>Export</Button>
+              <Button className='btn' onClick={this.askFeedback.bind(this)}>Export</Button>
             </a>
           }
         >
