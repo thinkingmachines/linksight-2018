@@ -43,6 +43,7 @@ class App extends React.Component {
           <Route exact path='/datasets/:id/preview' component={Preview} />
           <Route exact path='/matches/:id/check' component={Check} />
           <Route exact path='/matches/:id/export' component={Export} />
+          <Route exact path='/feedback' component={Feedback} />
         </Switch>
       </div>
     )
