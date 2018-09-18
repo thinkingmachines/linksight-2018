@@ -179,7 +179,6 @@ class Preview extends React.Component {
                 Select the columns in your dataset that refer to locations for cleaning. If you need to standardize either barangays or municipalities/cities, please choose at least two columns (ex: barangay & municipality, municipality & province).
               </p>
             </li>
-            <li>Clean your data</li>
             <li>Check and export</li>
           </ol>
         </Sidebar>
