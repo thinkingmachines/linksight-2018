@@ -165,15 +165,15 @@ class Check extends React.Component {
           <ol className='steps'>
             <li>Upload your data</li>
             <li>Prep your data</li>
-            <li>Clean your data</li>
             <li className='current'>
-              <p>Check and export</p>
+              <p>Review matches</p>
               <ul className='step-desc'>
                 <li>For locations with more than one possible match, select the one you think is correct.</li>
                 <li>If none of the candidates are the right match, please select "No correct match/Unsure."</li>
-                <li>When you’re finished checking, export the results as a CSV.</li>
               </ul>
             </li>
+            <li>Check new columns and export</li>
+            <li>Give feedback</li>
           </ol>
         </Sidebar>
       </Page>
