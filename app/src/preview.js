@@ -126,11 +126,46 @@ class Preview extends React.Component {
                 </ErrorOverlay>
               ) : null}
               <Grid columns={12} gap='0' alignContent='space-between'>
-                <Cell width={12} className='preview'>
+                <Cell width={9} className='preview'>
                   <PreviewTable
                     preview={this.state.preview}
                     columnHighlights={this.getColumnHighlights()}
                   />
+                </Cell>
+                <Cell width={3} className='location-columns' middle>
+                  <Instruction>
+                    Select the following<br />
+                    location columns:
+                  </Instruction>
+                  <br />
+                  <LocationColumn
+                    name='Barangay'
+                    color={colors.indigo}
+                    columnOptions={this.getColumnOptions()}
+                    onChange={this.selectLocationColumn.bind(this, 'barangay')}
+                  />
+                  <br />
+                  <LocationColumn
+                    name='City/Municipality'
+                    color={colors.teal}
+                    columnOptions={this.getColumnOptions()}
+                    onChange={this.selectLocationColumn.bind(this, 'city_municipality')}
+                  />
+                  <br />
+                  <LocationColumn
+                    name='Province'
+                    color={colors.orange}
+                    columnOptions={this.getColumnOptions()}
+                    onChange={this.selectLocationColumn.bind(this, 'province')}
+                  />
+                  {this.hasLocationColumnsSelected() && (
+                    <Button
+                      className='proceed'
+                      onClick={this.match.bind(this)}
+                    >
+                      Proceed
+                    </Button>
+                  )}
                 </Cell>
               </Grid>
             </Cell>
