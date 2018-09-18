@@ -114,7 +114,7 @@ class Preview extends React.Component {
     return (
       <Page>
         <Cell width={9} className={this.props.className}>
-          <Grid columns={12} gap='0' height='100%' alignContent='center' className='preview'>
+          <Grid columns={12} gap='0' height='100%' alignContent='stretch'>
             <Cell width={12} className='box'>
               {this.state.isMatching ? (
                 <LoadingOverlay>Cleaning your dataset. Don't leave!<br />
@@ -125,14 +125,14 @@ class Preview extends React.Component {
                   {this.state.error}
                 </ErrorOverlay>
               ) : null}
-              <Grid columns={12} gap='0' alignContent='space-between'>
-                <Cell width={9} className='preview'>
+              <Grid columns={12} gap='0' height='100%' alignContent='stretch'>
+                <Cell width={9} className='preview-table'>
                   <PreviewTable
                     preview={this.state.preview}
                     columnHighlights={this.getColumnHighlights()}
                   />
                 </Cell>
-                <Cell width={3} className='location-columns' middle>
+                <Cell width={3} className='location-columns'>
                   <Instruction>
                     Select the following<br />
                     location columns:
@@ -165,10 +165,21 @@ class Preview extends React.Component {
         </Cell>
         <Sidebar
           backButton={
-            <Button className='btn -back' onClick={this.props.history.goBack}>Back</Button>
+            <Button
+              className='btn -back'
+              onClick={this.props.history.goBack}
+            >
+              Back
+            </Button>
           }
           nextButton={
-            <Button className='btn proceed' disabled={!this.hasLocationColumnsSelected()} onClick={this.match.bind(this)}>Next</Button>
+            <Button
+              className='btn -proceed'
+              disabled={!this.hasLocationColumnsSelected()}
+              onClick={this.match.bind(this)}
+            >
+              Next
+            </Button>
           }
         >
           <ol className='steps'>
@@ -203,11 +214,12 @@ export default styled(Preview)`
   .box {
     position: relative;
     background: ${colors.monochrome[0]};
+    overflow-y: auto;
   }
-  .preview, .location-columns {
+  .preview-table, .location-columns {
     box-sizing: border-box;
   }
-  .preview {
+  .preview-table {
     padding: 40px 0 40px 30px;
   }
   .location-columns {
@@ -218,14 +230,8 @@ export default styled(Preview)`
     border-left: 1px solid ${colors.monochrome[2]};
     position: relative;
   }
-  .proceed {
+  .buttons .btn.-proceed {
     position: absolute;
     bottom: 40px;
-  }
-  .preview {
-    background: ${colors.monochrome[1]};
-    padding: 30px;
-    box-sizing: border-box;
-    overflow-y: auto;
   }
 `
