@@ -158,20 +158,19 @@ class Preview extends React.Component {
                     columnOptions={this.getColumnOptions()}
                     onChange={this.selectLocationColumn.bind(this, 'province')}
                   />
-                  {this.hasLocationColumnsSelected() && (
-                    <Button
-                      className='proceed'
-                      onClick={this.match.bind(this)}
-                    >
-                      Proceed
-                    </Button>
-                  )}
                 </Cell>
               </Grid>
             </Cell>
           </Grid>
         </Cell>
-        <Sidebar>
+        <Sidebar
+          backButton={
+            <Button className='btn -back' onClick={this.props.history.goBack}>Back</Button>
+          }
+          nextButton={
+            <Button className='btn proceed' disabled={!this.hasLocationColumnsSelected()} onClick={this.match.bind(this)}>Next</Button>
+          }
+        >
           <ol className='steps'>
             <li>Upload your data</li>
             <li className='current'>
