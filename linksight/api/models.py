@@ -9,6 +9,7 @@ from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import Q
 from linksight.api.matcher import get_matches
+from linksight.api.matcher import create_search_tuple
 
 
 class Dataset(models.Model):
@@ -97,22 +98,23 @@ class Match(models.Model):
 
         with self.dataset.file.open() as f:
             dataset_df = pd.read_csv(f, dtype=str)
+            dataset_df['search_tuple'] = dataset_df.apply(partial(create_search_tuple, columns=columns), axis=1)
 
         matches_df = pd.DataFrame(list(self.items.filter(
             Q(match_type='exact') | Q(chosen=True)
         ).values()))
-        matches_df.set_index('dataset_index', inplace=True)
+
+        matches_df.set_index('search_tuple', inplace=True)
+
+        print(matches_df.columns)
 
         joined_df = dataset_df.join(matches_df[[
             'matched_barangay',
-            #'matched_barangay_psgc',
             'matched_city_municipality',
-            #'matched_city_municipality_psgc',
             'matched_province',
-            #'matched_province_psgc',
             'code',
             'total_score'
-        ]])
+        ]].dropna(axis=1,how="all"))
 
 
         # Get deepest PSGC
@@ -165,9 +167,11 @@ class Match(models.Model):
         # Rename some columns for display
 
         joined_df.rename(columns={
-            'matched_barangay': 'Matched Barangay',
-            'matched_city_municipality': 'Matched City/Municipality',
-            'matched_province': 'Matched Province',
+            'matched_barangay': 'brgy_linksight',
+            'matched_city_municipality': 'municity_linksight',
+            'matched_province': 'prov_linksight',
+            'code':'psgc',
+            'total_score':'confidence_score'
         }, inplace=True)
 
         # Create matched dataset
@@ -184,7 +188,11 @@ class Match(models.Model):
 class MatchItem(models.Model):
     match = models.ForeignKey(Match, on_delete=models.CASCADE, editable=False,
                               related_name='items')
+
     dataset_index = models.IntegerField(editable=False)
+
+    search_tuple = models.CharField(
+        max_length=256, unique=True)
 
     source_barangay = models.CharField(
         max_length=256, editable=False, null=True)
