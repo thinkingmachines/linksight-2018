@@ -213,7 +213,7 @@ export default styled(Preview)`
   .location-columns {
     box-sizing: border-box;
     min-height: 540px;
-    padding: 40px 30px;
+    padding: 40px 40px;
     background: ${colors.monochrome[1]};
     border-left: 1px solid ${colors.monochrome[2]};
     position: relative;
