@@ -75,6 +75,28 @@ locations_df = locations_df.set_index(locations_df['loc_tuple'].apply(to_index))
 locations = locations_df.loc_tuple.tolist()
 ngram_table = generate_ngram_table(locations, NGRAM_SIZE)
 
+
+def create_search_tuple(columns, row):
+    locations = (
+        row[list(columns.values())]
+            .dropna()
+            .str.replace('BGY|BRGY|BARANGAY||NOT A PROVINCE|CAPITAL|\(|\)|CITY OF|CITY|', '',
+                         case=False)
+            .str.replace(r'[^A-Z ]', '', case=False)
+            .str.lower()
+    )
+    values = locations.values.tolist()
+    lowest_interlevel = None
+
+    # Check lowest interlevel with values to determine lowest interlevel
+
+    for lowest_interlevel in 'bgy', 'municity', 'prov':
+        col = columns.get(lowest_interlevel)
+        if col and row.dropna().get(col):
+            break
+
+    return tuple(values + [lowest_interlevel])
+
 def score_matches(pair, first_item_ratio_weight=.6, other_items_ratio_weight=.30,
                   adm_level_match_weight=0.2):
     search_tuple, candidate_tuple = pair
@@ -112,9 +134,6 @@ def score_matches(pair, first_item_ratio_weight=.6, other_items_ratio_weight=.30
     )
     return (
         candidate_tuple,
-        #first_item_ratio,
-        #other_items_ratio,
-        #adm_level_match,
         round(score,2),
         candidate_code
     )
@@ -169,7 +188,7 @@ def search_reference(search_tuple, ngram_table, nresults):
         return search_tuple, tuple()
  
 
-    # otherwise, fi the search tuple has at least one element, turn the first item in the search string into ngrams
+    # otherwise, if the search tuple has at least one element, turn the first item in the search string into ngrams
 
     ss_ngrams = list(set(make_ngram(search_tuple[0], NGRAM_SIZE)))
 
@@ -209,36 +228,11 @@ def search_reference(search_tuple, ngram_table, nresults):
 
     return search_tuple, top_results
 
-
 def get_matches(dataset_df, columns):
-
-    #dataset_df.dropna(subset=list(columns.values()),inplace=True)
-
-    def create_search_tuple(row):
-        locations = (
-            #row[columns]
-            row[list(columns.values())]
-                .dropna()
-                .str.replace('BGY|BRGY|BARANGAY||NOT A PROVINCE|CAPITAL|\(|\)|CITY OF|CITY|', '',
-                             case=False)
-                .str.replace(r'[^A-Z ]', '', case=False)
-                .str.lower()
-        )
-        values = locations.values.tolist()
-        lowest_interlevel = None
-
-        # Check lowest interlevel with values to determine lowest interlevel
-
-        for lowest_interlevel in 'bgy', 'municity', 'prov':
-            col = columns.get(lowest_interlevel)
-            if col and row.dropna().get(col):
-                break
-
-        return tuple(values + [lowest_interlevel])
 
     #first, create search tuples for the dataset provided by the user
 
-    dataset_df['search_tuple'] = dataset_df.apply(create_search_tuple, axis=1)
+    dataset_df['search_tuple'] = dataset_df.apply(partial(create_search_tuple, columns=columns), axis=1)
     dataset_df.drop_duplicates('search_tuple', inplace=True)
     (dataset_df
      .set_index(dataset_df['search_tuple'].apply(to_index),
@@ -256,10 +250,10 @@ def get_matches(dataset_df, columns):
 
     for i, (search_tuple, results) in enumerate(map(search_func, search_tuples)):
         source = dataset_df.loc[to_index(search_tuple)].fillna('')
-
         
         match = {
             'dataset_index': i,
+            'search_tuple':to_index(search_tuple),
             'source_province': source.get(columns.get('prov')),
             'source_city_municipality': source.get(columns.get('municity')),
             'source_barangay': source.get(columns.get('bgy')),
