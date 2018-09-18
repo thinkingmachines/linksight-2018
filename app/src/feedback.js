@@ -55,7 +55,10 @@ class Feedback extends React.Component {
             <li>Prep your data</li>
             <li>Review matches</li>
             <li>Check new columns and export</li>
-            <li className='current'>Give feedback</li>
+            <li className='current'>
+              <p>Give feedback</p>
+              <p className='step-desc'>Let us know if you found any issues or if you have any suggestions or feature requests.</p>
+            </li>
           </ol>
         </Sidebar>
       </Page>
@@ -67,7 +70,7 @@ export default styled(Feedback)`
   background: ${colors.monochrome[0]};
   .feedback .airtable-embed {
     width: 100%;
-    height: 80%;
+    height: 100%;
     background: transparent;
     border: 2px solid ${colors.monochrome[1]};
   }
