@@ -22,13 +22,6 @@ class Feedback extends React.Component {
       isDone: null
     }
   }
-  componentDidMount () {
-    const script = document.createElement('script')
-    script.src = 'https://static.airtable.com/js/embed/embed_snippet_v1.js'
-    script.async = true
-
-    document.body.appendChild(script)
-  }
   uploadNewDataset () {
     this.setState({isDone: true})
   }
