@@ -29,6 +29,9 @@ module.exports = {
             {rel: 'manifest', href: '/static/manifest.json'},
             {rel: 'short icon', href: '/static/favicon.ico'}
           ],
+          scripts: [
+            'https://static.airtable.com/js/embed/embed_snippet_v1.js'
+          ],
           window: {
             API_HOST: process.env.PUBLIC_URL || 'http://localhost:8000'
           }
