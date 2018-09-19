@@ -152,7 +152,7 @@ def search_shortlist(search_tuple, shortlist):
 
 
 def search_reference(search_tuple, ngram_table, nresults):
-    # if the search tuple only has one element (brgy, prov, municity), it means
+    # if the search tuple only has one element (bgy, prov, municity), it means
     # it is actually empty. return an empty result
     if len(search_tuple) == 1:
         return search_tuple, tuple()
