@@ -127,8 +127,8 @@ class Match(models.Model):
         # Order columns
 
         front_cols = [
-            'code',
-            'total_score',
+            #'code',
+            #'total_score',
         ]
         for source_col, matched_col in (
             (self.barangay_col, 'matched_barangay'),
@@ -137,10 +137,14 @@ class Match(models.Model):
         ):
             if source_col:
                 front_cols.extend((source_col, matched_col))
-
+        
+        mid_cols = [
+            "code",
+            "total_score"
+        ]
         other_cols = [col for col in joined_df.columns.tolist()
-                      if col not in front_cols]
-        new_cols = front_cols + other_cols
+                      if (col not in front_cols) or (col not in mid_cols)]
+        new_cols = front_cols + mid_cols+ other_cols
         joined_df = joined_df[new_cols]
 
         # Rename some columns for display
