@@ -1,14 +1,15 @@
 import json
 import os.path
 import uuid
+from collections import OrderedDict
 from functools import partial
 
 import pandas as pd
-
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import Q
+
 from linksight.api.matcher import create_search_tuple, get_matches, to_index
 
 
@@ -71,11 +72,11 @@ class Match(models.Model):
 
     @property
     def loc_columns(self):
-        return {
-            'bgy': self.barangay_col,
-            'municity': self.city_municipality_col,
-            'prov': self.province_col,
-        }
+        return OrderedDict([
+            ('bgy', self.barangay_col),
+            ('municity', self.city_municipality_col),
+            ('prov', self.province_col),
+        ])
 
     def generate_match_items(self, **kwargs):
         with self.dataset.file.open() as f:
