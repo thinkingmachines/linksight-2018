@@ -64,15 +64,15 @@ class Export extends React.Component {
         <Cell width={9} className={this.props.className}>
           <div className='summary'>
             <Instruction>
-              <p>We've added the following new columns to your file:</p>
-              <ul>
-                <li><strong>Barangay_Linksight</strong> - Standardized barangay names.</li>
-                <li><strong>MuniCity_Linksight </strong> - Standardized municipality or city names.</li>
-                <li><strong>Province_Linksight </strong> - Standardized province names.</li>
-                <li><strong>PSG_Code</strong> - Each location has a unique 9-digit ID number based on the PSGC.</li>
-                <li><strong>Confidence Score</strong> - Each match has a confidence score on a scale of 0 to 100. Exact matches are 100%.</li>
-              </ul>
+              We've added the following new columns to your file:
             </Instruction>
+            <ul>
+              <li><strong>bgy_linksight</strong> - Standardized barangay names.</li>
+              <li><strong>municity_linksight </strong> - Standardized municipality or city names.</li>
+              <li><strong>prov_linksight </strong> - Standardized province names.</li>
+              <li><strong>psgc</strong> - Each location has a unique 9-digit ID number based on the PSGC.</li>
+              <li><strong>confidence_score</strong> - Each match has a confidence score on a scale of 0 to 100. Exact matches are 100%.</li>
+            </ul>
           </div>
           <PreviewTable
             preview={this.state.preview}
@@ -110,6 +110,9 @@ export default styled(Export)`
   background: ${colors.monochrome[0]};
   padding: 60px;
   box-sizing: border-box;
+  max-height: calc(100vh - 30px);
+  overflow-y: auto;
+
   .summary {
     background: ${colors.monochrome[1]};
     border-radius: 7.5px;
@@ -118,5 +121,11 @@ export default styled(Export)`
     flex-direction: column;
     padding: 20px 40px;
     margin-bottom: 20px;
+  }
+
+  .summary ul {
+    margin-top: 10px;
+    padding-left: 0;
+    list-style: none;
   }
 `
