@@ -36,7 +36,7 @@ def generate_ngram_table(locations, n):
             ngram = first_item[i:i + n]
             # if the n-gram is not yet in the table, add it as a new
             # key for which value is empty dict
-            ngram_table.setdefault(ngram, {})
+            ngram_table.setdefault(ngram, set)
             # if the location tuple is not yet associated with the ngram, add it to
             # the list of values
             ngram_table[ngram].add(loc)
