@@ -228,3 +228,5 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.user.user_details',
 )
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880
