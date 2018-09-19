@@ -1,6 +1,7 @@
 import json
 import os.path
 import uuid
+from functools import partial
 
 import pandas as pd
 
@@ -8,8 +9,7 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import Q
-from linksight.api.matcher import get_matches
-from linksight.api.matcher import create_search_tuple
+from linksight.api.matcher import create_search_tuple, get_matches, to_index
 
 
 class Dataset(models.Model):
@@ -69,20 +69,23 @@ class Match(models.Model):
     def __str__(self):
         return '{} ({})'.format(self.dataset.name, self.id)
 
-    def generate_match_items(self, **kwargs):
-        with self.dataset.file.open() as f:
-            dataset_df = pd.read_csv(f)
-
-        
-        columns = {
+    @property
+    def loc_columns(self):
+        return {
             'bgy': self.barangay_col,
             'municity': self.city_municipality_col,
             'prov': self.province_col,
         }
 
+    def generate_match_items(self, **kwargs):
+        with self.dataset.file.open() as f:
+            dataset_df = pd.read_csv(f)
+
+        matches = get_matches(dataset_df, columns=self.loc_columns)
+
         MatchItem.objects.bulk_create([
             MatchItem(**match_item, match=self, chosen=False)
-            for match_item in get_matches(dataset_df, columns=columns)
+            for match_item in matches
         ])
 
     def save_choices(self, match_choices):
@@ -98,15 +101,19 @@ class Match(models.Model):
 
         with self.dataset.file.open() as f:
             dataset_df = pd.read_csv(f, dtype=str)
-            dataset_df['search_tuple'] = dataset_df.apply(partial(create_search_tuple, columns=columns), axis=1)
+
+        dataset_df.set_index(
+            dataset_df
+            .apply(
+                partial(create_search_tuple, columns=self.loc_columns),
+                axis=1)
+            .apply(to_index),
+            inplace=True)
 
         matches_df = pd.DataFrame(list(self.items.filter(
             Q(match_type='exact') | Q(chosen=True)
         ).values()))
-
         matches_df.set_index('search_tuple', inplace=True)
-
-        print(matches_df.columns)
 
         joined_df = dataset_df.join(matches_df[[
             'matched_barangay',
@@ -114,51 +121,22 @@ class Match(models.Model):
             'matched_province',
             'code',
             'total_score'
-        ]].dropna(axis=1,how="all"))
+        ]].dropna(axis=1, how='all'))
 
+        # Order columns
 
-        # Get deepest PSGC
-
-        # def get_deepest_code(row):
-        #     for field in ['barangay', 'city_municipality', 'province']:
-        #         key = 'matched_{}_psgc'.format(field)
-        #         if row.get(key):
-        #             return row[key]
-
-        # joined_df['PSGC'] = joined_df.apply(
-        #     get_deepest_code, axis=1).astype(str)
-
-        # Merge population
-
-        # population = Dataset.objects.get(pk=settings.POPULATION_DATASET_ID)
-        # with population.file.open() as f:
-        #     population_df = pd.read_csv(f, dtype={'Code': object})
-
-        # joined_df = joined_df.merge(population_df, how='left',
-        #                             left_on='PSGC', right_on='Code',
-        #                             suffixes=[' (Source)', ''])
-        # joined_df.drop([
-        #     'Code',
-        #     'matched_barangay_psgc',
-        #     'matched_city_municipality_psgc',
-        #     'matched_province_psgc',
-        # ], axis='columns', inplace=True)
-
-        # Reorder so matched columns and merged datasets are in front
-
-        front_cols = []
+        front_cols = [
+            'code',
+            'total_score',
+        ]
         for source_col, matched_col in (
             (self.barangay_col, 'matched_barangay'),
             (self.city_municipality_col, 'matched_city_municipality'),
             (self.province_col, 'matched_province'),
         ):
-             if source_col:
-                 front_cols.extend((source_col, matched_col))
-        # front_cols.extend([
-        #     'PSGC',
-        #     'Population',
-        #     'Administrative Level',
-        # ])
+            if source_col:
+                front_cols.extend((source_col, matched_col))
+
         other_cols = [col for col in joined_df.columns.tolist()
                       if col not in front_cols]
         new_cols = front_cols + other_cols
@@ -170,8 +148,8 @@ class Match(models.Model):
             'matched_barangay': 'brgy_linksight',
             'matched_city_municipality': 'municity_linksight',
             'matched_province': 'prov_linksight',
-            'code':'psgc',
-            'total_score':'confidence_score'
+            'code': 'psgc_linksight',
+            'total_score': 'confidence_score_linksight'
         }, inplace=True)
 
         # Create matched dataset
@@ -192,7 +170,7 @@ class MatchItem(models.Model):
     dataset_index = models.IntegerField(editable=False)
 
     search_tuple = models.CharField(
-        max_length=256, unique=True)
+        max_length=256, db_index=True)
 
     source_barangay = models.CharField(
         max_length=256, editable=False, null=True)
@@ -222,6 +200,8 @@ class MatchItem(models.Model):
         choices=match_types,
         default='no_match'
     )
+    match_time = models.FloatField()
+
     chosen = models.BooleanField()
 
     class Meta:
