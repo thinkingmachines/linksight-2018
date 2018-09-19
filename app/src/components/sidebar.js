@@ -72,6 +72,7 @@ const Sidebar = styled(props => (
   .steps .current .step-desc {
     font-size: 15px;
     line-height: 20px;
+    padding-left: 0;
   }
   .buttons .btn {
     padding: 0 2.5em;
