@@ -80,7 +80,7 @@ def create_search_tuple(row, columns):
 
 def score_matches(pair, first_item_ratio_weight=.6,
                   other_items_ratio_weight=.3,
-                  adm_level_match_weight=.2):
+                  adm_level_match_weight=.1):
     search_tuple, candidate_tuple = pair
 
     # split both the search_tuple and candidate_tuple into their name and
@@ -99,7 +99,7 @@ def score_matches(pair, first_item_ratio_weight=.6,
                                               first_candidate_term) * 100
 
     # check on edit distance ratio between remaining search terms
-    other_items_ratio = fuzz.partial_ratio(
+    other_items_ratio = fuzz.ratio(
         ' '.join(other_search_terms), ' '.join(other_candidate_terms))
 
     # if a search and the candidate have the same administrative level,
