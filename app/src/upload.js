@@ -63,10 +63,14 @@ class Upload extends React.Component {
                 name='file'
                 server={{
                   url: `${window.API_HOST}/api/datasets/`,
-                  process: {withCredentials: true}
+                  process: {
+                    withCredentials: true,
+                    onerror: JSON.parse
+                  }
                 }}
                 allowRevert={false}
                 onprocessfile={this.handleProcessFile.bind(this)}
+                labelFileProcessingError={error => error.body.file[0]}
                 labelIdle={`
                   ${this.renderInstruction()}
                 `}
