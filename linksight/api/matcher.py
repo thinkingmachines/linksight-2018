@@ -36,11 +36,10 @@ def generate_ngram_table(locations, n):
             ngram = first_item[i:i + n]
             # if the n-gram is not yet in the table, add it as a new
             # key for which value is empty dict
-            ngram_table.setdefault(ngram, [])
-        # if the location tuple is not yet associated with the ngram, add it to
-        # the list of values
-        if loc not in ngram_table[ngram]:
-            ngram_table[ngram].append(loc)
+            ngram_table.setdefault(ngram, {})
+            # if the location tuple is not yet associated with the ngram, add it to
+            # the list of values
+            ngram_table[ngram].add(loc)
     return ngram_table
 
 
@@ -131,8 +130,10 @@ def search_shortlist(search_tuple, shortlist):
     for candidate_tuple in shortlist:
         exact_match = search_tuple == candidate_tuple[:-1]
         if exact_match:
+
             # exact matches result in perfect score and a single row returned
             # with the candidate tuple, total score of 100 and psgc code
+
             psgc = candidate_tuple[-1]
             return [(candidate_tuple, 100, psgc)]
 
