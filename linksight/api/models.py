@@ -145,7 +145,7 @@ class Match(models.Model):
         # Rename some columns for display
 
         joined_df.rename(columns={
-            'matched_barangay': 'brgy_linksight',
+            'matched_barangay': 'bgy_linksight',
             'matched_city_municipality': 'municity_linksight',
             'matched_province': 'prov_linksight',
             'code': 'psgc_linksight',
