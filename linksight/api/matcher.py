@@ -3,6 +3,7 @@ import re
 import time
 from functools import lru_cache, partial
 from multiprocessing import Pool
+from collections import Counter
 
 import pandas as pd
 
@@ -162,6 +163,7 @@ def search_reference(search_tuple, ngram_table, nresults):
     # item in the search string into ngrams
     ss_ngrams = list(set(make_ngram(search_tuple[0], NGRAM_SIZE)))
 
+
     # create a list of possible matches based on common ngrams between the first
     # items of search tuple and candidates
     possible_matches = []
@@ -171,13 +173,20 @@ def search_reference(search_tuple, ngram_table, nresults):
         if ngram in ngram_table:
             possible_matches += ngram_table[ngram]
 
+    #let's eliminate any candidates that share fewer than half of the unique n-grams in the search terms. 
+    #for example, no need to run fuzzy matching on an candidate with only a single common n-gram with the search terms
+
+    threshold = len(ss_ngrams)/3
+    most_possible = [k for k, v in Counter(possible_matches).items() if v >= threshold]
+
+
     # calculate similarity scores of search tuples with candidate among
     # possible matches for each unique psgc code, get the match phrase with the
     # highest score:
     scored_shortlist = {
         code: (*result, code)
         for (*result, code) in
-        sorted(search_shortlist(search_tuple, possible_matches),
+        sorted(search_shortlist(search_tuple, most_possible),
                key=operator.itemgetter(1))
     }.values()
 
@@ -189,6 +198,7 @@ def search_reference(search_tuple, ngram_table, nresults):
 
 
 def get_matches(dataset_df, columns):
+    print ("start")
     # first, create search tuples for the dataset provided by the user
     dataset_df['search_tuple'] = dataset_df.apply(
         partial(create_search_tuple, columns=columns),
@@ -197,9 +207,26 @@ def get_matches(dataset_df, columns):
     dataset_df.set_index(dataset_df['search_tuple'].apply(to_index),
                          inplace=True)
 
+    print (len(dataset_df))
+
     # get lowest interlevel selected
     locations_df, ngram_table = load_reference()
+    print("just loaded reference file, now doing search")
+
+    locations_df_find_exact = locations_df.set_index('candidate_terms').rename(columns={
+        'bgy':'matched_barangay',
+        'municity':'matched_city_municipality',
+        'prov':'matched_province'
+        })
+
+    # WORK IN PROGRESS: Exploring using a more efficient way of finding exact matches.
+
+    #exact_matches = dataset_df.join(locations_df_find_exact,how="inner")
+    
+    #needs_fuzzy_matching = dataset_df.drop(exact_matches.index)
+
     search_func = partial(search_reference, ngram_table=ngram_table, nresults=5)
+    #search_tuples = needs_fuzzy_matching.search_tuple.tolist()
     search_tuples = dataset_df.search_tuple.tolist()
 
     # for each search tuple, find its top matches
@@ -207,6 +234,7 @@ def get_matches(dataset_df, columns):
 
     start_time = time.time()
     for i, (search_tuple, results) in enumerate(result_pairs):
+        #search_tuples = needs_fuzzy_matching.search_tuple.tolist()
         source = dataset_df.loc[to_index(search_tuple)].fillna('')
         match = {
             'dataset_index': i,
