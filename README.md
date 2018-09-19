@@ -50,12 +50,20 @@ to contribute, please send us an email at
     | Config name | Description |
     | - | - |
     | DEBUG | Toggles running the server in debug mode |
-    | DATABASE_URL | https://github.com/kennethreitz/dj-database-url |
+    | DATABASE_URL | See [DJ-Database-URL](https://github.com/kennethreitz/dj-database-url) |
     | SECRET_KEY | String used to provide cryptographic signing of sessions, etc. |
     | PSGC_DATASET_ID | UUID of PSGC reference dataset |
     | POPULATION_DATASET_ID | UUID of the population dataset |
+    | EMAIL_PORT | Port to use when sending email |
+    | EMAIL_HOST_USER | User for sending email |
+    | EMAIL_HOST_PASSWORD | Password for above |
+    | SOCIAL_AUTH_GOOGLE_OAUTH2_KEY | Key for Google OAuth2 |
+    | SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET | Secret for Google OAuth2 |
 
     Instructions will follow on how to set `PSGC_DATASET_ID` and `POPULATION_DATASET_ID`.
+
+    If you are a member of the official LinkSight development team, you can ask
+    for access to the template with secrets filled in.
 
 1. Install postgresql and run the following in `psql`:
 
