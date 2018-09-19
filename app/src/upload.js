@@ -61,6 +61,7 @@ class Upload extends React.Component {
             <Cell width={6} left={4} alignContent='center' middle>
               <UploadWidget
                 name='file'
+                maxFileSize='5MB'
                 server={{
                   url: `${window.API_HOST}/api/datasets/`,
                   process: {
