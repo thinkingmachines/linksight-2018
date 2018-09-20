@@ -54,6 +54,24 @@ class Export extends React.Component {
   askFeedback () {
     this.setState({isExported: true})
   }
+  renderColumns (match) {
+    const columns = []
+    switch (true) {
+      case !!match.barangayCol:
+        columns.push(
+          <li key='bgy'><strong>bgy_linksight</strong> - Standardized barangay names.</li>
+        )
+      case !!match.cityMunicipalityCol:
+        columns.push(
+          <li key='municity'><strong>municity_linksight </strong> - Standardized municipality or city names.</li>
+        )
+      case !!match.provinceCol:
+        columns.push(
+          <li key='prov'><strong>prov_linksight </strong> - Standardized province names.</li>
+        )
+    }
+    return columns
+  }
   render () {
     if (!this.state.preview) {
       return null
@@ -90,9 +108,7 @@ class Export extends React.Component {
               We've added the following new columns to your file:
             </Instruction>
             <ul>
-              <li><strong>bgy_linksight</strong> - Standardized barangay names.</li>
-              <li><strong>municity_linksight </strong> - Standardized municipality or city names.</li>
-              <li><strong>prov_linksight </strong> - Standardized province names.</li>
+              {this.renderColumns(this.state.preview.match)}
               <li><strong>psgc_linksight</strong> - Each location has a unique 9-digit ID number based on the PSGC.</li>
               <li><strong>confidence_score_linksight</strong> - Each match has a confidence score on a scale of 0 to 100. Exact matches are 100%.</li>
             </ul>
