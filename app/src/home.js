@@ -30,6 +30,12 @@ const GoogleIcon = () => (
 )
 
 class Home extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      isUnauthorized: null
+    }
+  }
   render () {
     return (
       <Page withHeader>
@@ -53,6 +59,7 @@ class Home extends React.Component {
                 <GoogleIcon />
                 <span>Sign in with Google</span>
               </a>
+              <p className='request'>Not yet a user? <a className='register-link' href='https://thinkingmachines.typeform.com/to/Am40jZ' target='_blank'>Request access.</a></p>
             </Cell>
           </Grid>
         </Cell>
@@ -106,5 +113,10 @@ export default styled(Home)`
   }
   .sign-in span {
     margin: 0 15px;
+  }
+  .request,
+  .request .register-link {
+    margin: 20px 0;
+    color: ${colors.monochrome[0]};
   }
 `
