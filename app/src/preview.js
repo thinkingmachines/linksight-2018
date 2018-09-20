@@ -166,8 +166,7 @@ class Preview extends React.Component {
                 </Cell>
                 <Cell width={3} className='location-columns'>
                   <Instruction>
-                    Select the following<br />
-                    location columns:
+                    Indicate which column headers in your dataset refer to the following administrative levels. You may also select "Not Applicable" if it’s not in your dataset.
                   </Instruction>
                   <br />
                   <LocationColumn
