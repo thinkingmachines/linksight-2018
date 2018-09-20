@@ -122,7 +122,7 @@ class Match(models.Model):
             'matched_province',
             'code',
             'total_score'
-        ]].dropna(axis=1, how='all'))
+        ]])
 
         # Order columns
 
@@ -158,6 +158,7 @@ class Match(models.Model):
         }, inplace=True)
 
         #drop columns that are empty
+
 
         # Create matched dataset
 
