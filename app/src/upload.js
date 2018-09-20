@@ -100,6 +100,8 @@ class Upload extends React.Component {
                   <li>Barangay, Municipality or City, or Province (whichever is available) should be in separate columns.</li>
                 </ul>
                 <br />
+                <p className='note'>Don't have a dataset? You can also use sample datasets <a href='https://drive.google.com/drive/u/0/folders/1Yo1Y68fLnOcj_x-AEQh-V5S7_H08s_IV' target='_blank'>here</a>.</p>
+                <br />
                 <p className='note -important'><strong>Important</strong>: Linksight needs to save a copy of your data to process it. The copy will be deleted from our system within 24 hours of upload.</p>
               </div>
             </Cell>
