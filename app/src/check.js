@@ -96,8 +96,7 @@ class Check extends React.Component {
   }
   getMultipleCount () {
     return this.state.matchItems.filter(item => (
-      item.match_type === 'near' && this.state.matchChoices[item.dataset_index]
-    )).length
+      item.match_type === 'near')).length
   }
   getNoMatchesCount () {
     return this.state.matchItems.filter(item => item.match_type === 'no_match').length
@@ -167,7 +166,7 @@ class Check extends React.Component {
           <Grid columns={1} gap='0' height='calc(100vh - 30px)'>
             <Cell className='matches'>
               <Instruction className='instruction'>
-                Out of the {this.state.matchItems.length} records in your dataset, <strong> {this.getMultipleCount()} </strong> need your review.
+                Out of all locations in your dataset, <strong> {this.getMultipleCount()} </strong> need your review.
               </Instruction>
               <MatchesTable
                 items={this.state.matchItems.filter(matchItem => matchItem.match_type === 'near')}
