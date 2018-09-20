@@ -132,28 +132,6 @@ class Check extends React.Component {
     }
     return (
       <Page>
-        <Cell width={9} className={this.props.className}>
-          {this.state.isSaving ? (
-            <LoadingOverlay>Saving choices&hellip;</LoadingOverlay>
-          ) : null}
-          {this.state.error ? (
-            <ErrorOverlay>
-              {this.state.error}
-            </ErrorOverlay>
-          ) : null}
-          <Grid columns={1} gap='0' height='calc(100vh - 30px)'>
-            <Cell className='matches'>
-              <Instruction className='instruction'>
-                Out of the {this.state.matchItems.length} records in your dataset, <strong> {this.getMultipleCount()} </strong> need your review.
-              </Instruction>
-              <MatchesTable
-                items={this.state.matchItems.filter(matchItem => matchItem.match_type === 'near')}
-                matchChoices={this.state.matchChoices}
-                onChoose={this.handleChoice.bind(this)}
-              />
-            </Cell>
-          </Grid>
-        </Cell>
         <Sidebar
           backButton={
             <Button className='btn -back' onClick={this.props.history.goBack}>Back</Button>
@@ -176,6 +154,28 @@ class Check extends React.Component {
             <li>Give feedback</li>
           </ol>
         </Sidebar>
+        <Cell width={9} className={this.props.className}>
+          {this.state.isSaving ? (
+            <LoadingOverlay>Saving choices&hellip;</LoadingOverlay>
+          ) : null}
+          {this.state.error ? (
+            <ErrorOverlay>
+              {this.state.error}
+            </ErrorOverlay>
+          ) : null}
+          <Grid columns={1} gap='0' height='calc(100vh - 30px)'>
+            <Cell className='matches'>
+              <Instruction className='instruction'>
+                Out of the {this.state.matchItems.length} records in your dataset, <strong> {this.getMultipleCount()} </strong> need your review.
+              </Instruction>
+              <MatchesTable
+                items={this.state.matchItems.filter(matchItem => matchItem.match_type === 'near')}
+                matchChoices={this.state.matchChoices}
+                onChoose={this.handleChoice.bind(this)}
+              />
+            </Cell>
+          </Grid>
+        </Cell>
       </Page>
     )
   }
