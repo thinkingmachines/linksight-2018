@@ -44,8 +44,7 @@ export default styled(MatchesTable)`
   thead th {
     font-weight: normal;
     text-align: left;
-    line-height: 40px;
-    padding: 0 15px;
+    padding: 15px 15px 0;
   }
   tr:hover .table-cell.-index,
   tr:hover .table-cell.-choice-content {
