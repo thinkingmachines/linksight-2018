@@ -47,7 +47,7 @@ const Choice = styled(props => (
     ` : null}
   }
   .table-cell .score {
-    font-size: 12px;
+    font-size: 15px;
     color: ${colors.monochrome[3]};
   }
 `
