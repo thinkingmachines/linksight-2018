@@ -147,6 +147,7 @@ class Check extends React.Component {
               <p>Review matches</p>
               <ul className='step-desc'>
                 <li>For locations with more than one possible match, select the one you think is correct.</li>
+                <li>You may consider the confidence score (0-100) that LinkSight computed for each candidate. Exact matches are 100%.</li>
                 <li>If none of the candidates are the right match, please select "No correct match/Unsure."</li>
               </ul>
             </li>
