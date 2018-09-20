@@ -137,7 +137,7 @@ class Preview extends React.Component {
             <li className='current'>
               <p>Prep your data</p>
               <p className='step-desc'>
-                Select the columns in your dataset that refer to locations for cleaning. If you need to standardize either barangays or municipalities/cities, please choose at least two columns (ex: barangay & municipality, municipality & province).
+                Select all the administrative units available as columns in your dataset. Our tool matches your data against standard barangay, municipality/city, province names in our database. The more administrative levels are specified, the better LinkSight can match them.
               </p>
             </li>
             <li>Review matches</li>
