@@ -78,6 +78,9 @@ const Sidebar = styled(props => (
     font-size: 15px;
     padding-left: 0;
   }
+  .steps .current .step-desc li {
+    margin-bottom: 10px;
+  }
   .buttons .btn {
     padding: 0 2.5em;
   }
