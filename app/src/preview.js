@@ -160,13 +160,7 @@ class Preview extends React.Component {
                 </ErrorOverlay>
               ) : null}
               <Grid columns={12} gap='0' height='100%' alignContent='stretch'>
-                <Cell width={9} className='preview-table'>
-                  <PreviewTable
-                    preview={this.state.preview}
-                    columnHighlights={this.getColumnHighlights()}
-                  />
-                </Cell>
-                <Cell width={3} className='location-columns'>
+                <Cell width={3} className='location-columns' middle>
                   <Instruction>
                     Indicate which column headers in your dataset refer to the following administrative levels. You may also select "Not Applicable" if it’s not in your dataset.
                   </Instruction>
@@ -190,6 +184,12 @@ class Preview extends React.Component {
                     color={colors.orange}
                     columnOptions={this.getColumnOptions()}
                     onChange={this.selectLocationColumn.bind(this, 'province')}
+                  />
+                </Cell>
+                <Cell width={9} className='preview-table'>
+                  <PreviewTable
+                    preview={this.state.preview}
+                    columnHighlights={this.getColumnHighlights()}
                   />
                 </Cell>
               </Grid>
@@ -227,8 +227,8 @@ export default styled(Preview)`
     box-sizing: border-box;
     min-height: 540px;
     padding: 40px 40px;
-    background: ${colors.monochrome[1]};
-    border-left: 1px solid ${colors.monochrome[2]};
+    background: ${colors.monochrome[0]};
+    border-right: 1px solid ${colors.monochrome[2]};
     position: relative;
   }
   .buttons .btn.-proceed {
