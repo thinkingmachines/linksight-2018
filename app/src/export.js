@@ -31,7 +31,7 @@ class Export extends React.Component {
     const {id} = this.props.match.params
     api.get(`/matches/${id}/preview`, {
       params: {
-        'rowsShown': 100
+        'rowsShown': 5
       }
     })
       .then(resp => {
