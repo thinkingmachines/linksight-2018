@@ -64,14 +64,18 @@ const Sidebar = styled(props => (
   .steps {
     color: ${colors.monochrome[3]};
     font-size: 20px;
-    line-height: 50px;
+  }
+  .steps li {
+    margin-bottom: 30px;
   }
   .steps .current {
     color: ${colors.monochrome[0]};
   }
+  .steps .current p {
+    margin-bottom: 10px;
+  }
   .steps .current .step-desc {
     font-size: 15px;
-    line-height: 20px;
     padding-left: 0;
   }
   .buttons .btn {
