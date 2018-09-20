@@ -31,13 +31,6 @@ class Feedback extends React.Component {
     }
     return (
       <Page>
-        <Cell width={9} className={this.props.className}>
-          <Grid columns={12} gap='15px' height='100%' className='feedback' middle>
-            <Cell width={8} left={3} alignContent='center' middle>
-              <iframe class='airtable-embed' src='https://airtable.com/embed/shr7b1eauaxFWw1et?backgroundColor=teal' onWheel={(e) => this.wheel(e)} />
-            </Cell>
-          </Grid>
-        </Cell>
         <Sidebar
           button={
             <Button className='btn' onClick={this.uploadNewDataset.bind(this)}>Upload new dataset</Button>
@@ -54,6 +47,13 @@ class Feedback extends React.Component {
             </li>
           </ol>
         </Sidebar>
+        <Cell width={9} className={this.props.className}>
+          <Grid columns={12} gap='15px' height='100%' className='feedback' middle>
+            <Cell width={8} left={3} alignContent='center' middle>
+              <iframe class='airtable-embed' src='https://airtable.com/embed/shr7b1eauaxFWw1et?backgroundColor=teal' onWheel={(e) => this.wheel(e)} />
+            </Cell>
+          </Grid>
+        </Cell>
       </Page>
     )
   }
