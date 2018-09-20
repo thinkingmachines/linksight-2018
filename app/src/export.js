@@ -61,24 +61,6 @@ class Export extends React.Component {
     }
     return (
       <Page>
-        <Cell width={9} className={this.props.className}>
-          <div className='summary'>
-            <Instruction>
-              We've added the following new columns to your file:
-            </Instruction>
-            <ul>
-              <li><strong>bgy_linksight</strong> - Standardized barangay names.</li>
-              <li><strong>municity_linksight </strong> - Standardized municipality or city names.</li>
-              <li><strong>prov_linksight </strong> - Standardized province names.</li>
-              <li><strong>psgc</strong> - Each location has a unique 9-digit ID number based on the PSGC.</li>
-              <li><strong>confidence_score</strong> - Each match has a confidence score on a scale of 0 to 100. Exact matches are 100%.</li>
-            </ul>
-          </div>
-          <PreviewTable
-            preview={this.state.preview}
-            columnHighlights={this.getColumnHighlights()}
-          />
-        </Cell>
         <Sidebar
           backButton={
             <Button className='btn -back' onClick={this.props.history.goBack}>Back</Button>
@@ -100,6 +82,24 @@ class Export extends React.Component {
             <li>Give feedback</li>
           </ol>
         </Sidebar>
+        <Cell width={9} className={this.props.className}>
+          <div className='summary'>
+            <Instruction>
+              We've added the following new columns to your file:
+            </Instruction>
+            <ul>
+              <li><strong>bgy_linksight</strong> - Standardized barangay names.</li>
+              <li><strong>municity_linksight </strong> - Standardized municipality or city names.</li>
+              <li><strong>prov_linksight </strong> - Standardized province names.</li>
+              <li><strong>psgc</strong> - Each location has a unique 9-digit ID number based on the PSGC.</li>
+              <li><strong>confidence_score</strong> - Each match has a confidence score on a scale of 0 to 100. Exact matches are 100%.</li>
+            </ul>
+          </div>
+          <PreviewTable
+            preview={this.state.preview}
+            columnHighlights={this.getColumnHighlights()}
+          />
+        </Cell>
       </Page>
     )
   }
