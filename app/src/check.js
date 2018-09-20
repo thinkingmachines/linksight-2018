@@ -184,6 +184,7 @@ class Check extends React.Component {
 
 export default styled(Check)`
   position: relative;
+  background: ${colors.monochrome[0]};
   .map {
     background: #e5e3e0;  // color from Google Maps
   }
@@ -191,7 +192,6 @@ export default styled(Check)`
     margin: 0 30px 20px;
   }
   .matches {
-    background: ${colors.monochrome[1]};
     padding: 30px;
     box-sizing: border-box;
     overflow-y: auto;
