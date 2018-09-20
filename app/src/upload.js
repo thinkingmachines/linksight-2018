@@ -56,6 +56,20 @@ class Upload extends React.Component {
     }
     return (
       <Page>
+        <Sidebar>
+          <ol className='steps'>
+            <li className='current'>
+              <p>Upload your data</p>
+              <p className='step-desc'>
+                Upload a dataset that meets the file requirements.
+              </p>
+            </li>
+            <li>Prep your data</li>
+            <li>Review matches</li>
+            <li>Check new columns and export</li>
+            <li>Give feedback</li>
+          </ol>
+        </Sidebar>
         <Cell width={9} className={this.props.className}>
           <Grid columns={12} gap='15px' height='100%' className='upload'>
             <Cell width={6} left={4} alignContent='center' middle>
@@ -89,20 +103,6 @@ class Upload extends React.Component {
             </Cell>
           </Grid>
         </Cell>
-        <Sidebar>
-          <ol className='steps'>
-            <li className='current'>
-              <p>Upload your data</p>
-              <p className='step-desc'>
-                Upload a dataset that meets the file requirements.
-              </p>
-            </li>
-            <li>Prep your data</li>
-            <li>Review matches</li>
-            <li>Check new columns and export</li>
-            <li>Give feedback</li>
-          </ol>
-        </Sidebar>
       </Page>
     )
   }
