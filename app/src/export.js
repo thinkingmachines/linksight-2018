@@ -44,9 +44,11 @@ class Export extends React.Component {
   }
   getColumnHighlights () {
     return {
-      'PSGC': colors.green,
-      'Population': colors.orange,
-      'Administrative Level': colors.orange
+      'bgy_linksight': colors.green,
+      'municity_linksight': colors.green,
+      'prov_linksight': colors.green,
+      'psgc_linksight': colors.green,
+      'confidence_score_linksight': colors.green
     }
   }
   askFeedback () {
