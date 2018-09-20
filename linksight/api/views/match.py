@@ -35,7 +35,10 @@ def match_save_choices(request, id):
 @api_view(['GET'])
 def match_preview(request, id):
     match = get_object_or_404(Match, pk=id)
-    context = {'rows_shown': int(request.query_params.get('rowsShown', 10))}
+    context = {
+        'rows_shown': int(request.query_params.get('rowsShown', 10)),
+        'match': match,
+    }
     serializer = DatasetPreviewSerializer(match.matched_dataset,
                                           context=context)
     return Response(serializer.data)

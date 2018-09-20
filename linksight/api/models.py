@@ -26,7 +26,7 @@ class Dataset(models.Model):
     def __str__(self):
         return self.name or self.file.name
 
-    def preview(self, n=10):
+    def preview(self, n=10, match=None):
         with self.file.open() as f:
             df = pd.read_csv(f, dtype=str)
             preview = json.loads(
@@ -40,6 +40,12 @@ class Dataset(models.Model):
             'rowsShown': n,
             'url': self.file.url,
         }
+        if match:
+            preview['match'] = {
+                'barangayCol': match.barangay_col,
+                'cityMunicipalityCol': match.city_municipality_col,
+                'provinceCol': match.province_col,
+            }
         return preview
 
 
@@ -162,9 +168,6 @@ class Match(models.Model):
         file = ContentFile(joined_df.to_csv(index=False))
         self.matched_dataset.file.save(self.matched_dataset.name, file)
         self.save()
-
-    def preview(self):
-        return self.matched_dataset.preview()
 
 
 class MatchItem(models.Model):

@@ -5,7 +5,8 @@ module.exports = {
       {
         eslint: {
           rules: {
-            'babel/object-curly-spacing': ['error', 'never']
+            'babel/object-curly-spacing': ['error', 'never'],
+            'no-fallthrough': ['off']
           }
         }
       }

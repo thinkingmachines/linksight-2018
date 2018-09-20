@@ -48,7 +48,8 @@ class DatasetSerializer(serializers.ModelSerializer):
 class DatasetPreviewSerializer(serializers.BaseSerializer):
 
     def to_representation(self, obj):
-        return obj.preview(n=self.context['rows_shown'])
+        return obj.preview(n=self.context['rows_shown'],
+                           match=self.context.get('match'))
 
 
 class DatasetMatchSerializer(serializers.ModelSerializer):
