@@ -113,6 +113,38 @@ class Preview extends React.Component {
     }
     return (
       <Page>
+        <Sidebar
+          backButton={
+            <Button
+              className='btn -back'
+              onClick={this.props.history.goBack}
+            >
+              Back
+            </Button>
+          }
+          nextButton={
+            <Button
+              className='btn -proceed'
+              disabled={!this.hasLocationColumnsSelected()}
+              onClick={this.match.bind(this)}
+            >
+              Next
+            </Button>
+          }
+        >
+          <ol className='steps'>
+            <li>Upload your data</li>
+            <li className='current'>
+              <p>Prep your data</p>
+              <p className='step-desc'>
+                Select the columns in your dataset that refer to locations for cleaning. If you need to standardize either barangays or municipalities/cities, please choose at least two columns (ex: barangay & municipality, municipality & province).
+              </p>
+            </li>
+            <li>Review matches</li>
+            <li>Check new columns and export</li>
+            <li>Give feedback</li>
+          </ol>
+        </Sidebar>
         <Cell width={9} className={this.props.className}>
           <Grid columns={12} gap='0' height='100%' alignContent='stretch'>
             <Cell width={12} className='box'>
@@ -163,38 +195,6 @@ class Preview extends React.Component {
             </Cell>
           </Grid>
         </Cell>
-        <Sidebar
-          backButton={
-            <Button
-              className='btn -back'
-              onClick={this.props.history.goBack}
-            >
-              Back
-            </Button>
-          }
-          nextButton={
-            <Button
-              className='btn -proceed'
-              disabled={!this.hasLocationColumnsSelected()}
-              onClick={this.match.bind(this)}
-            >
-              Next
-            </Button>
-          }
-        >
-          <ol className='steps'>
-            <li>Upload your data</li>
-            <li className='current'>
-              <p>Prep your data</p>
-              <p className='step-desc'>
-                Select the columns in your dataset that refer to locations for cleaning. If you need to standardize either barangays or municipalities/cities, please choose at least two columns (ex: barangay & municipality, municipality & province).
-              </p>
-            </li>
-            <li>Review matches</li>
-            <li>Check new columns and export</li>
-            <li>Give feedback</li>
-          </ol>
-        </Sidebar>
       </Page>
     )
   }
