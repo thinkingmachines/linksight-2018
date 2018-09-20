@@ -112,7 +112,6 @@ export default styled(Export)`
   background: ${colors.monochrome[0]};
   padding: 60px;
   box-sizing: border-box;
-  max-height: calc(100vh - 30px);
   overflow-y: auto;
 
   .summary {
