@@ -127,21 +127,21 @@ class Match(models.Model):
         # Order columns
 
         front_cols = [
-            #'code',
-            #'total_score',
         ]
+
         for source_col, matched_col in (
             (self.barangay_col, 'matched_barangay'),
             (self.city_municipality_col, 'matched_city_municipality'),
             (self.province_col, 'matched_province'),
         ):
-            if source_col:
+            if source_col is not None:
                 front_cols.extend((source_col, matched_col))
         
         mid_cols = [
             "code",
             "total_score"
         ]
+
         other_cols = [col for col in joined_df.columns.tolist()
                       if (col not in front_cols) or (col not in mid_cols)]
         new_cols = front_cols + mid_cols+ other_cols
@@ -157,11 +157,13 @@ class Match(models.Model):
             'total_score': 'confidence_score_linksight'
         }, inplace=True)
 
+        #drop columns that are empty
+
         # Create matched dataset
 
         name, _ = os.path.splitext(self.dataset.name)
         self.matched_dataset = Dataset.objects.create(
-            name='{}-matched.csv'.format(name),
+            name='{}-linksight.csv'.format(name),
         )
         file = ContentFile(joined_df.to_csv(index=False))
         self.matched_dataset.file.save(self.matched_dataset.name, file)
