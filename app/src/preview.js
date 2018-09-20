@@ -125,7 +125,7 @@ class Preview extends React.Component {
           nextButton={
             <Button
               className='btn -proceed'
-              disabled={!this.hasLocationColumnsSelected()}
+              disabled={!this.hasLocationColumnsSelected() || this.state.isMatching}
               onClick={this.match.bind(this)}
             >
               Next
