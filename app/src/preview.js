@@ -162,7 +162,7 @@ class Preview extends React.Component {
               <Grid columns={12} gap='0' height='100%' alignContent='stretch'>
                 <Cell width={3} className='location-columns' middle>
                   <Instruction>
-                    Indicate which column headers in your dataset refer to the following administrative levels. You may also select "Not Applicable" if it’s not in your dataset.
+                    Indicate which column headers in your dataset refer to the following administrative levels. You may leave a field blank if it's not in your dataset.
                   </Instruction>
                   <br />
                   <LocationColumn
