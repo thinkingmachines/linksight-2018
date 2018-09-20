@@ -72,7 +72,7 @@ class Upload extends React.Component {
         </Sidebar>
         <Cell width={9} className={this.props.className}>
           <Grid columns={12} gap='15px' height='100%' className='upload'>
-            <Cell width={6} left={4} alignContent='center' middle>
+            <Cell width={12} alignContent='center' middle>
               <UploadWidget
                 name='file'
                 maxFileSize='5MB'
@@ -90,6 +90,8 @@ class Upload extends React.Component {
                   ${this.renderInstruction()}
                 `}
               />
+            </Cell>
+            <Cell width={6} left={4} alignContent='center'>
               <div className='upload-desc'>
                 <p className='note reqs'>File requirements:</p>
                 <ul className='note reqs'>
