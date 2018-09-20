@@ -93,8 +93,8 @@ class Export extends React.Component {
               <li><strong>bgy_linksight</strong> - Standardized barangay names.</li>
               <li><strong>municity_linksight </strong> - Standardized municipality or city names.</li>
               <li><strong>prov_linksight </strong> - Standardized province names.</li>
-              <li><strong>psgc</strong> - Each location has a unique 9-digit ID number based on the PSGC.</li>
-              <li><strong>confidence_score</strong> - Each match has a confidence score on a scale of 0 to 100. Exact matches are 100%.</li>
+              <li><strong>psgc_linksight</strong> - Each location has a unique 9-digit ID number based on the PSGC.</li>
+              <li><strong>confidence_score_linksight</strong> - Each match has a confidence score on a scale of 0 to 100. Exact matches are 100%.</li>
             </ul>
           </div>
           <PreviewTable
