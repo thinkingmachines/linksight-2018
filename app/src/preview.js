@@ -160,7 +160,7 @@ class Preview extends React.Component {
                 </ErrorOverlay>
               ) : null}
               <Grid columns={12} gap='0' height='100%' alignContent='stretch'>
-                <Cell width={3} className='location-columns' middle>
+                <Cell width={3} className='location-columns'>
                   <Instruction>
                     Indicate which column headers in your dataset refer to the following administrative levels. You may leave a field blank if it's not in your dataset.
                   </Instruction>
