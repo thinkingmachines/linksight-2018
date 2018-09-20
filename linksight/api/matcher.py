@@ -64,10 +64,11 @@ def to_index(t):
 
 def create_search_tuple(row, columns):
     locations = row[list(columns.values())].dropna().str.lower()
-    locations = locations.str.replace(
-        'BGY|BRGY|BARANGAY||NOT A PROVINCE|CAPITAL|\(|\)|CITY OF|CITY|',
-        '', case=False)
-    locations = locations.str.replace(r'[^A-Z ]', '', case=False)
+    locations = locations.str.replace(r'NOT A PROVINCE|CAPITAL|\(|\)|CITY OF|CITY','', case=False)
+    locations = locations.str.replace('ñ','n', case=False)
+    locations = locations.str.replace(r'BARANGAY|BGY','BGY', case=False)
+    locations = locations.str.replace('POBLACION','POB', case=False)
+    locations = locations.str.replace(r'[^A-Z ]', '', case=False).str.strip()
     values = locations.values.tolist()
     lowest_interlevel = None
     # Check lowest interlevel with values to determine lowest interlevel
@@ -105,11 +106,12 @@ def score_matches(pair, first_item_ratio_weight=.6,
     # if a search and the candidate have the same administrative level,
     # this improves the resulting score
     adm_level_match_score = (adm_level_match_multiplier if search_adm in candidate_adm else 1)
+    print (search_terms, search_adm, candidate_adm)
 
     # create a weighted score for the match with weights for each input
-    score = (
-        ((first_item_ratio * first_item_ratio_weight)/adm_level_match_multiplier +
-        (other_items_ratio * other_items_ratio_weight)/adm_level_match_multiplier) * adm_level_match_score
+    score = ((
+        (first_item_ratio * first_item_ratio_weight + other_items_ratio * other_items_ratio_weight) 
+        / adm_level_match_multiplier ) * adm_level_match_score
     )
     return (
         candidate_tuple,
@@ -196,7 +198,6 @@ def search_reference(search_tuple, ngram_table, nresults):
 
 
 def get_matches(dataset_df, columns):
-    print ("start")
     # first, create search tuples for the dataset provided by the user
     dataset_df['search_tuple'] = dataset_df.apply(
         partial(create_search_tuple, columns=columns),
@@ -216,13 +217,30 @@ def get_matches(dataset_df, columns):
 
     # WORK IN PROGRESS: Exploring using a more efficient way of finding exact matches.
 
-    #exact_matches = dataset_df.join(locations_df_find_exact,how="inner")
+    exact_matches = dataset_df.join(locations_df_find_exact,how="inner")
+
+    for i, (search_tuple, row) in enumerate(exact_matches.iterrows()):
+        yield {
+            'dataset_index': i,
+            'search_tuple': search_tuple,
+            'source_province': row.get(columns.get('prov')),
+            'source_city_municipality': row.get(columns.get('municity')),
+            'source_barangay': row.get(columns.get('bgy')),
+            'match_time': 0,
+            'matched_province': row.get('matched_province'),
+            'matched_city_municipality': row.get('matched_city_municipality'),
+            'matched_barangay': row.get('matched_city_municipality'),
+            'code': row.get('code'),
+            'total_score': 100,
+            'match_type': 'exact',
+
+        }
     
-    #needs_fuzzy_matching = dataset_df.drop(exact_matches.index)
+    needs_fuzzy_matching = dataset_df.drop(exact_matches.index)
 
     search_func = partial(search_reference, ngram_table=ngram_table, nresults=5)
     #search_tuples = needs_fuzzy_matching.search_tuple.tolist()
-    search_tuples = dataset_df.search_tuple.tolist()
+    search_tuples = needs_fuzzy_matching.search_tuple.tolist()
 
     # for each search tuple, find its top matches
     result_pairs = map(search_func, search_tuples)
@@ -230,9 +248,9 @@ def get_matches(dataset_df, columns):
     start_time = time.time()
     for i, (search_tuple, results) in enumerate(result_pairs):
         #search_tuples = needs_fuzzy_matching.search_tuple.tolist()
-        source = dataset_df.loc[to_index(search_tuple)].fillna('')
+        source = needs_fuzzy_matching.loc[to_index(search_tuple)].fillna('')
         match = {
-            'dataset_index': i,
+            'dataset_index': len(exact_matches)+i,
             'search_tuple': to_index(search_tuple),
             'source_province': source.get(columns.get('prov')),
             'source_city_municipality': source.get(columns.get('municity')),
