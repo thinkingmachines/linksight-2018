@@ -34,7 +34,7 @@ class Feedback extends React.Component {
         <Cell width={9} className={this.props.className}>
           <Grid columns={12} gap='15px' height='100%' className='feedback' middle>
             <Cell width={8} left={3} alignContent='center' middle>
-              <iframe className='airtable-embed airtable-dynamic-height' src='https://airtable.com/embed/shr7b1eauaxFWw1et?backgroundColor=teal' onWheel={(e) => this.wheel(e)} />
+              <iframe class='airtable-embed' src='https://airtable.com/embed/shr7b1eauaxFWw1et?backgroundColor=teal' onWheel={(e) => this.wheel(e)} />
             </Cell>
           </Grid>
         </Cell>
