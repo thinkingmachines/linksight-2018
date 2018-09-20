@@ -15,7 +15,8 @@ class MatchesTable extends React.Component {
           <tr>
             <th colSpan='2' />
             <th>Original Locations</th>
-            <th>Candidate Matches</th>
+            <th colSpan='4'>Candidate Matches</th>
+            <th>Confidence Score</th>
           </tr>
         </thead>
         <tbody>

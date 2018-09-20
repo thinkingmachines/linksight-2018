@@ -7,7 +7,7 @@ import * as colors from '../colors'
 const Choice = styled(props => (
   <tr className={'-choice ' + props.className}>
     <td
-      colSpan='5'
+      colSpan='4'
       className='table-cell -choice-content'
       onClick={props.onChoose.bind(null, props.item)}
     >
@@ -16,6 +16,11 @@ const Choice = styled(props => (
         props.item.matched_city_municipality,
         props.item.matched_province
       ].filter(v => v).join(', ')}
+    </td>
+    <td
+      className='table-cell'
+    >
+      <div className='score'>{props.item.total_score}</div>
     </td>
   </tr>
 ))`
