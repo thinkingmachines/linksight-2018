@@ -136,9 +136,11 @@ class Preview extends React.Component {
             <li>Upload your data</li>
             <li className='current'>
               <p>Prep your data</p>
-              <p className='step-desc'>
-                Select all the administrative units available as columns in your dataset. Our tool matches your data against standard barangay, municipality/city, province names in our database. The more administrative levels are specified, the better LinkSight can match them.
-              </p>
+              <ul className='step-desc'>
+                <li>Select all the administrative units available as columns in your dataset.</li>
+                <li>Our tool matches your data against standard barangay, municipality/city, province names in our database.</li>
+                <li>The more administrative levels are specified, the better LinkSight can match them.</li>
+              </ul>
             </li>
             <li>Review matches</li>
             <li>Check new columns and export</li>
