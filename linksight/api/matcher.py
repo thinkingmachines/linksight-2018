@@ -79,8 +79,8 @@ def create_search_tuple(row, columns):
 
 
 def score_matches(pair, first_item_ratio_weight=.6,
-                  other_items_ratio_weight=.3,
-                  adm_level_match_weight=.1):
+                  other_items_ratio_weight=.4,
+                  adm_level_match_multiplier=1.25):
     search_tuple, candidate_tuple = pair
 
     # split both the search_tuple and candidate_tuple into their name and
@@ -104,14 +104,12 @@ def score_matches(pair, first_item_ratio_weight=.6,
 
     # if a search and the candidate have the same administrative level,
     # this improves the resulting score
-    adm_level_match = search_adm in candidate_adm
-    adm_level_match_score = (1 if adm_level_match else 0)
+    adm_level_match_score = (adm_level_match_multiplier if search_adm in candidate_adm else 1)
 
     # create a weighted score for the match with weights for each input
     score = (
-        first_item_ratio * first_item_ratio_weight +
-        other_items_ratio * other_items_ratio_weight +
-        adm_level_match_score * adm_level_match_weight
+        ((first_item_ratio * first_item_ratio_weight)/adm_level_match_multiplier +
+        (other_items_ratio * other_items_ratio_weight)/adm_level_match_multiplier) * adm_level_match_score
     )
     return (
         candidate_tuple,
@@ -207,11 +205,8 @@ def get_matches(dataset_df, columns):
     dataset_df.set_index(dataset_df['search_tuple'].apply(to_index),
                          inplace=True)
 
-    print (len(dataset_df))
-
     # get lowest interlevel selected
     locations_df, ngram_table = load_reference()
-    print("just loaded reference file, now doing search")
 
     locations_df_find_exact = locations_df.set_index('candidate_terms').rename(columns={
         'bgy':'matched_barangay',
