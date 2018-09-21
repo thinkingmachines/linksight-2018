@@ -92,27 +92,37 @@ def score_matches(pair, first_item_ratio_weight=.6,
     # split first and remaining terms
     (first_search_term, *other_search_terms) = search_terms
     (first_candidate_term, *other_candidate_terms) = candidate_terms
-
+    
     # check on jw distance ratio between the very first items in searchString
     # and candidateStrings. multiply by 100 since jellyfish returns a decimal
-    # between 0 to 1.
+    # between 0 to 1.    
+
     first_item_ratio = jellyfish.jaro_winkler(first_search_term,
                                               first_candidate_term) * 100
 
-    # check on edit distance ratio between remaining search terms
-    other_items_ratio = fuzz.ratio(
-        ' '.join(other_search_terms), ' '.join(other_candidate_terms))
+    # check on edit distance ratio between remaining search terms. only do this if there is more than one search term.
+    if len(search_terms) > 1:
+        other_items_ratio = fuzz.ratio(' '.join(other_search_terms), ' '.join(other_candidate_terms))
+
 
     # if a search and the candidate have the same administrative level,
     # this improves the resulting score
     adm_level_match_score = (adm_level_match_multiplier if search_adm in candidate_adm else 1)
-    print (search_terms, search_adm, candidate_adm)
 
-    # create a weighted score for the match with weights for each input
-    score = ((
-        (first_item_ratio * first_item_ratio_weight + other_items_ratio * other_items_ratio_weight) 
-        / adm_level_match_multiplier ) * adm_level_match_score
-    )
+    # create a weighted score for the match with weights for each input. 
+    # if the search terms have only one term, don't include the similarity score of the other terms.
+
+    if len(search_terms) > 1:
+        score = ((
+            (first_item_ratio * first_item_ratio_weight + other_items_ratio * other_items_ratio_weight) 
+            / adm_level_match_multiplier ) * adm_level_match_score
+        )
+    else:
+        score = ((
+            (first_item_ratio * (first_item_ratio_weight+other_items_ratio_weight)) / adm_level_match_multiplier)
+            * adm_level_match_score
+        )
+
     return (
         candidate_tuple,
         round(score,2),
