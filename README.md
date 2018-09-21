@@ -59,6 +59,7 @@ to contribute, please send us an email at
     | EMAIL_HOST_PASSWORD | Password for above |
     | SOCIAL_AUTH_GOOGLE_OAUTH2_KEY | Key for Google OAuth2 |
     | SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET | Secret for Google OAuth2 |
+    | HOST | The hostname, used for login failure redirection |
 
     Instructions will follow on how to set `PSGC_DATASET_ID` and `POPULATION_DATASET_ID`.
 
