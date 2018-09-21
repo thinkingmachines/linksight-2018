@@ -30,13 +30,10 @@ const GoogleIcon = () => (
 )
 
 class Home extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      isUnauthorized: null
-    }
-  }
   render () {
+    if (window.location.search.indexOf('login-error') !== -1) {
+      console.log('error')
+    }
     return (
       <Page withHeader>
         <Header />
