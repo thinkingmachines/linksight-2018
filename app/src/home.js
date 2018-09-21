@@ -31,9 +31,6 @@ const GoogleIcon = () => (
 
 class Home extends React.Component {
   render () {
-    if (window.location.search.indexOf('login-error') !== -1) {
-      console.log('error')
-    }
     return (
       <Page withHeader>
         <Header />
@@ -56,7 +53,11 @@ class Home extends React.Component {
                 <GoogleIcon />
                 <span>Sign in with Google</span>
               </a>
-              <p className='request'>Not yet a user? <a className='register-link' href='https://thinkingmachines.typeform.com/to/Am40jZ' target='_blank'>Request access.</a></p>
+              <br />
+              <div className='request'>
+                {window.location.search.indexOf('login-error') !== -1 ? <p className='-error'>Oops! You haven't signed up yet!</p> : ''}
+                <p className='-register'>Not yet a user? <a className='-link' href='https://thinkingmachines.typeform.com/to/Am40jZ' target='_blank'>Request access.</a></p>
+              </div>
             </Cell>
           </Grid>
         </Cell>
@@ -111,8 +112,11 @@ export default styled(Home)`
   .sign-in span {
     margin: 0 15px;
   }
-  .request,
-  .request .register-link {
+  .request p.-error {
+    color: ${colors.yellow};
+  }
+  .request .-register, 
+  .request .-link {
     margin: 20px 0;
     color: ${colors.monochrome[0]};
   }
