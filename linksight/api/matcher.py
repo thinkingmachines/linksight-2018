@@ -68,7 +68,7 @@ def create_search_tuple(row, columns):
     locations = locations.str.replace('ñ','n', case=False)
     locations = locations.str.replace(r'BARANGAY|BGY','BGY', case=False)
     locations = locations.str.replace('POBLACION','POB', case=False)
-    locations = locations.str.replace(r'[^A-Z ]', '', case=False).str.strip()
+    locations = locations.str.replace(r'[^A-Z0-9\s]', '', case=False).str.strip()
     values = locations.values.tolist()
     lowest_interlevel = None
     # Check lowest interlevel with values to determine lowest interlevel
@@ -100,6 +100,19 @@ def score_matches(pair, first_item_ratio_weight=.6,
     first_item_ratio = jellyfish.jaro_winkler(first_search_term,
                                               first_candidate_term) * 100
 
+    # if the item has a number in it, improve the score by checking if the numbers 
+    # are equivalent with those in the candidate
+
+    # same_digits_multiplier = 1
+
+    # if bool(re.search(first_search_term,r'\d')):
+    #     digits_in_first_search_term = "".join(re.findall(r'\d',first_search_term))
+    #     digits_in_first_candidate_term = "".join(re.findall(r'\d',first_candidate_term))
+
+    #     same_digits_ratio = fuzz.ratio(digits_in_first_search_term,digits_in_first_candidate_term)
+
+    #     same_digits_multiplier = same_digits_multiplier + (same_digits_ratio/200)
+
     # check on edit distance ratio between remaining search terms. only do this if there is more than one search term.
     if len(search_terms) > 1:
         other_items_ratio = fuzz.ratio(' '.join(other_search_terms), ' '.join(other_candidate_terms))
@@ -111,6 +124,7 @@ def score_matches(pair, first_item_ratio_weight=.6,
 
     # create a weighted score for the match with weights for each input. 
     # if the search terms have only one term, don't include the similarity score of the other terms.
+
 
     if len(search_terms) > 1:
         score = ((
@@ -135,32 +149,16 @@ def search_shortlist(search_tuple, shortlist):
     Takes a search tuple and a short list of candidate tuples
     based on common n-grams
     """
-
-    # from the shortlist, find exact matches first
-    exact_match = False
-    for candidate_tuple in shortlist:
-        exact_match = search_tuple == candidate_tuple[:-1]
-        if exact_match:
-
-            # exact matches result in perfect score and a single row returned
-            # with the candidate tuple, total score of 100 and psgc code
-
-            psgc = candidate_tuple[-1]
-            return [(candidate_tuple, 100, psgc)]
-
-    # if no exact match found, then pair search tuple with each possible
-    # candidate tuple
-    else:
-        candidate_pairs = [
-            (search_tuple, candidate_tuple)
-            for candidate_tuple in shortlist
-        ]
-        # use multiprocessing to run fuzzy matching
-        pool = Pool(2)
-        results = pool.map(score_matches, candidate_pairs)
-        pool.close()
-        pool.join()
-        return results
+    candidate_pairs = [
+        (search_tuple, candidate_tuple)
+        for candidate_tuple in shortlist
+    ]
+    # use multiprocessing to run fuzzy matching
+    pool = Pool(2)
+    results = pool.map(score_matches, candidate_pairs)
+    pool.close()
+    pool.join()
+    return results
 
 
 def search_reference(search_tuple, ngram_table, nresults):
@@ -225,11 +223,12 @@ def get_matches(dataset_df, columns):
         'prov':'matched_province'
         })
 
-    # WORK IN PROGRESS: Exploring using a more efficient way of finding exact matches.
+    # using a more efficient way of finding exact matches first
 
     exact_matches = dataset_df.join(locations_df_find_exact,how="inner")
 
     for i, (search_tuple, row) in enumerate(exact_matches.iterrows()):
+        print (search_tuple, row.get('matched_barangay'), row.get('matched_city_municipality'))
         yield {
             'dataset_index': i,
             'search_tuple': search_tuple,
@@ -246,17 +245,21 @@ def get_matches(dataset_df, columns):
 
         }
     
+    # then exclude these from those that need fuzzy matching. only process the fuzzy matches next:
+
     needs_fuzzy_matching = dataset_df.drop(exact_matches.index)
 
     search_func = partial(search_reference, ngram_table=ngram_table, nresults=5)
-    #search_tuples = needs_fuzzy_matching.search_tuple.tolist()
+
     search_tuples = needs_fuzzy_matching.search_tuple.tolist()
 
     # for each search tuple, find its top matches
+    
     result_pairs = map(search_func, search_tuples)
 
     start_time = time.time()
     for i, (search_tuple, results) in enumerate(result_pairs):
+        print (search_tuple)
         #search_tuples = needs_fuzzy_matching.search_tuple.tolist()
         source = needs_fuzzy_matching.loc[to_index(search_tuple)].fillna('')
         match = {
