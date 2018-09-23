@@ -17,10 +17,11 @@ import environ
 # Load .env file
 env = environ.Env(
     DEBUG=(bool, False),
+    HOST=(str, 'http://localhost:3000'),
     ALLOWED_HOSTS=(list, ['127.0.0.1', 'localhost']),
     EMAIL_PORT=(int, 25),
     SENTRY_DSN=(str, None),
-    LOGIN_REDIRECT_URL=(str, 'http://localhost:3000/upload')
+    LOGIN_REDIRECT_URL=(str, 'http://localhost:3000/upload'),
 )
 env.read_env('.env')
 
@@ -152,6 +153,7 @@ else:
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880
 
 # django-cors-headers
 CORS_ORIGIN_WHITELIST = (
@@ -178,7 +180,6 @@ SILENCED_SYSTEM_CHECKS = [
 # Datasets
 PSGC_DATASET_ID = env('PSGC_DATASET_ID')
 POPULATION_DATASET_ID = env('POPULATION_DATASET_ID')
-APPROVED_EMAILS_SHEETS_ID = env('APPROVED_EMAILS_SHEETS_ID')
 
 # Raven
 RAVEN_CONFIG = {
@@ -233,4 +234,8 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.user.user_details',
 )
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880
+# Approved emails
+APPROVED_EMAILS_SHEET_ID = env('APPROVED_EMAILS_SHEET_ID')
+APPROVED_EMAILS_SHEET_RANGE = env('APPROVED_EMAILS_SHEET_RANGE')
+APPROVED_EMAILS_ROW_KEY = env('APPROVED_EMAILS_ROW_KEY')
+

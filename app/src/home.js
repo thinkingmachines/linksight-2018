@@ -30,6 +30,15 @@ const GoogleIcon = () => (
 )
 
 class Home extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {unapproved: false}
+  }
+  componentDidMount () {
+    const unapproved = new window.URLSearchParams(window.location.search)
+      .get('unapproved')
+    this.setState({unapproved})
+  }
   render () {
     return (
       <Page withHeader>
@@ -55,8 +64,19 @@ class Home extends React.Component {
               </a>
               <br />
               <div className='request'>
-                {window.location.search.indexOf('login-error') !== -1 ? <p className='-error'>Oops! You haven't signed up yet!</p> : ''}
-                <p className='-register'>Not yet a user? <a className='-link' href='https://thinkingmachines.typeform.com/to/Am40jZ' target='_blank'>Request access.</a></p>
+                {this.state.unapproved ? (
+                  <p className='-register'>
+                    <strong>{this.state.unapproved}</strong> doesn't have access to LinkSight yet.<br />
+                    Sign up by answering&nbsp;
+                    <a
+                      className='-link'
+                      href='https://thinkingmachines.typeform.com/to/Am40jZ'
+                      target='_blank'
+                    >
+                      this form.
+                    </a>
+                  </p>
+                ) : null}
               </div>
             </Cell>
           </Grid>
@@ -112,10 +132,7 @@ export default styled(Home)`
   .sign-in span {
     margin: 0 15px;
   }
-  .request p.-error {
-    color: ${colors.yellow};
-  }
-  .request .-register, 
+  .request .-register,
   .request .-link {
     margin: 20px 0;
     color: ${colors.monochrome[0]};

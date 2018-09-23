@@ -1,21 +1,13 @@
-import json
-from django.shortcuts import redirect
-from linksight.settings import HOST, APPROVED_EMAILS_SHEETS_ID
-
 from apiclient.discovery import build
-
-
-def get_sheets_service():
-    return build('sheets', 'v4')
-
-
-def get_sheets_client():
-    service = get_sheets_service()
-    return service.spreadsheets()
+from django.shortcuts import redirect
+from linksight.settings import (APPROVED_EMAILS_ROW_KEY,
+                                APPROVED_EMAILS_SHEET_ID,
+                                APPROVED_EMAILS_SHEET_RANGE, HOST)
 
 
 def get_sheet_values(spreadsheet_id, sheet_range):
-    client = get_sheets_client()
+    service = build('sheets', 'v4')
+    client = service.spreadsheets()
     values = client.values().get(
         spreadsheetId=spreadsheet_id,
         range=sheet_range).execute().get('values', [])
@@ -25,10 +17,12 @@ def get_sheet_values(spreadsheet_id, sheet_range):
 
 
 def auth_allowed(backend, details, response, *args, **kwargs):
-    approved_emails = [json.dumps(row) for row in get_sheet_values(APPROVED_EMAILS_SHEETS_ID,
-                                                                   'Sheet1!A')]
-
+    approved_emails = [
+        row.get(APPROVED_EMAILS_ROW_KEY)
+        for row in get_sheet_values(
+            APPROVED_EMAILS_SHEET_ID,
+            APPROVED_EMAILS_SHEET_RANGE)
+    ]
     email = details.get('email')
-
     if email not in approved_emails:
-        return redirect('{}/?login-error'.format(HOST))
+        return redirect('{}/?unapproved={}'.format(HOST, email))
