@@ -8,6 +8,7 @@ djangorestframework-csv
 djangorestframework-link-header-pagination
 fuzzywuzzy[speedup]
 gunicorn
+google-api-python-client
 ipython
 pandas
 psycopg2-binary

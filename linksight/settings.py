@@ -178,6 +178,7 @@ SILENCED_SYSTEM_CHECKS = [
 # Datasets
 PSGC_DATASET_ID = env('PSGC_DATASET_ID')
 POPULATION_DATASET_ID = env('POPULATION_DATASET_ID')
+APPROVED_EMAILS_SHEETS_ID = env('APPROVED_EMAILS_SHEETS_ID')
 
 # Raven
 RAVEN_CONFIG = {
@@ -224,7 +225,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
     'social_core.pipeline.social_auth.social_uid',
     'linksight.pipeline.auth_allowed',
-    'social_core.pipeline.social_auth.auth_allowed',
+    # 'social_core.pipeline.social_auth.auth_allowed',
     'social_core.pipeline.user.get_username',
     'social_core.pipeline.social_auth.associate_by_email',
     'social_core.pipeline.user.create_user',
