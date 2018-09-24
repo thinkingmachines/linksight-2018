@@ -1,5 +1,4 @@
 import csv
-import os
 from django.test import TestCase
 from linksight.api.fuzzywuzzymatcher import FuzzyWuzzyMatcher
 from tempfile import NamedTemporaryFile
@@ -7,10 +6,16 @@ from tempfile import NamedTemporaryFile
 REFERENCE_FILE = 'data/clean-psgc.csv'
 
 
+def create_test_file(content):
+    temp = NamedTemporaryFile(delete=False, mode='w')
+    temp.write(content)
+    temp.close
+    return temp.name
+
+
 class LinkSightMatcherTest(TestCase):
 
-    def setUp(self):
-        self.reference = REFERENCE_FILE
+    reference = REFERENCE_FILE
 
     def test_return_possible_matches(self):
         '''
@@ -19,7 +24,7 @@ class LinkSightMatcherTest(TestCase):
         '''
 
         test = '''pro,mun,bgy\nNATIONAL CAPITAL REGION,QUEZON CITY,TEACHERS VILLAGE WST'''
-        dataset_path = self.create_test_file(test)
+        dataset_path = create_test_file(test)
         matcher = self.create_matcher(dataset_path)
         result = matcher.get_match_items(
             province_col='pro',
@@ -46,7 +51,7 @@ class LinkSightMatcherTest(TestCase):
             test_case['source_mun'],
             test_case['source_bgy']
         )
-        dataset_path = self.create_test_file(test)
+        dataset_path = create_test_file(test)
         matcher = self.create_matcher(dataset_path)
         result = matcher.get_match_items(
             province_col='pro',
@@ -73,13 +78,6 @@ class LinkSightMatcherTest(TestCase):
                     assert not len(subset)
                 else:
                     assert subset[0] == expected_val
-
-    @staticmethod
-    def create_test_file(content):
-        temp = NamedTemporaryFile(delete=False, mode='w')
-        temp.write(content)
-        temp.close
-        return temp.name
 
     def create_matcher(self, dataset):
         return FuzzyWuzzyMatcher(
