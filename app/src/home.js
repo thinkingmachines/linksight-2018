@@ -71,7 +71,7 @@ class Home extends React.Component {
                 ) : null}
                 Not yet a user?&nbsp;
                 <a
-                  href='https://thinkingmachines.typeform.com/to/Am40jZ'
+                  href='https://docs.google.com/forms/d/e/1FAIpQLScQPG4sol4rz8T5pgGe0LqZTllUNWkVzyipF3JANDWvOuc_AA/viewform'
                   target='_blank'
                 >
                   Request access.
