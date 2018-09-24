@@ -63,21 +63,20 @@ class Home extends React.Component {
                 <span>Sign in with Google</span>
               </a>
               <br />
-              <div className='request'>
+              <p className='signup'>
                 {this.state.unapproved ? (
-                  <p className='-register'>
+                  <div className='-error'>
                     <strong>{this.state.unapproved}</strong> doesn't have access to LinkSight yet.<br />
-                    Sign up by answering&nbsp;
-                    <a
-                      className='-link'
-                      href='https://thinkingmachines.typeform.com/to/Am40jZ'
-                      target='_blank'
-                    >
-                      this form.
-                    </a>
-                  </p>
+                  </div>
                 ) : null}
-              </div>
+                Not yet a user?&nbsp;
+                <a
+                  href='https://thinkingmachines.typeform.com/to/Am40jZ'
+                  target='_blank'
+                >
+                  Request access.
+                </a>
+              </p>
             </Cell>
           </Grid>
         </Cell>
@@ -132,9 +131,13 @@ export default styled(Home)`
   .sign-in span {
     margin: 0 15px;
   }
-  .request .-register,
-  .request .-link {
+  .signup .-error {
+    color: ${colors.yellow};
+  }
+  .signup {
     margin: 20px 0;
+  }
+  .signup a {
     color: ${colors.monochrome[0]};
   }
 `
