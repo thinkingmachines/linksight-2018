@@ -66,8 +66,8 @@ def create_search_tuple(row, columns):
     locations = row[list(columns.values())].dropna().str.lower()
     locations = locations.str.replace(r'NOT A PROVINCE|CAPITAL|\(|\)|CITY OF|CITY','', case=False)
     locations = locations.str.replace('ñ','n', case=False)
-    locations = locations.str.replace(r'BARANGAY|BGY','BGY', case=False)
-    locations = locations.str.replace('POBLACION','POB', case=False)
+    locations = locations.str.replace(r'BARANGAY|BGY','bgy', case=False)
+    locations = locations.str.replace('POBLACION','pob', case=False)
     locations = locations.str.replace(r'[^A-Z0-9\s]', '', case=False).str.strip()
     values = locations.values.tolist()
     lowest_interlevel = None
@@ -238,7 +238,7 @@ def get_matches(dataset_df, columns):
             'match_time': 0,
             'matched_province': row.get('matched_province'),
             'matched_city_municipality': row.get('matched_city_municipality'),
-            'matched_barangay': row.get('matched_city_municipality'),
+            'matched_barangay': row.get('matched_barangay'),
             'code': row.get('code'),
             'total_score': 100,
             'match_type': 'exact',
@@ -276,7 +276,7 @@ def get_matches(dataset_df, columns):
             for candidate_tuple, score, candidate_code in results:
                 matched = (locations_df
                            .loc[to_index(candidate_tuple)].fillna(''))
-                match_type = 'near' if len(results) > 1 else 'exact'
+                match_type = 'near'# if len(results) > 1 else 'exact'
                 yield {
                     **match,
                     'matched_province': matched['prov'],

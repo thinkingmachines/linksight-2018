@@ -90,6 +90,7 @@ class Match(models.Model):
         ])
 
     def save_choices(self, match_choices):
+        
         # Save choices
 
         self.items.all().update(chosen=False)
@@ -156,9 +157,6 @@ class Match(models.Model):
             'code': 'psgc_linksight',
             'total_score': 'confidence_score_linksight'
         }, inplace=True)
-
-        #drop columns that are empty
-
 
         # Create matched dataset
 
