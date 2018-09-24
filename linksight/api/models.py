@@ -102,6 +102,7 @@ class Match(models.Model):
             'matched_city_municipality_psgc',
             'matched_province',
             'matched_province_psgc',
+            'match_type'
         ]])
 
         # Get deepest PSGC
@@ -157,6 +158,7 @@ class Match(models.Model):
             'matched_barangay': 'Matched Barangay',
             'matched_city_municipality': 'Matched City/Municipality',
             'matched_province': 'Matched Province',
+            'match_type': 'Match Type'
         }, inplace=True)
 
         # Create matched dataset
