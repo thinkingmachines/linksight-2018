@@ -27,11 +27,11 @@ class DatasetSerializer(serializers.ModelSerializer):
                 'LinkSight currently only handles CSV files.',
             )
 
-        # row_count = sum(1 for row in csv.reader(map(str, value.open())))
-        # if row_count > 3000:
-        #     raise serializers.ValidationError(
-        #         'LinkSight can only handle max 3000 rows at the moment.',
-        #     )
+        row_count = sum(1 for row in csv.reader(map(str, value.open())))
+        if row_count > 3000:
+            raise serializers.ValidationError(
+                'LinkSight can only handle max 3000 rows at the moment.',
+            )
 
         # NOTE: Re-opening the file does `seek(0)`
         return value.open()
