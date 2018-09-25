@@ -20,7 +20,7 @@ module.exports = {
           appMountIds: ['modal-root'],
           baseHref: '/',
           googleAnalytics: {
-            trackingId: 'UA-123415402-1'
+            trackingId: 'UA-66863078-3'
           },
           links: [
             'https://fonts.googleapis.com/css?family=Barlow:400,400i,700',
