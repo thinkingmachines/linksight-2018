@@ -210,7 +210,9 @@ class NgramsMatcher(BaseMatcher):
                                    }))
 
         # using a more efficient way of finding exact matches first
-        exact_matches = dataset_df.join(locations_df_find_exact, how='inner')
+
+        exact_matches = dataset_df.join(locations_df_find_exact, how="inner",
+                                        lsuffix='dataset', rsuffix='reference')
 
         for i, (search_tuple, row) in enumerate(exact_matches.iterrows()):
             yield {
