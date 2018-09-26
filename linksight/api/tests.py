@@ -9,7 +9,7 @@ REFERENCE_FILE = 'data/clean-psgc.csv'
 def create_test_file(content):
     temp = NamedTemporaryFile(delete=False, mode='w')
     temp.write(content)
-    temp.close
+    temp.close()
     return temp.name
 
 
