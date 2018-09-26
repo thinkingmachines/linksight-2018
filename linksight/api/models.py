@@ -10,7 +10,7 @@ from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import Q
 
-from linksight.api.matcher import create_search_tuple, get_matches, to_index
+from linksight.api.matchers.ngrams_matcher import create_search_tuple, get_matches, to_index
 
 
 class Dataset(models.Model):
