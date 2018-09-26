@@ -2,6 +2,14 @@ import abc
 
 
 class BaseMatcher(abc.ABC):
+    def __init__(self, dataset_path, columns):
+        """Attributes:
+        dataset_path: file path of the dataset to be processed
+        columns: ordered dict containing the names of the dataset fields and their corresponding
+                 interlevels
+        """
+        self.dataset_path = dataset_path
+        self.columns = columns
 
     @abc.abstractmethod
     def get_matches():

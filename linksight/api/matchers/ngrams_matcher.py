@@ -17,9 +17,7 @@ REFERENCE_FILE = 'data/psgc-locations.csv.gz'
 
 
 class NgramsMatcher(BaseMatcher):
-    @property
-    def reference(self):
-        return REFERENCE_FILE
+    reference = REFERENCE_FILE
 
     @staticmethod
     def make_ngram(string, n):
@@ -187,7 +185,12 @@ class NgramsMatcher(BaseMatcher):
 
         return search_tuple, top_results
 
-    def get_matches(self, dataset_df, columns):
+    def get_matches(self):
+        with open(self.dataset_path) as f:
+            dataset_df = pd.read_csv(f)
+
+        columns = self.columns
+
         # first, create search tuples for the dataset provided by the user
         dataset_df['search_tuple'] = dataset_df.apply(
             partial(create_search_tuple, columns=columns),
