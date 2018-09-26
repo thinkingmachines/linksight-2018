@@ -59,7 +59,10 @@ to contribute, please send us an email at
     | EMAIL_HOST_PASSWORD | Password for above |
     | SOCIAL_AUTH_GOOGLE_OAUTH2_KEY | Key for Google OAuth2 |
     | SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET | Secret for Google OAuth2 |
-    | HOST | The hostname, used for login failure redirection |
+    | GOOGLE_APPLICATION_CREDENTIALS | Path to the Google Cloud Service Account key file used to retrieve the list of approved emails |
+    | APPROVED_EMAILS_SHEET_ID | Google Sheets ID of th list of approved emails |
+    | APPROVED_EMAILS_SHEET_RANGE | The sheet range for approved emails |
+    | APPROVED_EMAILS_ROW_KEY | The row key for approved emails |
 
     Instructions will follow on how to set `PSGC_DATASET_ID` and `POPULATION_DATASET_ID`.
 
