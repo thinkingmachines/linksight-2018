@@ -22,5 +22,21 @@ class BaseMatcher(abc.ABC):
             'near': if there are multiple possible matches or if if there's a partial match
                     Ex: we find the correct province and city, but no match for barangay
             'exact': if it's an exact match for all interlevels
+
+        Sample return dict for each iteration:
+        { 'dataset_index': 12,
+          'search_tuple': 'san antonio valley ii,paranaque,bgy',
+          'source_province': '',
+          'source_city_municipality': 'Paranaque City',
+          'source_barangay': 'San Antonio Valley II',
+          'match_time': 0.17308688163757324,
+          'matched_province': 'QUEZON',
+          'matched_city_municipality': 'GUINAYANGAN',
+          'matched_barangay': 'SAN ANTONIO',
+          'code': '045618037',
+          'total_score': 75.09,
+          'match_type': 'near'
+        }
+
         """
         pass
