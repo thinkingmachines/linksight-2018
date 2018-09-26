@@ -1,7 +1,7 @@
 import abc
 
 
-class Matcher(abc.ABC):
+class BaseMatcher(abc.ABC):
     """Returns a dataframe containing the following fields:
         source_barangay
         source_city_municipality
@@ -32,10 +32,11 @@ class Matcher(abc.ABC):
             reference: the path of the file containing the PSGC reference file
     """
 
-    def __init__(self, dataset, reference):
-        self.dataset = dataset
-        self.reference = reference
+    @property
+    @abc.abstractmethod
+    def reference(self):
+        pass
 
     @abc.abstractmethod
-    def get_match_items(self):
+    def get_matches():
         pass
