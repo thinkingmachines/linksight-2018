@@ -32,11 +32,6 @@ class BaseMatcher(abc.ABC):
             reference: the path of the file containing the PSGC reference file
     """
 
-    @property
-    @abc.abstractmethod
-    def reference(self):
-        pass
-
     @abc.abstractmethod
     def get_matches():
         pass
