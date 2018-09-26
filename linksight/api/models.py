@@ -80,10 +80,9 @@ class Match(models.Model):
         ])
 
     def generate_match_items(self, **kwargs):
-        with self.dataset.file.open() as f:
-            dataset_df = pd.read_csv(f)
-
-        matches = NgramsMatcher().get_matches(dataset_df, columns=self.loc_columns)
+        matcher = NgramsMatcher(dataset_path=self.dataset.file.path,
+                                columns=self.loc_columns)
+        matches = matcher.get_matches()
 
         MatchItem.objects.bulk_create([
             MatchItem(**match_item, match=self, chosen=False)
