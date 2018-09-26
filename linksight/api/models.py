@@ -146,7 +146,7 @@ class Match(models.Model):
 
         other_cols = [col for col in joined_df.columns.tolist()
                       if (col not in front_cols) and (col not in mid_cols)]
-        new_cols = front_cols + mid_cols+ other_cols
+        new_cols = front_cols + mid_cols + other_cols
         joined_df = joined_df[new_cols]
 
         # Rename some columns for display
