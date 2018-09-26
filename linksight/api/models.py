@@ -10,7 +10,8 @@ from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import Q
 
-from linksight.api.matchers.ngrams_matcher import create_search_tuple, get_matches, to_index
+from linksight.api.matchers.search_tuple import create_search_tuple, to_index
+from linksight.api.matchers.ngrams_matcher import NgramsMatcher
 
 
 class Dataset(models.Model):
@@ -82,7 +83,7 @@ class Match(models.Model):
         with self.dataset.file.open() as f:
             dataset_df = pd.read_csv(f)
 
-        matches = get_matches(dataset_df, columns=self.loc_columns)
+        matches = NgramsMatcher().get_matches(dataset_df, columns=self.loc_columns)
 
         MatchItem.objects.bulk_create([
             MatchItem(**match_item, match=self, chosen=False)
@@ -90,7 +91,7 @@ class Match(models.Model):
         ])
 
     def save_choices(self, match_choices):
-        
+
         # Save choices
 
         self.items.all().update(chosen=False)
@@ -137,7 +138,7 @@ class Match(models.Model):
         ):
             if source_col is not None:
                 front_cols.extend((source_col, matched_col))
-        
+
         mid_cols = [
             "code",
             "total_score"
