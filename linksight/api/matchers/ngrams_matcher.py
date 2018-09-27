@@ -63,69 +63,61 @@ class NgramsMatcher(BaseMatcher):
         return locations_df, self.generate_ngram_table(locations, NGRAM_SIZE)
 
     @staticmethod
-    def score_matches(pair, first_item_ratio_weight=.6,
-                      other_items_ratio_weight=.4,
-                      adm_level_match_multiplier=1.25):
+    def score_matches(pair, first_item_ratio_weight=.5,
+                      other_items_ratio_weight=.5):
         search_tuple, candidate_tuple = pair
 
         # split both the search_tuple and candidate_tuple into their name and
         # interlevel components.
+
         (*search_terms, search_adm) = search_tuple
         (*candidate_terms, candidate_adm, candidate_code) = candidate_tuple
 
         # split first and remaining terms
+
         (first_search_term, *other_search_terms) = search_terms
         (first_candidate_term, *other_candidate_terms) = candidate_terms
 
-        # check on jw distance ratio between the very first items in searchString
-        # and candidateStrings. multiply by 100 since jellyfish returns a decimal
-        # between 0 to 1.
+        #everything starts with perfect score, then we penalize for differences
+        score = 100
 
-        first_item_ratio = jellyfish.jaro_winkler(first_search_term,
-                                                  first_candidate_term) * 100
+        # check on jw distance ratio between the very first items in search terms
+        # and candidate terms. multiply by 100 since jellyfish returns a decimal
+        # between 0 to 1. inflict a larger penalty for different terms
 
-        # if the item has a number in it, improve the score by checking if the numbers
-        # are equivalent with those in the candidate
+        first_item_ratio = jellyfish.jaro_winkler(first_search_term, first_candidate_term) * 100
+        first_item_diff = (100 - first_item_ratio) 
+        score -= first_item_diff * first_item_ratio_weight
 
-        # same_digits_multiplier = 1
+        # if the first items don't have the same numbers in them, reduce the score further:
+        digits_in_first_search_term = "".join(re.findall(r'\d+',first_search_term))
+        digits_in_first_candidate_term = "".join(re.findall(r'\d+',first_candidate_term))
 
-        # if bool(re.search(first_search_term,r'\d')):
-        #     digits_in_first_search_term = "".join(re.findall(r'\d',first_search_term))
-        #     digits_in_first_candidate_term = "".join(re.findall(r'\d',first_candidate_term))
+        #if digits_in_first_search_term != digits_in_first_candidate_term:
+        #    score -= 10
 
-        #     same_digits_ratio = fuzz.ratio(digits_in_first_search_term,digits_in_first_candidate_term)
+        # if a search and the candidate have the same administrative level, inflict penalty
+        if search_adm != candidate_adm:
+            score -= 10
 
-        #     same_digits_multiplier = same_digits_multiplier + (same_digits_ratio/200)
+        #if there are more search terms than candidate terms, inflict a penalty
+        if len(search_terms) > len(candidate_terms):
+            score -= 30
 
-        # check on edit distance ratio between remaining search terms. only do this if there is more than one search term.
+        # if the search terms have only one term, don't include the similarity score of the other terms.
         if len(search_terms) > 1:
             other_items_ratio = fuzz.ratio(' '.join(other_search_terms), ' '.join(other_candidate_terms))
+            other_items_diff = 100 - other_items_ratio
+            score -= other_items_diff * other_items_ratio_weight
 
-
-        # if a search and the candidate have the same administrative level,
-        # this improves the resulting score
-        adm_level_match_score = (adm_level_match_multiplier if search_adm in candidate_adm else 1)
-
-        # create a weighted score for the match with weights for each input.
-        # if the search terms have only one term, don't include the similarity score of the other terms.
-
-
-        if len(search_terms) > 1:
-            score = ((
-                (first_item_ratio * first_item_ratio_weight + other_items_ratio * other_items_ratio_weight)
-                / adm_level_match_multiplier ) * adm_level_match_score
-            )
-        else:
-            score = ((
-                (first_item_ratio * (first_item_ratio_weight+other_items_ratio_weight)) / adm_level_match_multiplier)
-                * adm_level_match_score
-            )
+        #print (search_tuple, candidate_tuple, score)
 
         return (
             candidate_tuple,
             round(score,2),
             candidate_code
         )
+        
 
     def search_shortlist(self, search_tuple, shortlist):
         """
@@ -166,8 +158,8 @@ class NgramsMatcher(BaseMatcher):
         # for example, no need to run fuzzy matching on an candidate with only a
         # single common n-gram with the search terms
 
-        threshold = len(ss_ngrams) / 3
-        most_possible = [k for k, v in Counter(possible_matches).items() if v >= threshold]
+        #threshold = len(ss_ngrams) / 4 
+        most_possible = [k for k, v in Counter(possible_matches).items() if v >= 2]
 
         # calculate similarity scores of search tuples with candidate among
         # possible matches for each unique psgc code, get the match phrase with the
@@ -213,7 +205,7 @@ class NgramsMatcher(BaseMatcher):
         exact_matches = dataset_df.join(locations_df_find_exact, how="inner")
 
         for i, (search_tuple, row) in enumerate(exact_matches.iterrows()):
-            print(search_tuple, row.get('matched_barangay'), row.get('matched_city_municipality'))
+            #print(search_tuple, row.get('matched_barangay'), row.get('matched_city_municipality'))
             yield {
                 'dataset_index': i,
                 'search_tuple': search_tuple,
@@ -243,7 +235,7 @@ class NgramsMatcher(BaseMatcher):
 
         start_time = time.time()
         for i, (search_tuple, results) in enumerate(result_pairs):
-            print(search_tuple)
+            #print(search_tuple)
             # search_tuples = needs_fuzzy_matching.search_tuple.tolist()
             source = needs_fuzzy_matching.loc[to_index(search_tuple)].fillna('')
             match = {
