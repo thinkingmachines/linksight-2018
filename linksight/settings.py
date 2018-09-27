@@ -155,6 +155,12 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880
 
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+GS_BUCKET_NAME = 'linksight'
+GS_PROJECT_ID = 'linksight-208514'
+GS_DEFAULT_ACL = 'publicRead'
+GS_FILE_OVERWRITE = False
+
 # django-cors-headers
 CORS_ORIGIN_WHITELIST = (
     'localhost:3000',
@@ -212,7 +218,7 @@ else:
     EMAIL_HOST_USER = env('EMAIL_HOST_USER')
     EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
-# Soacial Auth
+# Social Auth
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
@@ -226,7 +232,6 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
     'social_core.pipeline.social_auth.social_uid',
     'linksight.pipeline.auth_allowed',
-    # 'social_core.pipeline.social_auth.auth_allowed',
     'social_core.pipeline.user.get_username',
     'social_core.pipeline.social_auth.associate_by_email',
     'social_core.pipeline.user.create_user',

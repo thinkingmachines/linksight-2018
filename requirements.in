@@ -3,12 +3,13 @@ django-cors-headers
 django-environ
 django-registration-redux
 django-silk
+django-storages[google]
 djangorestframework
 djangorestframework-csv
 djangorestframework-link-header-pagination
 fuzzywuzzy[speedup]
-gunicorn
 google-api-python-client
+gunicorn
 ipython
 pandas
 psycopg2-binary
