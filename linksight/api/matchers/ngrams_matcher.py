@@ -1,7 +1,7 @@
 import operator
 import re
 import time
-from collections import Counter
+from collections import Counter, OrderedDict
 from functools import lru_cache, partial
 from multiprocessing import Pool
 
@@ -18,6 +18,11 @@ REFERENCE_FILE = 'data/psgc-locations.csv.gz'
 
 class NgramsMatcher(BaseMatcher):
     reference = REFERENCE_FILE
+    dataset_columns = OrderedDict([
+        ('bgy', 'dataset_bgy'),
+        ('municity', 'dataset_mun'),
+        ('prov', 'dataset_prov'),
+    ])
 
     @staticmethod
     def make_ngram(string, n):
@@ -185,10 +190,28 @@ class NgramsMatcher(BaseMatcher):
 
         return search_tuple, top_results
 
+    def get_exact_matches(self, dataset_df, locations_df_find_exact):
+        exact_matches = dataset_df.join(locations_df_find_exact, how="inner",
+                                        lsuffix='_dataset')
+
+        return exact_matches
+
+    def set_dataset_columns(self, dataset_df):
+        columns = self.columns
+
+        dataset_df.columns = ['dataset_{}'.format(col) for col in dataset_df.columns]
+        dataset_df.rename(columns={
+            'dataset_{}'.format(columns.get('prov')): 'dataset_prov',
+            'dataset_{}'.format(columns.get('municity')): 'dataset_mun',
+            'dataset_{}'.format(columns.get('bgy')): 'dataset_bgy'
+        }, inplace=True)
+        return dataset_df
+
     def get_matches(self):
         dataset_df = pd.read_csv(self.dataset_file)
 
-        columns = self.columns
+        dataset_df = self.set_dataset_columns(dataset_df)
+        columns = self.dataset_columns
 
         # first, create search tuples for the dataset provided by the user
         dataset_df['search_tuple'] = dataset_df.apply(
@@ -210,9 +233,7 @@ class NgramsMatcher(BaseMatcher):
                                    }))
 
         # using a more efficient way of finding exact matches first
-
-        exact_matches = dataset_df.join(locations_df_find_exact, how="inner",
-                                        lsuffix='dataset', rsuffix='reference')
+        exact_matches = self.get_exact_matches(dataset_df, locations_df_find_exact)
 
         for i, (search_tuple, row) in enumerate(exact_matches.iterrows()):
             yield {

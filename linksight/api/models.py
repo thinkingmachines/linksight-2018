@@ -123,7 +123,7 @@ class Match(models.Model):
             'matched_province',
             'code',
             'total_score'
-        ]])
+        ]], lsuffix='_dataset')
 
         # Order columns
 
