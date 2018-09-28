@@ -117,44 +117,49 @@ class Match(models.Model):
         ).values()))
         matches_df.set_index('search_tuple', inplace=True)
 
-        joined_df = dataset_df.join(matches_df[[
-            'matched_barangay',
-            'matched_city_municipality',
-            'matched_province',
-            'code',
-            'total_score'
-        ]], lsuffix='_dataset')
-
-        # Order columns
-
-        front_cols = []
-        for source_col, matched_col in (
-            (self.barangay_col, 'matched_barangay'),
-            (self.city_municipality_col, 'matched_city_municipality'),
-            (self.province_col, 'matched_province'),
-        ):
-            if source_col is not None:
-                front_cols.extend((source_col, matched_col))
-
-        mid_cols = [
-            "code",
-            "total_score"
-        ]
-
-        other_cols = [col for col in joined_df.columns.tolist()
-                      if (col not in front_cols) and (col not in mid_cols)]
-        new_cols = front_cols + mid_cols + other_cols
-        joined_df = joined_df[new_cols]
-
-        # Rename some columns for display
-
-        joined_df.rename(columns={
+        matches_df.rename(columns={
             'matched_barangay': 'bgy_linksight',
             'matched_city_municipality': 'municity_linksight',
             'matched_province': 'prov_linksight',
             'code': 'psgc_linksight',
             'total_score': 'confidence_score_linksight'
         }, inplace=True)
+
+        # Rename some columns for display
+        linksight_cols = [
+            'bgy_linksight',
+            'municity_linksight',
+            'prov_linksight',
+            'psgc_linksight',
+            'confidence_score_linksight'
+        ]
+
+        joined_df = dataset_df.join(matches_df[linksight_cols], lsuffix='_dataset')
+
+        # Order columns
+
+        front_cols = []
+        for source_col, matched_col in (
+            (self.barangay_col, 'bgy_linksight'),
+            (self.city_municipality_col, 'municity_linksight'),
+            (self.province_col, 'prov_linksight'),
+        ):
+            if source_col is not None:
+                if source_col in linksight_cols:
+                    front_cols.extend(('{}_dataset'.format(source_col), matched_col))
+                else:
+                    front_cols.extend((source_col, matched_col))
+
+        mid_cols = [
+            "psgc_linksight",
+            "confidence_score_linksight"
+        ]
+
+        other_cols = [col for col in joined_df.columns.tolist()
+                      if (col not in front_cols) and (col not in mid_cols)]
+        new_cols = front_cols + mid_cols + other_cols
+        print(front_cols, mid_cols, other_cols)
+        joined_df = joined_df[new_cols]
 
         # Create matched dataset
 
