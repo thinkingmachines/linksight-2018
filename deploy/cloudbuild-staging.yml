@@ -1,0 +1,66 @@
+steps:
+
+- name: gcr.io/cloud-builders/gcloud
+  id: env
+  args:
+  - kms
+  - decrypt
+  - --ciphertext-file=staging.env.enc
+  - --plaintext-file=.env
+  - --location=global
+  - --keyring=linksight
+  - --key=linksight
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: pull-python
+  waitFor: ['-']
+  entrypoint: bash
+  args: ['-c', 'docker pull gcr.io/$PROJECT_ID/python || true']
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: pull-node
+  waitFor: ['-']
+  entrypoint: bash
+  args: ['-c', 'docker pull gcr.io/$PROJECT_ID/node || true']
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: pull-nginx
+  waitFor: ['-']
+  entrypoint: bash
+  args: ['-c', 'docker pull gcr.io/$PROJECT_ID/nginx || true']
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: python
+  waitFor: ['env', 'pull-python']
+  args:
+  - build
+  - -f=deploy/Dockerfile.python
+  - '-t=gcr.io/$PROJECT_ID/python'
+  - '--cache-from=gcr.io/$PROJECT_ID/python'
+  - .
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: node
+  waitFor: ['pull-node']
+  args:
+  - build
+  - -f=deploy/Dockerfile.node
+  - --build-arg
+  - PUBLIC_URL=https://linksight-stg.thinkingmachin.es
+  - '-t=gcr.io/$PROJECT_ID/node'
+  - '--cache-from=gcr.io/$PROJECT_ID/node'
+  - .
+
+- name: 'gcr.io/cloud-builders/docker'
+  waitFor: ['pull-nginx', 'python', 'node']
+  args:
+  - build
+  - -f=deploy/Dockerfile.nginx
+  - '-t=gcr.io/$PROJECT_ID/nginx'
+  - '--cache-from=gcr.io/$PROJECT_ID/nginx'
+  - .
+
+images:
+- 'gcr.io/$PROJECT_ID/python'
+- 'gcr.io/$PROJECT_ID/node'
+- 'gcr.io/$PROJECT_ID/nginx'

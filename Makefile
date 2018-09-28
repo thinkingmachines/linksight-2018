@@ -27,5 +27,5 @@ staging.env.enc: staging.env
 		--location=global \
 		--keyring=linksight \
 		--key=linksight
-build-staging: deploy/cloudbuild-staging.yaml
-	gcloud builds submit --config deploy/cloudbuild-staging.yaml .
+build-staging: deploy/cloudbuild-staging.yml
+	gcloud builds submit --config deploy/cloudbuild-staging.yml .

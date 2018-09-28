@@ -1,0 +1,19 @@
+- hosts: all
+  become_user: root
+  become: yes
+
+  vars:
+    certbot_create_standalone_stop_services: ['docker']
+    certbot_auto_renew_user: root
+
+  tasks:
+
+  - include_role:
+      name: geerlingguy.docker
+
+  - include_role:
+      name: geerlingguy.certbot
+
+  - include_role:
+      name: ansible-role-gcp-mailgun
+
