@@ -70,7 +70,6 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -144,17 +143,14 @@ USE_TZ = True
 STATIC_URL = '/static/'
 if DEBUG:
     STATICFILES_DIRS = [
-        os.path.join(BASE_DIR, 'app/build/static')
+        os.path.join(BASE_DIR, 'app/build/static'),
     ]
 else:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'app/build/static')
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Media files (Uploads)
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880
-
 DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 GS_BUCKET_NAME = 'linksight'
 GS_PROJECT_ID = 'linksight-208514'
@@ -162,6 +158,7 @@ GS_DEFAULT_ACL = 'publicRead'
 GS_FILE_OVERWRITE = False
 
 # django-cors-headers
+
 CORS_ORIGIN_WHITELIST = (
     'localhost:3000',
     'linksight.thinkingmachin.es',
@@ -169,6 +166,7 @@ CORS_ORIGIN_WHITELIST = (
 CORS_ALLOW_CREDENTIALS = True
 
 # DRF
+
 REST_FRAMEWORK = {
     'PAGE_SIZE': 10000,
     'DEFAULT_PERMISSION_CLASSES': (
@@ -184,20 +182,24 @@ SILENCED_SYSTEM_CHECKS = [
 ]
 
 # Datasets
+
 PSGC_DATASET_ID = env('PSGC_DATASET_ID')
 POPULATION_DATASET_ID = env('POPULATION_DATASET_ID')
 
 # Raven
+
 RAVEN_CONFIG = {
     'dsn': env('SENTRY_DSN'),
 }
 
 # Silk
+
 SILKY_AUTHENTICATION = True
 SILKY_AUTHORISATION = True
 SILKY_PERMISSIONS = lambda user: user.is_superuser
 
 # Registration
+
 LOGIN_REDIRECT_URL = env('LOGIN_REDIRECT_URL')
 ACCOUNT_ACTIVATION_DAYS = 1
 REGISTRATION_ADMINS = [
@@ -208,6 +210,7 @@ REGISTRATION_ADMINS = [
 REGISTRATION_FORM = 'linksight.accounts.forms.RegistrationWithSurveyForm'
 
 # Email
+
 DEFAULT_FROM_EMAIL = 'linksight@thinkingmachin.es'
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -219,6 +222,7 @@ else:
     EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
 # Social Auth
+
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
@@ -240,6 +244,7 @@ SOCIAL_AUTH_PIPELINE = (
 )
 
 # Approved emails
+
 APPROVED_EMAILS_SHEET_ID = env('APPROVED_EMAILS_SHEET_ID')
 APPROVED_EMAILS_SHEET_RANGE = env('APPROVED_EMAILS_SHEET_RANGE')
 APPROVED_EMAILS_ROW_KEY = env('APPROVED_EMAILS_ROW_KEY')

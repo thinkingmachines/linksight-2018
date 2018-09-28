@@ -1,0 +1,30 @@
+version: "3"
+services:
+
+  db:
+    image: postgres:9.4
+    volumes:
+    - db_data:/var/lib/postgresql/data
+    network_mode: host
+    environment:
+      POSTGRES_DB: linksight
+    restart: unless-stopped
+
+  python:
+    image: gcr.io/linksight-208514/python:latest
+    network_mode: host
+    depends_on:
+    - db
+    restart: unless-stopped
+
+  nginx:
+    image: gcr.io/linksight-208514/nginx:latest
+    volumes:
+    - /etc/letsencrypt:/etc/letsencrypt:ro
+    network_mode: host
+    depends_on:
+    - python
+    restart: unless-stopped
+
+volumes:
+  db_data:
