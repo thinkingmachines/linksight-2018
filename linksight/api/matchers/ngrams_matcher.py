@@ -5,10 +5,10 @@ from collections import Counter
 from functools import lru_cache, partial
 from multiprocessing import Pool
 
-import jellyfish
 import pandas as pd
-from fuzzywuzzy import fuzz
 
+import jellyfish
+from fuzzywuzzy import fuzz
 from linksight.api.matchers.base_matcher import BaseMatcher
 from linksight.api.matchers.search_tuple import create_search_tuple, to_index
 
@@ -45,8 +45,8 @@ class NgramsMatcher(BaseMatcher):
                 # if the n-gram is not yet in the table, add it as a new
                 # key for which value is empty dict
                 ngram_table.setdefault(ngram, set())
-                # if the location tuple is not yet associated with the ngram, add it to
-                # the list of values
+                # if the location tuple is not yet associated with the ngram,
+                # add it to the list of values
                 ngram_table[ngram].update([loc])
         return ngram_table
 
@@ -78,46 +78,41 @@ class NgramsMatcher(BaseMatcher):
         (first_search_term, *other_search_terms) = search_terms
         (first_candidate_term, *other_candidate_terms) = candidate_terms
 
-        #everything starts with perfect score, then we penalize for differences
+        # everything starts with perfect score, then we penalize for differences
         score = 100
 
         # check on jw distance ratio between the very first items in search terms
         # and candidate terms. multiply by 100 since jellyfish returns a decimal
         # between 0 to 1. inflict a larger penalty for different terms
 
-        first_item_ratio = jellyfish.jaro_winkler(first_search_term, first_candidate_term) * 100
-        first_item_diff = (100 - first_item_ratio) 
+        first_item_ratio = jellyfish.jaro_winkler(
+            first_search_term, first_candidate_term) * 100
+        first_item_diff = 100 - first_item_ratio
         score -= first_item_diff * first_item_ratio_weight
 
-        # if the first items don't have the same numbers in them, reduce the score further:
-        digits_in_first_search_term = "".join(re.findall(r'\d+',first_search_term))
-        digits_in_first_candidate_term = "".join(re.findall(r'\d+',first_candidate_term))
-
-        #if digits_in_first_search_term != digits_in_first_candidate_term:
-        #    score -= 10
-
-        # if a search and the candidate have the same administrative level, inflict penalty
+        # if a search and the candidate have the same administrative level,
+        # inflict penalty
         if search_adm != candidate_adm:
             score -= 10
 
-        #if there are more search terms than candidate terms, inflict a penalty
+        # if there are more search terms than candidate terms, inflict a penalty
         if len(search_terms) > len(candidate_terms):
             score -= 30
 
-        # if the search terms have only one term, don't include the similarity score of the other terms.
+        # if the search terms have only one term, don't include the similarity
+        # score of the other terms.
         if len(search_terms) > 1:
-            other_items_ratio = fuzz.ratio(' '.join(other_search_terms), ' '.join(other_candidate_terms))
+            other_items_ratio = fuzz.ratio(
+                ' '.join(other_search_terms),
+                ' '.join(other_candidate_terms))
             other_items_diff = 100 - other_items_ratio
             score -= other_items_diff * other_items_ratio_weight
 
-        #print (search_tuple, candidate_tuple, score)
-
         return (
             candidate_tuple,
-            round(score,2),
+            round(score, 2),
             candidate_code
         )
-        
 
     def search_shortlist(self, search_tuple, shortlist):
         """
@@ -136,17 +131,17 @@ class NgramsMatcher(BaseMatcher):
         return results
 
     def search_reference(self, search_tuple, ngram_table, nresults):
-        # if the search tuple only has one element (bgy, prov, municity), it means
-        # it is actually empty. return an empty result
+        # if the search tuple only has one element (bgy, prov, municity), it
+        # means it is actually empty. return an empty result
         if len(search_tuple) == 1:
             return search_tuple, tuple()
 
-        # otherwise, if the search tuple has at least one element, turn the first
-        # item in the search string into ngrams
+        # otherwise, if the search tuple has at least one element, turn the
+        # first item in the search string into ngrams
         ss_ngrams = list(set(self.make_ngram(search_tuple[0], NGRAM_SIZE)))
 
-        # create a list of possible matches based on common ngrams between the first
-        # items of search tuple and candidates
+        # create a list of possible matches based on common ngrams between the
+        # first items of search tuple and candidates
         possible_matches = []
         for ngram in ss_ngrams:
             # look each n-gram up in the hash list and add the values as
@@ -154,16 +149,18 @@ class NgramsMatcher(BaseMatcher):
             if ngram in ngram_table:
                 possible_matches += ngram_table[ngram]
 
-        # let's eliminate any candidates that share fewer than half of the unique n-grams in the search terms.
-        # for example, no need to run fuzzy matching on an candidate with only a
-        # single common n-gram with the search terms
+        # let's eliminate any candidates that share fewer than half of the
+        # unique n-grams in the search terms.  for example, no need to run fuzzy
+        # matching on an candidate with only a single common n-gram with the
+        # search terms
 
-        #threshold = len(ss_ngrams) / 4 
-        most_possible = [k for k, v in Counter(possible_matches).items() if v >= 2]
+        most_possible = [
+            k for k, v in Counter(possible_matches).items() if v >= 2
+        ]
 
         # calculate similarity scores of search tuples with candidate among
-        # possible matches for each unique psgc code, get the match phrase with the
-        # highest score:
+        # possible matches for each unique psgc code, get the match phrase with
+        # the highest score:
         scored_shortlist = {
             code: (*result, code)
             for (*result, code) in
@@ -194,18 +191,18 @@ class NgramsMatcher(BaseMatcher):
         # get lowest interlevel selected
         locations_df, ngram_table = self.load_reference()
 
-        locations_df_find_exact = locations_df.set_index('candidate_terms').rename(columns={
-            'bgy': 'matched_barangay',
-            'municity': 'matched_city_municipality',
-            'prov': 'matched_province'
-        })
+        locations_df_find_exact = (locations_df
+                                   .set_index('candidate_terms')
+                                   .rename(columns={
+                                       'bgy': 'matched_barangay',
+                                       'municity': 'matched_city_municipality',
+                                       'prov': 'matched_province'
+                                   }))
 
         # using a more efficient way of finding exact matches first
-
-        exact_matches = dataset_df.join(locations_df_find_exact, how="inner")
+        exact_matches = dataset_df.join(locations_df_find_exact, how='inner')
 
         for i, (search_tuple, row) in enumerate(exact_matches.iterrows()):
-            #print(search_tuple, row.get('matched_barangay'), row.get('matched_city_municipality'))
             yield {
                 'dataset_index': i,
                 'search_tuple': search_tuple,
@@ -221,22 +218,18 @@ class NgramsMatcher(BaseMatcher):
                 'match_type': 'exact',
             }
 
-        # then exclude these from those that need fuzzy matching. only process the fuzzy matches next:
-
+        # then exclude these from those that need fuzzy matching. only process
+        # the fuzzy matches next:
         needs_fuzzy_matching = dataset_df.drop(exact_matches.index)
-
-        search_func = partial(self.search_reference, ngram_table=ngram_table, nresults=5)
-
+        search_func = partial(self.search_reference, ngram_table=ngram_table,
+                              nresults=5)
         search_tuples = needs_fuzzy_matching.search_tuple.tolist()
 
         # for each search tuple, find its top matches
-
         result_pairs = map(search_func, search_tuples)
 
         start_time = time.time()
         for i, (search_tuple, results) in enumerate(result_pairs):
-            #print(search_tuple)
-            # search_tuples = needs_fuzzy_matching.search_tuple.tolist()
             source = needs_fuzzy_matching.loc[to_index(search_tuple)].fillna('')
             match = {
                 'dataset_index': len(exact_matches) + i,
@@ -252,7 +245,7 @@ class NgramsMatcher(BaseMatcher):
                 for candidate_tuple, score, candidate_code in results:
                     matched = (locations_df
                                .loc[to_index(candidate_tuple)].fillna(''))
-                    match_type = 'near'  # if len(results) > 1 else 'exact'
+                    match_type = 'near'
                     yield {
                         **match,
                         'matched_province': matched['prov'],

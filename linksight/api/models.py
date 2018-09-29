@@ -5,13 +5,13 @@ from collections import OrderedDict
 from functools import partial
 
 import pandas as pd
+
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import Q
-
-from linksight.api.matchers.search_tuple import create_search_tuple, to_index
 from linksight.api.matchers.ngrams_matcher import NgramsMatcher
+from linksight.api.matchers.search_tuple import create_search_tuple, to_index
 
 
 class Dataset(models.Model):
@@ -127,9 +127,7 @@ class Match(models.Model):
 
         # Order columns
 
-        front_cols = [
-        ]
-
+        front_cols = []
         for source_col, matched_col in (
             (self.barangay_col, 'matched_barangay'),
             (self.city_municipality_col, 'matched_city_municipality'),
