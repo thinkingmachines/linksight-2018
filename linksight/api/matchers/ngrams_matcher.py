@@ -12,7 +12,7 @@ from fuzzywuzzy import fuzz
 from linksight.api.matchers.base_matcher import BaseMatcher
 from linksight.api.matchers.search_tuple import create_search_tuple, to_index
 
-NGRAM_SIZE = 2
+NGRAM_SIZE = 3
 REFERENCE_FILE = 'data/psgc-locations.csv.gz'
 
 
@@ -154,8 +154,9 @@ class NgramsMatcher(BaseMatcher):
         # matching on an candidate with only a single common n-gram with the
         # search terms
 
+        threshold = len(ss_ngrams) / 3
         most_possible = [
-            k for k, v in Counter(possible_matches).items() if v >= 2
+            k for k, v in Counter(possible_matches).items() if v >= threshold
         ]
 
         # calculate similarity scores of search tuples with candidate among
