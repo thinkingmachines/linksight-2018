@@ -86,7 +86,7 @@ class Export extends React.Component {
             <Button className='btn -back' onClick={this.props.history.goBack}>Back</Button>
           }
           nextButton={
-            <a href={`${window.API_HOST}${this.state.preview.file.url}`}>
+            <a href={`${this.state.preview.file.url}`}>
               <Button className='btn' onClick={this.askFeedback.bind(this)}>Export</Button>
             </a>
           }

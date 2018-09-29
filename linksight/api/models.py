@@ -80,7 +80,7 @@ class Match(models.Model):
         ])
 
     def generate_match_items(self, **kwargs):
-        matcher = NgramsMatcher(dataset_path=self.dataset.file.path,
+        matcher = NgramsMatcher(dataset_file=self.dataset.file,
                                 columns=self.loc_columns)
         matches = matcher.get_matches()
 
@@ -162,7 +162,7 @@ class Match(models.Model):
         self.matched_dataset = Dataset.objects.create(
             name='{}-linksight.csv'.format(name),
         )
-        file = ContentFile(joined_df.to_csv(index=False))
+        file = ContentFile(joined_df.to_csv(index=False).encode('utf-8'))
         self.matched_dataset.file.save(self.matched_dataset.name, file)
         self.save()
 
