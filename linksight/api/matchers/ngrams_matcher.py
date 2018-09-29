@@ -175,8 +175,7 @@ class NgramsMatcher(BaseMatcher):
         return search_tuple, top_results
 
     def get_matches(self):
-        with open(self.dataset_path) as f:
-            dataset_df = pd.read_csv(f)
+        dataset_df = pd.read_csv(self.dataset_file)
 
         columns = self.columns
 

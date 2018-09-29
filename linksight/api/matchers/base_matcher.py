@@ -2,18 +2,20 @@ import abc
 
 
 class BaseMatcher(abc.ABC):
-    def __init__(self, dataset_path, columns):
+    def __init__(self, dataset_file, columns):
         """Attributes:
-        dataset_path: file path of the dataset to be processed
+
+        dataset_file: file of dataset to be processed
         columns: ordered dict containing the names of the dataset fields and their corresponding
                  interlevels
         """
-        self.dataset_path = dataset_path
+        self.dataset_file = dataset_file
         self.columns = columns
 
     @abc.abstractmethod
     def get_matches():
         """Should be a generator that yields a dictionary containing the following key-value pairs:
+
         dataset_index: the index of the client dataset row being processed
         search_tuple:
         source_province: the client dataset row's province field. A blank string if not available
