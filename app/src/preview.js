@@ -90,9 +90,9 @@ class Preview extends React.Component {
     const {id} = this.props.match.params
     api.post(
       `/datasets/${id}/match`, {
-        barangay_col: selectedLocationColumns.barangay,
-        city_municipality_col: selectedLocationColumns.city_municipality,
-        province_col: selectedLocationColumns.province
+        source_bgy_col: selectedLocationColumns.barangay,
+        source_municity_col: selectedLocationColumns.city_municipality,
+        source_prov_col: selectedLocationColumns.province
       })
       .then(resp => this.setState({matchId: resp.data.id}))
       .catch(_ => this.setState({
