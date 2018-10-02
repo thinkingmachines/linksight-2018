@@ -1,3 +1,4 @@
+import comms.Lpserver;
 import core.MatchingJob;
 import reference.Reference;
 import eval.Evaluator;
@@ -19,8 +20,6 @@ public class Main {
     private static String[] TEST_CORRECT_COLS = {"expected_brgy", "expected_municity", "expected_prov"};
 
     public static void main(String[] args) throws IOException {
-        System.out.println("\nTest CSV: " + TEST_CSV_PATH + "\n");
-
         long startMem = getMemUsage();
         // Get reference file and create model
         Reference reference = new Reference(REF_CSV_PATH, REF_LOC_COLS, REF_PSGC_COL, REF_ALIAS_COL);

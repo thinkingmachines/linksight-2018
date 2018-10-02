@@ -1,4 +1,13 @@
+# Mac OS
+.DS_Store
+
+# IntelliJ
 .idea/
+
+# Java
 .gradle/
 out/
-.DS_Store
+hs_err_pid*.log
+
+# Python
+venv/
