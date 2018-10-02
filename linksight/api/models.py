@@ -45,9 +45,9 @@ class Dataset(models.Model):
         }
         if match:
             preview['match'] = {
-                'barangayCol': match.barangay_col,
-                'cityMunicipalityCol': match.city_municipality_col,
-                'provinceCol': match.province_col,
+                'barangayCol': match.source_bgy_col,
+                'cityMunicipalityCol': match.source_municity_col,
+                'provinceCol': match.source_prov_col,
             }
         return preview
 
@@ -60,11 +60,11 @@ class Match(models.Model):
     matched_dataset = models.ForeignKey(Dataset, on_delete=models.SET_NULL,
                                         related_name='+', null=True)
 
-    barangay_col = models.CharField(max_length=256, blank=False, null=True)
+    source_bgy_col = models.CharField(max_length=256, blank=False, null=True)
 
-    city_municipality_col = models.CharField(max_length=256, blank=False,
-                                             null=True)
-    province_col = models.CharField(max_length=256, blank=False, null=True)
+    source_municity_col = models.CharField(max_length=256, blank=False, null=True)
+
+    source_prov_col = models.CharField(max_length=256, blank=False, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -74,9 +74,9 @@ class Match(models.Model):
     @property
     def loc_columns(self):
         return OrderedDict([
-            ('bgy', self.barangay_col),
-            ('municity', self.city_municipality_col),
-            ('prov', self.province_col),
+            ('bgy', self.source_bgy_col),
+            ('municity', self.source_municity_col),
+            ('prov', self.source_prov_col),
         ])
 
     def generate_match_items(self, **kwargs):
@@ -140,9 +140,9 @@ class Match(models.Model):
 
         front_cols = []
         for source_col, matched_col in (
-            (self.barangay_col, 'bgy_linksight'),
-            (self.city_municipality_col, 'municity_linksight'),
-            (self.province_col, 'prov_linksight'),
+            (self.source_bgy_col, 'bgy_linksight'),
+            (self.source_municity_col, 'municity_linksight'),
+            (self.source_prov_col, 'prov_linksight'),
         ):
             if source_col is not None:
                 if source_col in linksight_cols:
