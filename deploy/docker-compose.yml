@@ -11,14 +11,14 @@ services:
     restart: unless-stopped
 
   python:
-    image: gcr.io/linksight-208514/python:latest
+    image: gcr.io/linksight-208514/python:${BUILD_ID}
     network_mode: host
     depends_on:
     - db
     restart: unless-stopped
 
   nginx:
-    image: gcr.io/linksight-208514/nginx:latest
+    image: gcr.io/linksight-208514/nginx:${BUILD_ID}
     volumes:
     - /etc/letsencrypt:/etc/letsencrypt:ro
     network_mode: host
