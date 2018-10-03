@@ -1,17 +1,22 @@
 import pandas as pd
-from linksight.api.matcher import Matcher
+from linksight.api.matchers.base_matcher import BaseMatcher
 
 import re
 from itertools import chain, tee
-from linksight.api.linksight_matcher import LinkSightMatcher
+from linksight.api.matchers.linksight_matcher import LinkSightMatcher
 
 CITY_MUN_CODE_LEN = 6
 PROV_CODE_LEN = 4
 PSGC_LEN = 9
 
 
-class FuzzyWuzzyMatcher(Matcher):
-    def get_match_items(self, **kwargs):
+class FuzzyWuzzyMatcher(BaseMatcher):
+
+    def __init__(self, dataset, reference):
+        self.dataset = dataset
+        self.reference = reference
+
+    def get_matches(self, **kwargs):
 
         with open(self.reference) as f:
             psgc_df = pd.read_csv(f, dtype={'code': object})
