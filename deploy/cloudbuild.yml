@@ -28,7 +28,7 @@ steps:
   args:
   - kms
   - decrypt
-  - --ciphertext-file=deploy/staging.env.enc
+  - '--ciphertext-file=deploy/$TAG_NAME.env.enc'
   - --plaintext-file=.env
   - --location=global
   - --keyring=linksight
@@ -53,7 +53,7 @@ steps:
   - build
   - -f=deploy/Dockerfile.node
   - --build-arg
-  - PUBLIC_URL=https://linksight-stg.thinkingmachin.es
+  - 'PUBLIC_URL=https://$_HOST'
   - '-t=gcr.io/$PROJECT_ID/node'
   - '--cache-from=gcr.io/$PROJECT_ID/node'
   - .
@@ -124,7 +124,7 @@ steps:
   waitFor: ['push-python', 'push-nginx', 'ca', 'cert', 'key']
   args: ['-p', 'linksight', '-f', 'deploy/docker-compose.yml', 'pull']
   env:
-  - DOCKER_HOST=linksight-stg.thinkingmachin.es:2376
+  - 'DOCKER_HOST=$_HOST:2376'
   - DOCKER_TLS_VERIFY=1
   - DOCKER_CERT_PATH=.
 
@@ -132,11 +132,17 @@ steps:
   waitFor: ['push-python', 'push-nginx', 'ca', 'cert', 'key']
   args: ['-p', 'linksight', '-f', 'deploy/docker-compose.yml', 'up', '-d']
   env:
-  - DOCKER_HOST=linksight-stg.thinkingmachin.es:2376
+  - 'DOCKER_HOST=$_HOST:2376'
   - DOCKER_TLS_VERIFY=1
   - DOCKER_CERT_PATH=.
+
+# Other build config
 
 images:
 - 'gcr.io/$PROJECT_ID/python'
 - 'gcr.io/$PROJECT_ID/node'
 - 'gcr.io/$PROJECT_ID/nginx'
+
+substitutions:
+  _HOST: linksight.thinkingmachin.es
+
