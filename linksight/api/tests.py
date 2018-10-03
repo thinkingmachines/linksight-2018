@@ -1,6 +1,6 @@
 import csv
 from django.test import TestCase
-from linksight.api.fuzzywuzzymatcher import FuzzyWuzzyMatcher
+from linksight.api.matchers.fuzzywuzzymatcher import FuzzyWuzzyMatcher
 from tempfile import NamedTemporaryFile
 
 REFERENCE_FILE = 'data/clean-psgc.csv'
@@ -26,7 +26,7 @@ class LinkSightMatcherTest(TestCase):
         test = '''pro,mun,bgy\nNATIONAL CAPITAL REGION,QUEZON CITY,TEACHERS VILLAGE WST'''
         dataset_path = create_test_file(test)
         matcher = self.create_matcher(dataset_path)
-        result = matcher.get_match_items(
+        result = matcher.get_matches(
             province_col='pro',
             city_municipality_col='mun',
             barangay_col='bgy'
@@ -53,7 +53,7 @@ class LinkSightMatcherTest(TestCase):
         )
         dataset_path = create_test_file(test)
         matcher = self.create_matcher(dataset_path)
-        result = matcher.get_match_items(
+        result = matcher.get_matches(
             province_col='pro',
             city_municipality_col='mun',
             barangay_col='bgy'
