@@ -196,22 +196,26 @@ class NgramsMatcher(BaseMatcher):
 
         return exact_matches
 
-    def set_dataset_columns(self, dataset_df):
-        columns = self.columns
-
+    @staticmethod
+    def prepend_dataset_columns(dataset_df):
         dataset_df.columns = ['dataset_{}'.format(col) for col in dataset_df.columns]
+        return dataset_df
+
+    def rename_interlevels(self, dataset_df, new_columns):
+        old_columns = self.columns
         dataset_df.rename(columns={
-            'dataset_{}'.format(columns.get('prov')): 'dataset_prov',
-            'dataset_{}'.format(columns.get('municity')): 'dataset_mun',
-            'dataset_{}'.format(columns.get('bgy')): 'dataset_bgy'
+            'dataset_{}'.format(old_columns.get('prov')): new_columns.get('prov'),
+            'dataset_{}'.format(old_columns.get('municity')): new_columns.get('municity'),
+            'dataset_{}'.format(old_columns.get('bgy')): new_columns.get('bgy')
         }, inplace=True)
         return dataset_df
 
     def get_matches(self):
         dataset_df = pd.read_csv(self.dataset_file)
 
-        dataset_df = self.set_dataset_columns(dataset_df)
+        dataset_df = self.prepend_dataset_columns(dataset_df)
         columns = self.dataset_columns
+        dataset_df = self.rename_interlevels(dataset_df, columns)
 
         # first, create search tuples for the dataset provided by the user
         dataset_df['search_tuple'] = dataset_df.apply(
