@@ -134,7 +134,7 @@ class Match(models.Model):
             'confidence_score_linksight'
         ]
 
-        dataset_df.drop(['prov_linksight'], axis=1, errors='ignore', inplace=True)
+        dataset_df.drop(linksight_cols, axis=1, errors='ignore', inplace=True)
         joined_df = dataset_df.join(matches_df[linksight_cols])
 
         # Order columns
