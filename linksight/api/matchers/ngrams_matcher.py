@@ -18,11 +18,6 @@ REFERENCE_FILE = 'data/psgc-locations.csv.gz'
 
 class NgramsMatcher(BaseMatcher):
     reference = REFERENCE_FILE
-    dataset_columns = OrderedDict([
-        ('bgy', 'dataset_bgy'),
-        ('municity', 'dataset_mun'),
-        ('prov', 'dataset_prov'),
-    ])
 
     @staticmethod
     def make_ngram(string, n):
@@ -191,6 +186,20 @@ class NgramsMatcher(BaseMatcher):
         return search_tuple, top_results
 
     def get_exact_matches(self, dataset_df, locations_df_find_exact):
+        dataset_columns = self.columns
+
+        columns = OrderedDict([
+            ('bgy', 'dataset_bgy'),
+            ('municity', 'dataset_mun'),
+            ('prov', 'dataset_prov'),
+        ])
+
+        dataset_df = dataset_df[[dataset_columns.get('bgy'),
+                                 dataset_columns.get('municity'),
+                                 dataset_columns.get('prov')]].copy()
+
+        dataset_df = self.rename_interlevels(dataset_df, columns)
+
         exact_matches = dataset_df.join(locations_df_find_exact, how="inner",
                                         lsuffix='_dataset')
 
@@ -211,11 +220,10 @@ class NgramsMatcher(BaseMatcher):
         return dataset_df
 
     def get_matches(self):
-        dataset_df = pd.read_csv(self.dataset_file)
 
-        dataset_df = self.prepend_dataset_columns(dataset_df)
-        columns = self.dataset_columns
-        dataset_df = self.rename_interlevels(dataset_df, columns)
+        columns = self.columns
+
+        dataset_df = pd.read_csv(self.dataset_file)
 
         # first, create search tuples for the dataset provided by the user
         dataset_df['search_tuple'] = dataset_df.apply(
