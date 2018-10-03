@@ -188,30 +188,25 @@ class NgramsMatcher(BaseMatcher):
     def get_exact_matches(self, dataset_df, locations_df_find_exact):
         dataset_columns = self.columns
 
-        columns = OrderedDict([
-            ('bgy', 'dataset_bgy'),
-            ('municity', 'dataset_mun'),
-            ('prov', 'dataset_prov'),
-        ])
-
         dataset_df = dataset_df[[dataset_columns.get('bgy'),
                                  dataset_columns.get('municity'),
                                  dataset_columns.get('prov')]].copy()
 
-        dataset_df = self.rename_interlevels(dataset_df, columns)
+        dataset_df = self.rename_interlevels(dataset_df)
 
         exact_matches = dataset_df.join(locations_df_find_exact, how="inner",
                                         lsuffix='_dataset')
 
         return exact_matches
 
-    @staticmethod
-    def prepend_dataset_columns(dataset_df):
-        dataset_df.columns = ['dataset_{}'.format(col) for col in dataset_df.columns]
-        return dataset_df
-
-    def rename_interlevels(self, dataset_df, new_columns):
+    def rename_interlevels(self, dataset_df):
         old_columns = self.columns
+        new_columns = OrderedDict([
+            ('bgy', 'dataset_bgy'),
+            ('municity', 'dataset_mun'),
+            ('prov', 'dataset_prov'),
+        ])
+
         dataset_df.rename(columns={
             'dataset_{}'.format(old_columns.get('prov')): new_columns.get('prov'),
             'dataset_{}'.format(old_columns.get('municity')): new_columns.get('municity'),
