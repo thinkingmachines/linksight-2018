@@ -97,3 +97,17 @@ python manage.py test
 ```
 
 You can run specific subsets of tests [like so](https://docs.djangoproject.com/en/2.1/topics/testing/overview/#running-tests).
+
+### Deployment
+
+#### Staging
+
+```sh
+gcloud config set project <GCP_PROJECT>
+cd deploy
+make
+```
+
+#### Production
+
+Instructions to follow.
