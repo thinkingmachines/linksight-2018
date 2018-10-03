@@ -95,6 +95,11 @@ class NgramsMatcher(BaseMatcher):
         if search_adm != candidate_adm:
             score -= 10
 
+        # penalize missing vs expected higher interlevels
+        expected_higher_adm_items = {'bgy':2,'municity':1,'prov':0}[search_adm]
+        missing_higher_items = expected_higher_adm_items - len(other_search_terms)
+        score -= missing_higher_items * ((other_items_ratio_weight*50)/expected_higher_adm_items)
+
         # if there are more search terms than candidate terms, inflict a penalty
         if len(search_terms) > len(candidate_terms):
             score -= 30
