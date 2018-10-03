@@ -78,8 +78,8 @@ class NgramsMatcher(BaseMatcher):
         (first_search_term, *other_search_terms) = search_terms
         (first_candidate_term, *other_candidate_terms) = candidate_terms
 
-        # everything starts with perfect score, then we penalize for differences
-        score = 100
+        # every fuzz match starts with score of 99, then we penalize for differences
+        score = 99
 
         # check on jw distance ratio between the very first items in search terms
         # and candidate terms. multiply by 100 since jellyfish returns a decimal
@@ -90,7 +90,7 @@ class NgramsMatcher(BaseMatcher):
         first_item_diff = 100 - first_item_ratio
         score -= first_item_diff * first_item_ratio_weight
 
-        # if a search and the candidate have the same administrative level,
+        # if a search and the candidate don't have the same administrative level,
         # inflict penalty
         if search_adm != candidate_adm:
             score -= 10
@@ -154,10 +154,12 @@ class NgramsMatcher(BaseMatcher):
         # matching on an candidate with only a single common n-gram with the
         # search terms
 
-        threshold = len(ss_ngrams) / 3
-        most_possible = [
-            k for k, v in Counter(possible_matches).items() if v >= threshold
-        ]
+        #threshold = len(ss_ngrams) / 3
+        #most_possible = [
+        #    k for k, v in Counter(possible_matches).items() if v >= threshold
+        #]
+
+        most_possible = set(possible_matches)
 
         # calculate similarity scores of search tuples with candidate among
         # possible matches for each unique psgc code, get the match phrase with
