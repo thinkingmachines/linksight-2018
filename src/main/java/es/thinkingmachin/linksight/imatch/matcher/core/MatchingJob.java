@@ -1,23 +1,19 @@
-package core;
+package es.thinkingmachin.linksight.imatch.matcher.core;
 
-import candidates.FirstLevelCandidatesFilter;
+import es.thinkingmachin.linksight.imatch.matcher.filters.FirstLevelCandidatesFilter;
 import com.google.common.base.Stopwatch;
 import de.siegmar.fastcsv.reader.CsvParser;
 import de.siegmar.fastcsv.reader.CsvReader;
 import de.siegmar.fastcsv.reader.CsvRow;
-import matchers.BasicMatcher;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
+import es.thinkingmachin.linksight.imatch.matcher.matchers.BasicMatcher;
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
-import reference.Reference;
-import reference.ReferenceMatch;
+import es.thinkingmachin.linksight.imatch.matcher.reference.Reference;
+import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 public class MatchingJob {

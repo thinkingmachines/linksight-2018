@@ -8,6 +8,7 @@
 .gradle/
 out/
 hs_err_pid*.log
+build/
 
 # Python
 venv/

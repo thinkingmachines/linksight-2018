@@ -11,7 +11,7 @@ import zmq
 
 REQUEST_TIMEOUT = 2500
 REQUEST_RETRIES = 3
-SERVER_ENDPOINT = "tcp://localhost:5555"
+SERVER_ENDPOINT = "ipc://hello"
 
 context = zmq.Context(1)
 

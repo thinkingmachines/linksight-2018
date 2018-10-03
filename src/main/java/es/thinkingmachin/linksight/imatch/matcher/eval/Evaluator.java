@@ -1,7 +1,7 @@
-package eval;
+package es.thinkingmachin.linksight.imatch.matcher.eval;
 
-import core.Address;
-import reference.ReferenceMatch;
+import es.thinkingmachin.linksight.imatch.matcher.core.Address;
+import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
 import de.siegmar.fastcsv.reader.CsvParser;
 import de.siegmar.fastcsv.reader.CsvReader;
 import de.siegmar.fastcsv.reader.CsvRow;

@@ -1,9 +1,9 @@
-package candidates;
+package es.thinkingmachin.linksight.imatch.matcher.filters;
 
 import com.google.common.base.Stopwatch;
-import core.Address;
-import reference.Reference;
-import reference.ReferenceRow;
+import es.thinkingmachin.linksight.imatch.matcher.core.Address;
+import es.thinkingmachin.linksight.imatch.matcher.reference.Reference;
+import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceRow;
 import de.cxp.predict.api.SuggestItem;
 
 import java.util.*;

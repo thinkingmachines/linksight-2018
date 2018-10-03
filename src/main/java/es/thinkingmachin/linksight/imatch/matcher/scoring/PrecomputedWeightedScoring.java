@@ -1,6 +1,6 @@
-package scoring;
+package es.thinkingmachin.linksight.imatch.matcher.scoring;
 
-import reference.Reference;
+import es.thinkingmachin.linksight.imatch.matcher.reference.Reference;
 import org.apache.commons.collections4.map.LRUMap;
 
 import java.util.Map;

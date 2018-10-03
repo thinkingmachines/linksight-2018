@@ -1,13 +1,11 @@
-package scoring;
+package es.thinkingmachin.linksight.imatch.matcher.scoring;
 
-import core.Address;
-import core.Interlevel;
-
-import java.util.Arrays;
+import es.thinkingmachin.linksight.imatch.matcher.core.Address;
+import es.thinkingmachin.linksight.imatch.matcher.core.Interlevel;
 
 public abstract class WeightedScoring implements Scoring {
 
-    // Weighted average scoring
+    // Weighted average es.thinkingmachin.linksight.imatch.matcher.scoring
     private final double firstItemRatioWeight = 6;
     private final double otherItemsRatioWeight = 4;
 

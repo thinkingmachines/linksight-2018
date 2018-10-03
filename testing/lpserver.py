@@ -15,7 +15,7 @@ import zmq
 
 context = zmq.Context(1)
 server = context.socket(zmq.REP)
-server.bind("tcp://*:5555")
+server.bind("ipc://hello")
 
 cycles = 0
 while True:

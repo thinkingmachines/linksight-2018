@@ -1,13 +1,13 @@
-package matchers;
+package es.thinkingmachin.linksight.imatch.matcher.matchers;
 
-import candidates.CandidatesFilter;
-import candidates.FirstLevelCandidatesFilter;
+import es.thinkingmachin.linksight.imatch.matcher.filters.CandidatesFilter;
+import es.thinkingmachin.linksight.imatch.matcher.filters.FirstLevelCandidatesFilter;
 import com.google.common.base.Stopwatch;
-import core.Address;
-import reference.ReferenceMatch;
-import reference.Reference;
-import reference.ReferenceRow;
-import scoring.PrecomputedWeightedScoring;
+import es.thinkingmachin.linksight.imatch.matcher.core.Address;
+import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
+import es.thinkingmachin.linksight.imatch.matcher.reference.Reference;
+import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceRow;
+import es.thinkingmachin.linksight.imatch.matcher.scoring.PrecomputedWeightedScoring;
 
 import java.util.ArrayList;
 import java.util.List;

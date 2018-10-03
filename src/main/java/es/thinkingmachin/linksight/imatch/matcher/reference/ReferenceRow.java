@@ -1,7 +1,7 @@
-package reference;
+package es.thinkingmachin.linksight.imatch.matcher.reference;
 
-import core.Address;
-import core.Interlevel;
+import es.thinkingmachin.linksight.imatch.matcher.core.Address;
+import es.thinkingmachin.linksight.imatch.matcher.core.Interlevel;
 import de.siegmar.fastcsv.reader.CsvRow;
 
 import java.util.Arrays;

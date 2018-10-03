@@ -1,4 +1,4 @@
-package reference;
+package es.thinkingmachin.linksight.imatch.matcher.reference;
 
 public class ReferenceMatch {
     public final ReferenceRow referenceRow;

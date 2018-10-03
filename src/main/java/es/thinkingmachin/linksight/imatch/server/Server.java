@@ -1,13 +1,15 @@
-import comms.Lpserver;
-import core.MatchingJob;
-import reference.Reference;
-import eval.Evaluator;
+package es.thinkingmachin.linksight.imatch.server;
+
+import es.thinkingmachin.linksight.imatch.server.Lpserver;
+import es.thinkingmachin.linksight.imatch.matcher.core.MatchingJob;
+import es.thinkingmachin.linksight.imatch.matcher.reference.Reference;
+import es.thinkingmachin.linksight.imatch.matcher.eval.Evaluator;
 
 import java.io.IOException;
 
-public class Main {
+public class Server {
 
-    // reference.Reference
+    // Reference
     private static String REF_CSV_PATH = "data/psgc-locations.csv";
     private static String[] REF_LOC_COLS = {"bgy", "municity", "prov"};
     private static String REF_PSGC_COL = "code";
@@ -19,9 +21,17 @@ public class Main {
     private static String[] TEST_LOC_COLS = {"source_brgy", "source_municity", "source_prov"};
     private static String[] TEST_CORRECT_COLS = {"expected_brgy", "expected_municity", "expected_prov"};
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
+        System.out.println(getVersion());
+
+        Lpserver.main(args);
+
+        if (true) return;
+
+        System.out.println("\nTest CSV: " + TEST_CSV_PATH + "\n");
+
         long startMem = getMemUsage();
-        // Get reference file and create model
+        // Get es.thinkingmachin.linksight.imatch.matcher.reference file and create model
         Reference reference = new Reference(REF_CSV_PATH, REF_LOC_COLS, REF_PSGC_COL, REF_ALIAS_COL);
         System.out.println("After ref: "+(getMemUsage()-startMem));
 
@@ -39,5 +49,7 @@ public class Main {
         return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
     }
 
-
+    public static String getVersion() {
+        return Server.class.getPackage().getImplementationVersion();
+    }
 }

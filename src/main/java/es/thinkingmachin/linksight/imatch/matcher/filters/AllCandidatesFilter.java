@@ -1,8 +1,8 @@
-package candidates;
+package es.thinkingmachin.linksight.imatch.matcher.filters;
 
-import core.Address;
-import reference.Reference;
-import reference.ReferenceRow;
+import es.thinkingmachin.linksight.imatch.matcher.core.Address;
+import es.thinkingmachin.linksight.imatch.matcher.reference.Reference;
+import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceRow;
 
 import java.util.List;
 

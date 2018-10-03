@@ -1,8 +1,8 @@
-package reference;
+package es.thinkingmachin.linksight.imatch.matcher.reference;
 
 import com.google.common.base.Stopwatch;
-import core.Address;
-import core.Interlevel;
+import es.thinkingmachin.linksight.imatch.matcher.core.Address;
+import es.thinkingmachin.linksight.imatch.matcher.core.Interlevel;
 import de.cxp.predict.PreDict;
 import de.cxp.predict.api.PreDictSettings;
 import de.cxp.predict.api.SuggestItem;
@@ -80,7 +80,7 @@ public class Reference {
     }
 
     private void addReferenceRow(ReferenceRow row) {
-        // Add to list of reference rows
+        // Add to list of es.thinkingmachin.linksight.imatch.matcher.reference rows
         rows.add(row);
 
         Address[] addresses = new Address[]{row.aliasAddress, row.stdAddress};

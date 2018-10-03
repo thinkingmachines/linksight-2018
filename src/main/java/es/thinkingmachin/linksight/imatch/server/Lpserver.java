@@ -6,8 +6,9 @@
 //  - randomly runs slowly, or exits to simulate a crash.
 //
 
-package comms;
+package es.thinkingmachin.linksight.imatch.server;
 
+import java.nio.charset.Charset;
 import java.util.Random;
 
 import org.zeromq.ZMQ;
@@ -22,11 +23,13 @@ public class Lpserver {
 
         Context context = ZMQ.context(1);
         Socket server = context.socket(ZMQ.REP);
-        server.bind("tcp://*:5555");
+        server.bind("ipc://testing/hello");
+        System.out.println("Bound!");
 
         int cycles = 0;
         while (true) {
-            String request = server.recvStr();
+            String request = server.recvStr(Charset.defaultCharset());
+            System.out.println("Received");
             cycles++;
 
             //  Simulate various problems, after a few cycles

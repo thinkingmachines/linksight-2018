@@ -2,10 +2,31 @@ plugins {
     id 'java'
 }
 
-group 'com.linksight.imatch'
-version '1.0-SNAPSHOT'
+group 'es.thinkingmachin.linksight.imatch'
+version '0.1.0'
 
 sourceCompatibility = 1.8
+
+task buildFatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'imatch server',
+                'Implementation-Version': version,
+                'Main-Class': 'es.thinkingmachin.linksight.imatch.server.Server'
+    }
+    baseName = project.name + '-full'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+task copyLatestJar(type: Copy) {
+    from buildFatJar.archivePath
+    into 'build/libs/'
+    rename { buildFatJar.baseName + "-latest.jar" }
+}
+
+task buildAll(type: GradleBuild) {
+    tasks = ['buildFatJar', 'copyLatestJar']
+}
 
 repositories {
     mavenCentral()
@@ -20,5 +41,6 @@ dependencies {
     compile 'org.apache.commons:commons-collections4:4.2'
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.0'
     compile group: 'org.zeromq', name: 'jzmq', version: '3.1.0'
+    compile 'io.reactivex.rxjava2:rxjava:2.2.0'
     compile files('libs/pre-dict-library-0.1.0-jar-with-dependencies.jar')
 }
