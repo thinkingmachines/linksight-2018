@@ -14,8 +14,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Config
+# Secrets
 *.env
+*.pem
 
 # PyCharm
 /.idea/
