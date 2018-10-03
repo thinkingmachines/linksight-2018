@@ -1,7 +1,10 @@
 .PHONY: secrets deploy-staging
 
-deploy-staging: cloudbuild-staging.yml
-	gcloud builds submit --config cloudbuild-staging.yml ..
+deploy-staging: cloudbuild.yml
+	gcloud builds submit \
+		--config cloudbuild.yml \
+		--substitutions=TAG_NAME=staging,_HOST=linksight-stg.thinkingmachin.es \
+		..
 
 secrets: cert.pem.enc ca.pem.enc key.pem.enc staging.env.enc
 
