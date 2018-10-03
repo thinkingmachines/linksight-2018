@@ -52,8 +52,6 @@ to contribute, please send us an email at
     | DEBUG | Toggles running the server in debug mode |
     | DATABASE_URL | See [DJ-Database-URL](https://github.com/kennethreitz/dj-database-url) |
     | SECRET_KEY | String used to provide cryptographic signing of sessions, etc. |
-    | PSGC_DATASET_ID | UUID of PSGC reference dataset |
-    | POPULATION_DATASET_ID | UUID of the population dataset |
     | EMAIL_PORT | Port to use when sending email |
     | EMAIL_HOST_USER | User for sending email |
     | EMAIL_HOST_PASSWORD | Password for above |
@@ -63,8 +61,6 @@ to contribute, please send us an email at
     | APPROVED_EMAILS_SHEET_ID | Google Sheets ID of th list of approved emails |
     | APPROVED_EMAILS_SHEET_RANGE | The sheet range for approved emails |
     | APPROVED_EMAILS_ROW_KEY | The row key for approved emails |
-
-    Instructions will follow on how to set `PSGC_DATASET_ID` and `POPULATION_DATASET_ID`.
 
     If you are a member of the official LinkSight development team, you can ask
     for access to the template with secrets filled in.
@@ -77,7 +73,7 @@ to contribute, please send us an email at
 
     Make sure that you can connect using the `DATABASE_URL` you used in `.env`.
 
-1. Run server
+1. Run the server
 
     ```sh
     source venv/bin/activate
@@ -85,25 +81,7 @@ to contribute, please send us an email at
     python manage.py runserver
     ```
 
-1. Create a superuser
-
-    ```sh
-    python manage.py createsuperuser
-    ```
-
-1. Go to [http://localhost:8000/accounts/login](http://localhost:8000/accounts/login) and log in manually
-
-1. Upload the dataset files
-
-    - Download the files from [this bucket](https://console.cloud.google.com/storage/browser/linksight?project=linksight-208514&organizationId=301224238109).
-    - Go to [http://localhost:3000/](http://localhost:3000/) on your browser and upload them one at a time.
-        - After uploading `clean-psgc.csv`, use the ID in the post-upload URL to fill in `PSGC_DATASET_ID` in `.env`
-        - After uploading `population.csv`, use the ID in the post-upload URL to fill in `POPULATION_DATASET_ID` in `.env`
-    - After updating `.env`, restart your server.
-
-    ```sh
-    python manage.py runserver
-    ```
+1. Go to [http://localhost:3000/](http://localhost:3000/)
 
 ### Components Catalog
 
