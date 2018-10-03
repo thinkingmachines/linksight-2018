@@ -5,11 +5,11 @@ from collections import OrderedDict
 from functools import partial
 
 import pandas as pd
-
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import Q
+
 from linksight.api.matchers.ngrams_matcher import NgramsMatcher
 from linksight.api.matchers.search_tuple import create_search_tuple, to_index
 
@@ -134,7 +134,8 @@ class Match(models.Model):
             'confidence_score_linksight'
         ]
 
-        joined_df = dataset_df.join(matches_df[linksight_cols], lsuffix='_dataset')
+        dataset_df.drop(['prov_linksight'], axis=1, errors='ignore', inplace=True)
+        joined_df = dataset_df.join(matches_df[linksight_cols])
 
         # Order columns
 
@@ -144,11 +145,10 @@ class Match(models.Model):
             (self.source_municity_col, 'municity_linksight'),
             (self.source_prov_col, 'prov_linksight'),
         ):
-            if source_col is not None:
-                if source_col in linksight_cols:
-                    front_cols.extend(('{}_dataset'.format(source_col), matched_col))
-                else:
-                    front_cols.extend((source_col, matched_col))
+            if source_col == matched_col:
+                front_cols.extend((matched_col,))
+            else:
+                front_cols.extend((source_col, matched_col))
 
         mid_cols = [
             "psgc_linksight",
@@ -158,7 +158,6 @@ class Match(models.Model):
         other_cols = [col for col in joined_df.columns.tolist()
                       if (col not in front_cols) and (col not in mid_cols)]
         new_cols = front_cols + mid_cols + other_cols
-        print(front_cols, mid_cols, other_cols)
         joined_df = joined_df[new_cols]
 
         # Create matched dataset
