@@ -103,7 +103,6 @@ You can run specific subsets of tests [like so](https://docs.djangoproject.com/e
 #### Staging
 
 ```sh
-gcloud config set project <GCP_PROJECT>
 cd deploy
 make
 ```

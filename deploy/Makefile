@@ -1,7 +1,8 @@
 .PHONY: secrets deploy-staging
 
 deploy-staging: cloudbuild.yml
-	gcloud builds submit \
+	gcloud builds --project linksight-208514 \
+		submit \
 		--config cloudbuild.yml \
 		--substitutions=TAG_NAME=staging,_HOST=linksight-stg.thinkingmachin.es \
 		..
