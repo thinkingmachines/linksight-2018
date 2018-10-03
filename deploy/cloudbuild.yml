@@ -23,7 +23,7 @@ steps:
 # Setup environment variables
 
 - name: 'gcr.io/cloud-builders/gcloud'
-  id: env
+  id: decrypt-env
   waitFor: ['-']
   args:
   - kms
@@ -38,7 +38,7 @@ steps:
 
 - name: 'gcr.io/cloud-builders/docker'
   id: build-python
-  waitFor: ['env', 'pull-python']
+  waitFor: ['decrypt-env', 'pull-python']
   args:
   - build
   - -f=deploy/Dockerfile.python
@@ -83,7 +83,7 @@ steps:
 # Decrypt docker certs
 
 - name: 'gcr.io/cloud-builders/gcloud'
-  id: ca
+  id: decrypt-ca
   waitFor: ['-']
   args:
   - kms
@@ -95,7 +95,7 @@ steps:
   - --key=linksight
 
 - name: 'gcr.io/cloud-builders/gcloud'
-  id: cert
+  id: decrypt-cert
   waitFor: ['-']
   args:
   - kms
@@ -107,7 +107,7 @@ steps:
   - --key=linksight
 
 - name: 'gcr.io/cloud-builders/gcloud'
-  id: key
+  id: decrypt-key
   waitFor: ['-']
   args:
   - kms
@@ -121,7 +121,8 @@ steps:
 # Update containers
 
 - name: 'docker/compose:1.22.0'
-  waitFor: ['push-python', 'push-nginx', 'ca', 'cert', 'key']
+  id: compose-pull
+  waitFor: ['push-python', 'push-nginx', 'decrypt-ca', 'decrypt-cert', 'decrypt-key']
   args: ['-p', 'linksight', '-f', 'deploy/docker-compose.yml', 'pull']
   env:
   - 'DOCKER_HOST=$_HOST:2376'
@@ -129,7 +130,8 @@ steps:
   - DOCKER_CERT_PATH=.
 
 - name: 'docker/compose:1.22.0'
-  waitFor: ['push-python', 'push-nginx', 'ca', 'cert', 'key']
+  id: compose-up
+  waitFor: ['push-python', 'push-nginx', 'decrypt-ca', 'decrypt-cert', 'decrypt-key']
   args: ['-p', 'linksight', '-f', 'deploy/docker-compose.yml', 'up', '-d']
   env:
   - 'DOCKER_HOST=$_HOST:2376'
