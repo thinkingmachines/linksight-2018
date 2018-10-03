@@ -104,14 +104,17 @@ class NgramsMatcher(BaseMatcher):
         if len(search_terms) > len(candidate_terms):
             score -= 30
 
-        # if the search terms have only one term, don't include the similarity
-        # score of the other terms.
-        if len(search_terms) > 1:
-            other_items_ratio = fuzz.ratio(
-                ' '.join(other_search_terms),
-                ' '.join(other_candidate_terms))
-            other_items_diff = 100 - other_items_ratio
-            score -= other_items_diff * other_items_ratio_weight
+        # for search terms with higher admin levels provided,
+        # score the similarity ratio of each higher admin level with its
+        # counterpart in the candidate higher admin levels
+
+        if (len(search_terms) > 1) and (expected_higher_adm_items > 0):
+            for i in range(0,len(other_search_terms)):
+                try:
+                    other_item_ratio = fuzz.ratio(other_search_terms[i],other_candidate_terms[i])
+                    score -= (100 - other_item_ratio) * (other_items_ratio_weight/len(other_search_terms))
+                except:
+                    pass
 
         return (
             candidate_tuple,
