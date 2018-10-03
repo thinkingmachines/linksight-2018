@@ -1,15 +1,6 @@
 steps:
 
-- name: gcr.io/cloud-builders/gcloud
-  id: env
-  args:
-  - kms
-  - decrypt
-  - --ciphertext-file=staging.env.enc
-  - --plaintext-file=.env
-  - --location=global
-  - --keyring=linksight
-  - --key=linksight
+# Pull images for faster builds
 
 - name: 'gcr.io/cloud-builders/docker'
   id: pull-python
@@ -29,8 +20,24 @@ steps:
   entrypoint: bash
   args: ['-c', 'docker pull gcr.io/$PROJECT_ID/nginx || true']
 
+# Setup environment variables
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: env
+  waitFor: ['-']
+  args:
+  - kms
+  - decrypt
+  - --ciphertext-file=deploy/staging.env.enc
+  - --plaintext-file=.env
+  - --location=global
+  - --keyring=linksight
+  - --key=linksight
+
+# Build images
+
 - name: 'gcr.io/cloud-builders/docker'
-  id: python
+  id: build-python
   waitFor: ['env', 'pull-python']
   args:
   - build
@@ -40,7 +47,7 @@ steps:
   - .
 
 - name: 'gcr.io/cloud-builders/docker'
-  id: node
+  id: build-node
   waitFor: ['pull-node']
   args:
   - build
@@ -52,13 +59,82 @@ steps:
   - .
 
 - name: 'gcr.io/cloud-builders/docker'
-  waitFor: ['pull-nginx', 'python', 'node']
+  id: build-nginx
+  waitFor: ['pull-nginx', 'build-python', 'build-node']
   args:
   - build
   - -f=deploy/Dockerfile.nginx
   - '-t=gcr.io/$PROJECT_ID/nginx'
   - '--cache-from=gcr.io/$PROJECT_ID/nginx'
   - .
+
+# Push images to GCR
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: push-python
+  waitFor: ['build-python']
+  args: ['push', 'gcr.io/$PROJECT_ID/python']
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: push-nginx
+  waitFor: ['build-nginx']
+  args: ['push', 'gcr.io/$PROJECT_ID/nginx']
+
+# Decrypt docker certs
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: ca
+  waitFor: ['-']
+  args:
+  - kms
+  - decrypt
+  - --ciphertext-file=deploy/ca.pem.enc
+  - --plaintext-file=ca.pem
+  - --location=global
+  - --keyring=linksight
+  - --key=linksight
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: cert
+  waitFor: ['-']
+  args:
+  - kms
+  - decrypt
+  - --ciphertext-file=deploy/cert.pem.enc
+  - --plaintext-file=cert.pem
+  - --location=global
+  - --keyring=linksight
+  - --key=linksight
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: key
+  waitFor: ['-']
+  args:
+  - kms
+  - decrypt
+  - --ciphertext-file=deploy/key.pem.enc
+  - --plaintext-file=key.pem
+  - --location=global
+  - --keyring=linksight
+  - --key=linksight
+
+# Update containers
+
+- name: 'docker/compose:1.22.0'
+  waitFor: ['push-python', 'push-nginx', 'ca', 'cert', 'key']
+  args: ['-p', 'linksight', '-f', 'deploy/docker-compose.yml', 'pull']
+  env:
+  - DOCKER_HOST=linksight-stg.thinkingmachin.es:2376
+  - DOCKER_TLS_VERIFY=1
+  - DOCKER_CERT_PATH=.
+
+- name: 'docker/compose:1.22.0'
+  waitFor: ['push-python', 'push-nginx', 'ca', 'cert', 'key']
+  args: ['-p', 'linksight', '-f', 'deploy/docker-compose.yml', 'up', '-d']
+  env:
+  - DOCKER_HOST=linksight-stg.thinkingmachin.es:2376
+  - DOCKER_TLS_VERIFY=1
+  - DOCKER_CERT_PATH=.
 
 images:
 - 'gcr.io/$PROJECT_ID/python'

@@ -1,4 +1,4 @@
-.PHONY: install ssh build-staging
+.PHONY: install ssh
 install: venv requirements.txt
 	venv/bin/pip-sync
 venv:
@@ -11,21 +11,3 @@ ssh:
 		ssh \
 		--zone asia-southeast1-b \
 		linksight
-prod.env.enc: prod.env
-	gcloud kms --project linksight-208514 \
-		encrypt \
-		--plaintext-file=prod.env \
-		--ciphertext-file=prod.env.enc \
-		--location=global \
-		--keyring=linksight \
-		--key=linksight
-staging.env.enc: staging.env
-	gcloud kms --project linksight-208514 \
-		encrypt \
-		--plaintext-file=staging.env \
-		--ciphertext-file=staging.env.enc \
-		--location=global \
-		--keyring=linksight \
-		--key=linksight
-build-staging: deploy/cloudbuild-staging.yml
-	gcloud builds submit --config deploy/cloudbuild-staging.yml .
