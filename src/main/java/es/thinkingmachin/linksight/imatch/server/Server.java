@@ -1,5 +1,7 @@
 package es.thinkingmachin.linksight.imatch.server;
 
+import es.thinkingmachin.linksight.imatch.matcher.core.DatasetInfo;
+import es.thinkingmachin.linksight.imatch.matcher.tree.TreeReference;
 import es.thinkingmachin.linksight.imatch.server.Lpserver;
 import es.thinkingmachin.linksight.imatch.matcher.core.MatchingJob;
 import es.thinkingmachin.linksight.imatch.matcher.reference.Reference;
@@ -22,27 +24,29 @@ public class Server {
     private static String[] TEST_CORRECT_COLS = {"expected_brgy", "expected_municity", "expected_prov"};
 
     public static void main(String[] args) throws Exception {
-        System.out.println(getVersion());
-
-        Lpserver.main(args);
-
-        if (true) return;
-
-        System.out.println("\nTest CSV: " + TEST_CSV_PATH + "\n");
-
-        long startMem = getMemUsage();
-        // Get es.thinkingmachin.linksight.imatch.matcher.reference file and create model
-        Reference reference = new Reference(REF_CSV_PATH, REF_LOC_COLS, REF_PSGC_COL, REF_ALIAS_COL);
-        System.out.println("After ref: "+(getMemUsage()-startMem));
-
-        // Do matching on the test csv
-        MatchingJob matchingJob = new MatchingJob(reference, TEST_CSV_PATH, TEST_LOC_COLS);
-        matchingJob.start();
-
-        System.out.println("After matching: "+(getMemUsage()-startMem));
-
-        // Check accuracy
-        Evaluator.evaluate(matchingJob.matchedRows, TEST_CSV_PATH, TEST_CORRECT_COLS);
+        DatasetInfo datasetInfo = new DatasetInfo(REF_CSV_PATH, REF_LOC_COLS, REF_PSGC_COL, REF_ALIAS_COL);
+        TreeReference reference = new TreeReference(datasetInfo);
+//        System.out.println(getVersion());
+//
+//        Lpserver.main(args);
+//
+//        if (true) return;
+//
+//        System.out.println("\nTest CSV: " + TEST_CSV_PATH + "\n");
+//
+//        long startMem = getMemUsage();
+//        // Get es.thinkingmachin.linksight.imatch.matcher.reference file and create model
+//        Reference reference = new Reference(REF_CSV_PATH, REF_LOC_COLS, REF_PSGC_COL, REF_ALIAS_COL);
+//        System.out.println("After ref: "+(getMemUsage()-startMem));
+//
+//        // Do matching on the test csv
+//        MatchingJob matchingJob = new MatchingJob(reference, TEST_CSV_PATH, TEST_LOC_COLS);
+//        matchingJob.start();
+//
+//        System.out.println("After matching: "+(getMemUsage()-startMem));
+//
+//        // Check accuracy
+//        Evaluator.evaluate(matchingJob.matchedRows, TEST_CSV_PATH, TEST_CORRECT_COLS);
     }
 
     private static long getMemUsage() {

@@ -1,9 +1,11 @@
 package es.thinkingmachin.linksight.imatch.matcher.reference;
 
 import es.thinkingmachin.linksight.imatch.matcher.core.Address;
+import es.thinkingmachin.linksight.imatch.matcher.core.DatasetInfo;
 import es.thinkingmachin.linksight.imatch.matcher.core.Interlevel;
 import de.siegmar.fastcsv.reader.CsvRow;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -19,6 +21,10 @@ public class ReferenceRow {
         this.psgc = psgc;
     }
 
+    public static ReferenceRow fromCsvRow(CsvRow csvRow, DatasetInfo sourceDatasetInfo) {
+        return fromCsvRow(csvRow, sourceDatasetInfo.locFields, sourceDatasetInfo.psgcField, sourceDatasetInfo.aliasField);
+    }
+
     public static ReferenceRow fromCsvRow(CsvRow csvRow, String[] stdLocFields, String psgcField, String aliasField) {
         // Extract PSGC
         long psgc = Long.parseLong(csvRow.getField(psgcField));
@@ -30,6 +36,28 @@ public class ReferenceRow {
         String aliasValue = csvRow.getField(aliasField);
         String[] alias = aliasValue.split(",");
         alias = Arrays.copyOf(alias, alias.length-1);
+
+        // Special cases
+        if (stdAddress.terms.length != alias.length) {
+            String lastTerm = alias[alias.length-1];
+            String middleTerm = alias[alias.length-2];
+            if ((lastTerm.equals("national capital region ncr")
+                    || lastTerm.equals("ncr")
+                    || lastTerm.equals("national capital region")
+                    || lastTerm.equals("metro manila")
+                    || lastTerm.equals("metropolitan manila")) && middleTerm.equals("manila")) {
+                // TODO: optimize!
+                // Remove middle term
+                ArrayList<String> temp = new ArrayList<>(Arrays.asList(alias));
+                temp.remove(temp.size() - 2);
+                alias = temp.toArray(new String[]{});
+            }
+        }
+
+        if (stdAddress.terms.length != alias.length) {
+            assert false: "Unequal: "+stdAddress+" and "+Arrays.toString(alias);
+        }
+
         Interlevel level = Interlevel.inferLevel(alias.length);
         Address aliasAddress = new Address(alias, level);
 
