@@ -1,3 +1,13 @@
+# Build config
+
+images:
+- 'gcr.io/$PROJECT_ID/python:$TAG_NAME'
+- 'gcr.io/$PROJECT_ID/node:$TAG_NAME'
+- 'gcr.io/$PROJECT_ID/nginx:$TAG_NAME'
+
+substitutions:
+  _HOST: linksight.thinkingmachin.es
+
 steps:
 
 # Pull images for faster builds
@@ -6,19 +16,19 @@ steps:
   id: pull-python
   waitFor: ['-']
   entrypoint: bash
-  args: ['-c', 'docker pull gcr.io/$PROJECT_ID/python || true']
+  args: ['-c', 'docker pull gcr.io/$PROJECT_ID/python:$TAG_NAME || true']
 
 - name: 'gcr.io/cloud-builders/docker'
   id: pull-node
   waitFor: ['-']
   entrypoint: bash
-  args: ['-c', 'docker pull gcr.io/$PROJECT_ID/node || true']
+  args: ['-c', 'docker pull gcr.io/$PROJECT_ID/node:$TAG_NAME || true']
 
 - name: 'gcr.io/cloud-builders/docker'
   id: pull-nginx
   waitFor: ['-']
   entrypoint: bash
-  args: ['-c', 'docker pull gcr.io/$PROJECT_ID/nginx || true']
+  args: ['-c', 'docker pull gcr.io/$PROJECT_ID/nginx:$TAG_NAME || true']
 
 # Setup environment variables
 
@@ -42,8 +52,9 @@ steps:
   args:
   - build
   - -f=deploy/Dockerfile.python
-  - '-t=gcr.io/$PROJECT_ID/python'
-  - '--cache-from=gcr.io/$PROJECT_ID/python'
+  - '-t=gcr.io/$PROJECT_ID/python:$TAG_NAME'
+  - '-t=gcr.io/$PROJECT_ID/python:$BUILD_ID'
+  - '--cache-from=gcr.io/$PROJECT_ID/python:$TAG_NAME'
   - .
 
 - name: 'gcr.io/cloud-builders/docker'
@@ -54,8 +65,9 @@ steps:
   - -f=deploy/Dockerfile.node
   - --build-arg
   - 'PUBLIC_URL=https://$_HOST'
-  - '-t=gcr.io/$PROJECT_ID/node'
-  - '--cache-from=gcr.io/$PROJECT_ID/node'
+  - '-t=gcr.io/$PROJECT_ID/node:$TAG_NAME'
+  - '-t=gcr.io/$PROJECT_ID/node:$BUILD_ID'
+  - '--cache-from=gcr.io/$PROJECT_ID/node:$TAG_NAME'
   - .
 
 - name: 'gcr.io/cloud-builders/docker'
@@ -64,8 +76,9 @@ steps:
   args:
   - build
   - -f=deploy/Dockerfile.nginx
-  - '-t=gcr.io/$PROJECT_ID/nginx'
-  - '--cache-from=gcr.io/$PROJECT_ID/nginx'
+  - '-t=gcr.io/$PROJECT_ID/nginx:$TAG_NAME'
+  - '-t=gcr.io/$PROJECT_ID/nginx:$BUILD_ID'
+  - '--cache-from=gcr.io/$PROJECT_ID/nginx:$TAG_NAME'
   - .
 
 # Push images to GCR
@@ -73,12 +86,17 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   id: push-python
   waitFor: ['build-python']
-  args: ['push', 'gcr.io/$PROJECT_ID/python']
+  args: ['push', 'gcr.io/$PROJECT_ID/python:$BUILD_ID']
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: push-node
+  waitFor: ['build-node']
+  args: ['push', 'gcr.io/$PROJECT_ID/node:$BUILD_ID']
 
 - name: 'gcr.io/cloud-builders/docker'
   id: push-nginx
   waitFor: ['build-nginx']
-  args: ['push', 'gcr.io/$PROJECT_ID/nginx']
+  args: ['push', 'gcr.io/$PROJECT_ID/nginx:$BUILD_ID']
 
 # Decrypt docker certs
 
@@ -118,7 +136,7 @@ steps:
   - --keyring=linksight
   - --key=linksight
 
-# Update containers
+# Update services
 
 - name: 'docker/compose:1.22.0'
   id: compose-pull
@@ -128,6 +146,7 @@ steps:
   - 'DOCKER_HOST=$_HOST:2376'
   - DOCKER_TLS_VERIFY=1
   - DOCKER_CERT_PATH=.
+  - 'BUILD_ID=$BUILD_ID'
 
 - name: 'docker/compose:1.22.0'
   id: compose-up
@@ -137,19 +156,11 @@ steps:
   - 'DOCKER_HOST=$_HOST:2376'
   - DOCKER_TLS_VERIFY=1
   - DOCKER_CERT_PATH=.
+  - 'BUILD_ID=$BUILD_ID'
+
+# Prune and notify
 
 - name: 'gcr.io/cloud-builders/docker'
   id: docker-prune
   waitFor: ['compose-up']
   args: ['system', 'prune', '-f']
-
-# Other build config
-
-images:
-- 'gcr.io/$PROJECT_ID/python'
-- 'gcr.io/$PROJECT_ID/node'
-- 'gcr.io/$PROJECT_ID/nginx'
-
-substitutions:
-  _HOST: linksight.thinkingmachin.es
-
