@@ -1,9 +1,8 @@
 import csv
+from pprint import pprint
 from django.test import TestCase
 from linksight.api.matchers.ngrams_matcher import NgramsMatcher
 from tempfile import NamedTemporaryFile
-
-REFERENCE_FILE = 'data/clean-psgc.csv'
 
 
 def create_test_file(content):
@@ -15,8 +14,6 @@ def create_test_file(content):
 
 class LinkSightMatcherTest(TestCase):
 
-    reference = REFERENCE_FILE
-
     def test_return_possible_matches(self):
         '''
         If there are no exact matches, return the possible matches. The
@@ -26,16 +23,12 @@ class LinkSightMatcherTest(TestCase):
         test = '''pro,mun,bgy\nNATIONAL CAPITAL REGION,QUEZON CITY,TEACHERS VILLAGE WST'''
         dataset_path = create_test_file(test)
         matcher = self.create_matcher(dataset_path)
-        result = matcher.get_matches(
-            province_col='pro',
-            city_municipality_col='mun',
-            barangay_col='bgy'
-        )
+        result = list(matcher.get_matches())
 
-        bgys = result['matched_barangay']
-        assert bgys.iloc[0] == 'TEACHERS VILLAGE WEST'
-        assert bgys.iloc[1] == 'TEACHERS VILLAGE EAST'
-        assert bgys.iloc[2] == 'U.P. VILLAGE'
+        pprint(result)
+        assert result[0]['matched_barangay'] == 'TEACHERS VILLAGE WEST'
+        assert result[1]['matched_barangay'] == 'TEACHERS VILLAGE EAST'
+        assert result[2]['matched_barangay'] == 'U.P. VILLAGE'
 
     def test_cases(self):
         with open('data/test-cases.csv') as f:
@@ -53,16 +46,10 @@ class LinkSightMatcherTest(TestCase):
         )
         dataset_path = create_test_file(test)
         matcher = self.create_matcher(dataset_path)
-        result = matcher.get_matches(
-            province_col='pro',
-            city_municipality_col='mun',
-            barangay_col='bgy'
-        )
+        result = list(matcher.get_matches())
 
         expectations = {
-            'expected_pro_psgc': 'matched_province_psgc',
-            'expected_mun_psgc': 'matched_city_municipality_psgc',
-            'expected_bgy_psgc': 'matched_barangay_psgc',
+            'expected_bgy_psgc': 'code',
             'expected_pro': 'matched_province',
             'expected_mun': 'matched_city_municipality',
             'expected_bgy': 'matched_barangay'
@@ -71,16 +58,17 @@ class LinkSightMatcherTest(TestCase):
         for expectation, field in expectations.items():
             expected_val = test_case[expectation]
             if expected_val:
-                subset = result[field]
+                subset = set(map(lambda r: r[field], result))
                 if expected_val == 'MULTIPLE':
                     assert len(subset) > 1
                 elif expected_val == 'NONE':
                     assert not len(subset)
                 else:
-                    assert subset[0] == expected_val
+                    assert result[0][field] == expected_val
+
+    columns = {'prov': 'pro',
+               'municity': 'mun',
+               'bgy': 'bgy'}
 
     def create_matcher(self, dataset):
-        return NgramsMatcher(
-            dataset=dataset,
-            reference=self.reference
-        )
+        return NgramsMatcher(dataset, self.columns)

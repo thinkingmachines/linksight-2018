@@ -1,12 +1,12 @@
-name,source_bgy,source_mun,source_pro,expected_bgy,expected_bgy_psgc,expected_mun,expected_mun_psgc,expected_pro,expected_pro_psgc
-All Matches,Sabang,Dasmarinas,Cavite,SABANG,042106010,CITY OF DASMARIÑAS,042106000,CAVITE,042100000
-Missing Barangay,,Dasmarinas,Cavite,,,CITY OF DASMARIÑAS,042106000,CAVITE,042100000
-Missing MuniCity,Sabang,,Cavite,MULTIPLE,,MULTIPLE,,CAVITE,042100000
-Missing Province,Sabang,Dasmarinas,,SABANG,042106010,CITY OF DASMARIÑAS,042106000,CAVITE,042100000
-Just Barangay,Sabang,,,MULTIPLE,,MULTIPLE,,MULTIPLE,
-Just MuniCity,,Dasmarinas,,,,CITY OF DASMARIÑAS,042106000,CAVITE,042100000
-Just Province,,,Cavite,,,,,CAVITE,042100000
-Barangay-MuniCity,Sabang,Dasmarinas,,SABANG,042106010,CITY OF DASMARIÑAS,042106000,CAVITE,042100000
-MuniCity-Province,,Dasmarinas,Cavite,,,CITY OF DASMARIÑAS,042106000,CAVITE,042100000
-Barangay-Province,Sabang,,Cavite,MULTIPLE,,MULTIPLE,,CAVITE,042100000
-Naming Variations,Brgy Sabang,Dasmarinas City,Cavite,SABANG,042106010,CITY OF DASMARIÑAS,042106000,CAVITE,042100000
+name,source_bgy,source_mun,source_pro,expected_bgy,expected_bgy_psgc,expected_mun,expected_pro
+All Matches,Sabang,Dasmarinas,Cavite,SABANG,042106010,CITY OF DASMARIÑAS,CAVITE
+Missing Barangay,,Dasmarinas,Cavite,,,CITY OF DASMARIÑAS,CAVITE
+Missing MuniCity,Sabang,,Cavite,MULTIPLE,,MULTIPLE,CAVITE
+Missing Province,Sabang,Dasmarinas,,SABANG,042106010,CITY OF DASMARIÑAS,CAVITE
+Just Barangay,Sabang,,,MULTIPLE,,MULTIPLE,MULTIPLE
+Just MuniCity,,Dasmarinas,,,,CITY OF DASMARIÑAS,CAVITE
+Just Province,,,Cavite,,,,CAVITE
+Barangay-MuniCity,Sabang,Dasmarinas,,SABANG,042106010,CITY OF DASMARIÑAS,CAVITE
+MuniCity-Province,,Dasmarinas,Cavite,,,CITY OF DASMARIÑAS,CAVITE
+Barangay-Province,Sabang,,Cavite,MULTIPLE,,MULTIPLE,CAVITE
+Naming Variations,Brgy Sabang,Dasmarinas City,Cavite,SABANG,042106010,CITY OF DASMARIÑAS,CAVITE
