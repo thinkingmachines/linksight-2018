@@ -138,6 +138,11 @@ steps:
   - DOCKER_TLS_VERIFY=1
   - DOCKER_CERT_PATH=.
 
+- name: 'gcr.io/cloud-builders/docker'
+  id: docker-prune
+  waitFor: ['compose-up']
+  args: ['system', 'prune', '-f']
+
 # Other build config
 
 images:
