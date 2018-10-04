@@ -188,9 +188,9 @@ class NgramsMatcher(BaseMatcher):
     def get_exact_matches(self, dataset_df, locations_df_find_exact):
         dataset_columns = self.columns
 
-        dataset_df = dataset_df[[dataset_columns.get('bgy'),
-                                 dataset_columns.get('municity'),
-                                 dataset_columns.get('prov')]].copy()
+        interlevel_columns = [dataset_columns.get(interlevel) for interlevel in
+                              dataset_columns.keys() if dataset_columns.get(interlevel)]
+        dataset_df = dataset_df[interlevel_columns].copy()
 
         dataset_df = self.rename_interlevels(dataset_df)
 
