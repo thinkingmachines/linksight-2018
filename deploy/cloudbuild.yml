@@ -8,6 +8,11 @@ images:
 substitutions:
   _HOST: linksight.thinkingmachin.es
 
+secrets:
+- kmsKeyName: projects/linksight-208514/locations/global/keyRings/linksight/cryptoKeys/linksight
+  secretEnv:
+    SLACK_WEBHOOK: CiQAyqhYTzV2rjhqMlxev10hw99OHfRaBqSExolAiDFsla+dmW4SdwCl9n41cIV/5VSiNrQnqrkGvRAS29uJpy330EusajpZ9QwJz7SzOlqGZKFBWjrWFHriHIyZg7HWSNPFk/RXuK3sOP2gK0tbrT+p2Mpdiw2VE+QNToodDM3WGfv7HPccati0Q/Tvd4I58VpR98YyY7AUBQzLMDEI
+
 steps:
 
 # Pull images for faster builds
@@ -164,3 +169,18 @@ steps:
   id: docker-prune
   waitFor: ['compose-up']
   args: ['system', 'prune', '-f']
+
+- name: 'gcr.io/cloud-builders/curl'
+  id: slack-webhook
+  waitFor: ['docker-prune']
+  entrypoint: bash
+  args:
+  - -c
+  - >
+    curl \
+      -X POST \
+      -H 'Content-type: application/json' \
+      --data '{"text": "Deployed `$BUILD_ID` to `$TAG_NAME`: $_HOST"}' \
+      $$SLACK_WEBHOOK
+  secretEnv: ['SLACK_WEBHOOK']
+
