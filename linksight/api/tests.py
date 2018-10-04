@@ -1,6 +1,6 @@
 import csv
 from django.test import TestCase
-from linksight.api.matchers.fuzzywuzzymatcher import FuzzyWuzzyMatcher
+from linksight.api.matchers.ngrams_matcher import NgramsMatcher
 from tempfile import NamedTemporaryFile
 
 REFERENCE_FILE = 'data/clean-psgc.csv'
@@ -80,7 +80,7 @@ class LinkSightMatcherTest(TestCase):
                     assert subset[0] == expected_val
 
     def create_matcher(self, dataset):
-        return FuzzyWuzzyMatcher(
+        return NgramsMatcher(
             dataset=dataset,
             reference=self.reference
         )
