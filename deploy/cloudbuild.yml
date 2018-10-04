@@ -131,7 +131,7 @@ steps:
 
 - name: 'docker/compose:1.22.0'
   id: compose-up
-  waitFor: ['push-python', 'push-nginx', 'decrypt-ca', 'decrypt-cert', 'decrypt-key']
+  waitFor: ['compose-pull']
   args: ['-p', 'linksight', '-f', 'deploy/docker-compose.yml', 'up', '-d']
   env:
   - 'DOCKER_HOST=$_HOST:2376'
