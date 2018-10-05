@@ -98,7 +98,13 @@ class LinkSightMatcherTest(TestCase):
     ])
 
     def create_matcher(self, dataset, columns=''):
-        if not columns:
-            columns = self.columns
+        return NgramsMatcher(dataset, columns or self.columns)
 
-        return NgramsMatcher(dataset, columns)
+    def test_time_vs_reference(self):
+        print('Testing time vs. reference file...')
+        start = time()
+        matcher = self.create_matcher(REFERENCE_FILE)
+        list(matcher.get_matches())
+        duration = time() - start
+        print('Time: {}'.format(duration))
+        assert duration < 300
