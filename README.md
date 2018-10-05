@@ -68,7 +68,7 @@ to contribute, please send us an email at
 1. Install postgresql and run the following in `psql`:
 
     ```
-    CREATE DATABASE unicef;
+    CREATE DATABASE linksight;
     ```
 
     Make sure that you can connect using the `DATABASE_URL` you used in `.env`.
