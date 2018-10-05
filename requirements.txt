@@ -17,7 +17,7 @@ django-environ==0.4.5
 django-registration-redux==2.4
 django-silk==3.0.1
 django-storages[google]==1.7.1
-django==2.1.1
+django==2.1.2
 djangorestframework-csv==2.1.0
 djangorestframework-link-header-pagination==0.1.1
 djangorestframework==3.8.2
