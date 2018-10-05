@@ -1,8 +1,10 @@
 import csv
+from collections import OrderedDict
 from pprint import pprint
 from django.test import TestCase
-from linksight.api.matchers.ngrams_matcher import NgramsMatcher
+from linksight.api.matchers.ngrams_matcher import NgramsMatcher, REFERENCE_FILE
 from tempfile import NamedTemporaryFile
+from time import time
 
 
 def create_test_file(content):
@@ -20,15 +22,13 @@ class LinkSightMatcherTest(TestCase):
         possible matches should be sorted with the nearest match at the top.
         '''
 
-        test = '''pro,mun,bgy\nNATIONAL CAPITAL REGION,QUEZON CITY,TEACHERS VILLAGE WST'''
+        test = '''prov,municity,bgy\nNATIONAL CAPITAL REGION,QUEZON CITY,TEACHERS VILLAGE WST'''
         dataset_path = create_test_file(test)
         matcher = self.create_matcher(dataset_path)
         result = list(matcher.get_matches())
 
-        pprint(result)
         assert result[0]['matched_barangay'] == 'TEACHERS VILLAGE WEST'
         assert result[1]['matched_barangay'] == 'TEACHERS VILLAGE EAST'
-        assert result[2]['matched_barangay'] == 'U.P. VILLAGE'
 
     def test_cases(self):
         with open('data/test-cases.csv') as f:
@@ -39,7 +39,7 @@ class LinkSightMatcherTest(TestCase):
 
         print('Testing {}...'.format(test_case['name']))
 
-        test = '''pro,mun,bgy\n{},{},{}'''.format(
+        test = '''prov,municity,bgy\n{},{},{}'''.format(
             test_case['source_pro'],
             test_case['source_mun'],
             test_case['source_bgy']
@@ -58,17 +58,18 @@ class LinkSightMatcherTest(TestCase):
         for expectation, field in expectations.items():
             expected_val = test_case[expectation]
             if expected_val:
-                subset = set(map(lambda r: r[field], result))
                 if expected_val == 'MULTIPLE':
-                    assert len(subset) > 1
+                    assert len(result) > 1
                 elif expected_val == 'NONE':
-                    assert not len(subset)
+                    assert not len(result)
                 else:
-                    assert result[0][field] == expected_val
+                    assert expected_val in map(lambda r: r[field], result)
 
-    columns = {'prov': 'pro',
-               'municity': 'mun',
-               'bgy': 'bgy'}
+    columns = OrderedDict([
+        ('bgy', 'bgy'),
+        ('municity', 'municity'),
+        ('prov', 'prov')
+    ])
 
     def create_matcher(self, dataset):
         return NgramsMatcher(dataset, self.columns)
