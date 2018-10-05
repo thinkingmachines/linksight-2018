@@ -181,11 +181,6 @@ SILENCED_SYSTEM_CHECKS = [
     'rest_framework.W001',
 ]
 
-# Datasets
-
-PSGC_DATASET_ID = env('PSGC_DATASET_ID')
-POPULATION_DATASET_ID = env('POPULATION_DATASET_ID')
-
 # Raven
 
 RAVEN_CONFIG = {
