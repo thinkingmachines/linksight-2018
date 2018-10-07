@@ -1,6 +1,7 @@
 package es.thinkingmachin.linksight.imatch.matcher.eval;
 
 import es.thinkingmachin.linksight.imatch.matcher.core.Address;
+import es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset;
 import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
 import de.siegmar.fastcsv.reader.CsvParser;
 import de.siegmar.fastcsv.reader.CsvReader;
@@ -12,37 +13,36 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class Evaluator {
-    public static void evaluate(List<ReferenceMatch> matchedAddresses, String testCsvPath, String[] testCorrectCols) throws IOException {
-        CsvParser csvParser = createCsvParser(testCsvPath);
+    public static void evaluate(List<ReferenceMatch> matchedAddresses, TestDataset testDataset) throws IOException {
+        CsvParser csvParser = createCsvParser(testDataset.csvPath);
         CsvRow row;
         int i = -1;
         int countCorrect = 0;
         int countTotal = 0;
+        int countNull = 0;
         while ((row = csvParser.nextRow()) != null) {
             i++;
-            String match_type = row.getField("expected_match_type");
-            long correct_psgc = Long.parseLong(row.getField("expected_psgc"));
-//            if (!match_type.equalsIgnoreCase("Ambiguous")) continue;
-            Address correct = Address.fromCsvRow(row, testCorrectCols);
+            long correct_psgc = Long.parseLong(row.getField(testDataset.correctPsgcField));
             if (i >= matchedAddresses.size()) break;
             ReferenceMatch match = matchedAddresses.get(i);
             if (match != null && match.referenceRow.psgc == correct_psgc) {
                 countCorrect++;
             } else {
                 //Wrong
-//                if (match == null) {
-//                    System.out.println("Raw: " + Address.fromCsvRow(row, new String[]{"source_brgy", "source_municity", "source_prov"}));
-//                    System.out.println("Correct: " + correct);
-//                    System.out.println("Matched: "+ match);
-//                    System.out.println();
-//                }
+                if (match == null) {
+                    countNull++;
+                } else {
+                    System.out.println("Raw: " + Address.fromCsvRow(row, new String[]{"source_brgy", "source_municity", "source_prov"}));
+                    System.out.println("Matched: "+ match);
+                    System.out.println();
+                }
             }
-
             countTotal++;
         }
         System.out.println("Correct: " + countCorrect);
         System.out.println("Total: " + countTotal);
         System.out.println("% correct: " + (countCorrect * 100.0 / countTotal));
+        System.out.println("Null: "+countNull);
 
         if (matchedAddresses.size() != countTotal) {
             throw new Error("Size mismatch! " + matchedAddresses.size() + " matched vs " + countTotal + " correct");

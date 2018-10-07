@@ -1,5 +1,7 @@
 package es.thinkingmachin.linksight.imatch.matcher.reference;
 
+import java.util.LinkedList;
+
 public class ReferenceMatch {
     public final ReferenceRow referenceRow;
     public final double score;

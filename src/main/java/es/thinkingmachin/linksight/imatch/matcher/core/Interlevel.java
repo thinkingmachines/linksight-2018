@@ -6,7 +6,7 @@ public enum Interlevel {
     MUNICITY("municity"),
     PROVINCE("prov");
 
-    public static final Interlevel[] indexed = {BARANGAY, MUNICITY, PROVINCE};
+    public static final Interlevel[] indexed = Interlevel.values();
     public final String shortName;
 
     Interlevel(String shortName) {

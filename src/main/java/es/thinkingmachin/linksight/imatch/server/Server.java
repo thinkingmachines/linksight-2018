@@ -1,31 +1,35 @@
 package es.thinkingmachin.linksight.imatch.server;
 
-import es.thinkingmachin.linksight.imatch.matcher.core.DatasetInfo;
-import es.thinkingmachin.linksight.imatch.matcher.tree.TreeReference;
-import es.thinkingmachin.linksight.imatch.server.Lpserver;
-import es.thinkingmachin.linksight.imatch.matcher.core.MatchingJob;
-import es.thinkingmachin.linksight.imatch.matcher.reference.Reference;
+import es.thinkingmachin.linksight.imatch.matcher.dataset.ReferenceDataset;
+import es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset;
 import es.thinkingmachin.linksight.imatch.matcher.eval.Evaluator;
+import es.thinkingmachin.linksight.imatch.matcher.matchers.DatasetMatcher;
+import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
+import es.thinkingmachin.linksight.imatch.matcher.tree.TreeAddressMatcher;
+import es.thinkingmachin.linksight.imatch.matcher.tree.TreeReference;
 
-import java.io.IOException;
+import java.util.List;
+import java.util.zip.DataFormatException;
 
 public class Server {
 
     // Reference
-    private static String REF_CSV_PATH = "data/psgc-locations.csv";
-    private static String[] REF_LOC_COLS = {"bgy", "municity", "prov"};
-    private static String REF_PSGC_COL = "code";
-    private static String REF_ALIAS_COL = "candidate_terms";
-
-    // Test CSV
-//    private static String TEST_CSV_PATH = "data/happy_path.csv";
-    private static String TEST_CSV_PATH = "data/linksight-testing-file-fuzzy-200.csv";
-    private static String[] TEST_LOC_COLS = {"source_brgy", "source_municity", "source_prov"};
-    private static String[] TEST_CORRECT_COLS = {"expected_brgy", "expected_municity", "expected_prov"};
+    private static ReferenceDataset referenceDataset = new ReferenceDataset(
+            "data/psgc-locations.csv",
+            new String[]{"bgy", "municity", "prov"},
+            "code",
+            "candidate_terms"
+    );
 
     public static void main(String[] args) throws Exception {
-        DatasetInfo datasetInfo = new DatasetInfo(REF_CSV_PATH, REF_LOC_COLS, REF_PSGC_COL, REF_ALIAS_COL);
-        TreeReference reference = new TreeReference(datasetInfo);
+        TestDataset testDataset = TestDataset.BuiltIn.FUZZY_200;
+
+        TreeReference reference = new TreeReference(referenceDataset);
+        DatasetMatcher matcher = new DatasetMatcher(new TreeAddressMatcher(reference));
+
+        List<ReferenceMatch> matches = matcher.getTopMatches(testDataset);
+        Evaluator.evaluate(matches, testDataset);
+
 //        System.out.println(getVersion());
 //
 //        Lpserver.main(args);

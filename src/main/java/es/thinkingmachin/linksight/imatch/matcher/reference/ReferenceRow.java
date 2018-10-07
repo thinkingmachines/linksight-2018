@@ -1,7 +1,7 @@
 package es.thinkingmachin.linksight.imatch.matcher.reference;
 
 import es.thinkingmachin.linksight.imatch.matcher.core.Address;
-import es.thinkingmachin.linksight.imatch.matcher.core.DatasetInfo;
+import es.thinkingmachin.linksight.imatch.matcher.dataset.ReferenceDataset;
 import es.thinkingmachin.linksight.imatch.matcher.core.Interlevel;
 import de.siegmar.fastcsv.reader.CsvRow;
 
@@ -21,8 +21,8 @@ public class ReferenceRow {
         this.psgc = psgc;
     }
 
-    public static ReferenceRow fromCsvRow(CsvRow csvRow, DatasetInfo sourceDatasetInfo) {
-        return fromCsvRow(csvRow, sourceDatasetInfo.locFields, sourceDatasetInfo.psgcField, sourceDatasetInfo.aliasField);
+    public static ReferenceRow fromCsvRow(CsvRow csvRow, ReferenceDataset referenceDataset) {
+        return fromCsvRow(csvRow, referenceDataset.locFields, referenceDataset.psgcField, referenceDataset.aliasField);
     }
 
     public static ReferenceRow fromCsvRow(CsvRow csvRow, String[] stdLocFields, String psgcField, String aliasField) {

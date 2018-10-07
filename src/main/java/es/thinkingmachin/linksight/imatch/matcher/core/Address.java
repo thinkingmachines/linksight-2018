@@ -54,6 +54,18 @@ public class Address {
         return modelCleanedTerms[index];
     }
 
+    public String getTermAtLevel(Interlevel level, boolean clean) {
+        if (level.ordinal() < minLevel.ordinal()) {
+            throw new Error("Requested level too small: getting level "+level+" from address "+this);
+        }
+        int index = level.ordinal() - minLevel.ordinal();
+        return getTerm(index, clean);
+    }
+
+    public String getTermAtLevel(Interlevel level) {
+        return getTermAtLevel(level, false);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

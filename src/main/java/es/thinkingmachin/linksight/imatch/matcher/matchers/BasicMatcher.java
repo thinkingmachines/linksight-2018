@@ -40,7 +40,7 @@ public class BasicMatcher {
         stopwatch.stop();
         long duration = stopwatch.elapsed(TimeUnit.MICROSECONDS);
         if (duration >= 1E6) {
-            System.out.println("**OUTLIER** Matcher candidate gen: "+search+", duration: "+duration);
+            System.out.println("**OUTLIER** DatasetMatcher candidate gen: "+search+", duration: "+duration);
         }
         metricCandidateGen.add(stopwatch.elapsed(TimeUnit.MICROSECONDS));
 
