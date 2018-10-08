@@ -18,7 +18,37 @@
   - Update match checking step layout
   - Update export step layout
   - Add feedback page
-- New matching algorithm
+- New matching algorithm:
+
+    **NGram Algorithm**
+
+    This search algorithm receives a combination of up to three strings–representing any complete set of subset of 
+    barangay, city or municipality, and province names–and finds either its exact match or top N closest matches from
+    within a reference file of administrative territories in the Philippine Standard Geographic Code. The components
+    of the search terms and the candidate terms must be sorted from lowest to highest administrative hierarchy.
+
+    The first step is to find exact matches for each set of search terms. We get these by directly joining the table
+    of search items with the reference file, using search and candidate terms as the join key. Exact matches are
+    assigned a confidence score of 100 and only one row is returned. Only items that escape this direct join need
+    to undergo fuzzy matching.
+
+    The fuzzy matching process begins by narrowing down a search term’s list of candidate matches to those with which
+    it shares at least one trigram at the lowest level component. A trigram is a contiguous sequence of three
+    characters. For example, the first item in “Pipias, Bacarra” contains the trigrams ‘pip’, ‘ipi’, ‘pia’, and ‘ias’.
+    Its candidate matches would therefore only include include locations whose first item also contains at least one
+    of these trigrams.
+
+    After the list of candidates is narrowed, we score the similarity between the search term and each candidate.
+    The initial similarity score starts at 99 and is subsequently penalized based on various rules, in order of weight:
+    - Dissimilarity or inverse Jaro-Winkler ratio between lowest administrative level in the search and candidate terms
+    - Dissimilarity or inverse Levenshtein ratio between common available higher administrative level items in search
+      and candidate terms
+    - Absence of expected number of higher administrative level items in search terms
+    - Mismatched administrative level between search and candidate
+
+    After the similarity score between each set of search terms and all its candidates are calculated,
+    the top five (5) results are returned.
+
 
 ## 2018-09-14
 
