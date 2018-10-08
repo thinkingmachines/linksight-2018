@@ -5,6 +5,8 @@ import es.thinkingmachin.linksight.imatch.matcher.core.Address;
 import es.thinkingmachin.linksight.imatch.matcher.core.Interlevel;
 import es.thinkingmachin.linksight.imatch.matcher.matchers.AddressMatcher;
 import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.Nullable;
 import org.apache.commons.math3.util.Pair;
 
 import java.util.Arrays;
@@ -20,8 +22,10 @@ public class TreeAddressMatcher implements AddressMatcher {
         this.reference = reference;
     }
 
+    @Nullable
     @Override
     public ReferenceMatch getTopMatch(Address address) {
+        if (address.terms.length == 0) return null;
         List<ReferenceMatch> matches = getTopMatches(address, 1);
         if (matches.isEmpty()) return null;
         return matches.get(0);
@@ -33,6 +37,7 @@ public class TreeAddressMatcher implements AddressMatcher {
         List<BfsTraversed> bestN = Ordering.natural().greatestOf(candidates, numMatches);
 
         return bestN.stream()
+                .filter(b -> b.node.getReferenceRow() != null)
                 .map(b -> new ReferenceMatch(b.node.getReferenceRow(), b.overallScore))
                 .collect(Collectors.toList());
     }
@@ -54,6 +59,7 @@ public class TreeAddressMatcher implements AddressMatcher {
             int curNodeLevel = (curNode.node.level == null) ? Interlevel.values().length : curNode.node.level.ordinal();
             Interlevel childNodeLevel = Interlevel.indexed[curNodeLevel - 1];
             String term = address.getTermAtLevel(childNodeLevel);
+            if (term == null) return new LinkedList<>(); // TODO: Handle skipped interlevel
 
             List<String> transformedTerms = getTransformedTerms(term);
             List<Pair<AddressTreeNode, Double>> fuzzyChildren = new LinkedList<>();

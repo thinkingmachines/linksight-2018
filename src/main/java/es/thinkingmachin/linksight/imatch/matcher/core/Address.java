@@ -34,9 +34,8 @@ public class Address {
         for (int i = 0; i < Interlevel.indexed.length; i++) {
             String value = csvRow.getField(locFields[i]);
             value = (value.length() == 0) ? null : value;
-            Interlevel level = Interlevel.indexed[i];
             if (value == null) continue;
-            minLevel = (minLevel == null) ? level : minLevel;
+            minLevel = (minLevel == null) ? Interlevel.indexed[i] : minLevel;
             terms[ctr] = value;
             ctr++;
         }
