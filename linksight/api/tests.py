@@ -1,10 +1,10 @@
 import csv
 from collections import OrderedDict
-from pprint import pprint
-from django.test import TestCase
-from linksight.api.matchers.ngrams_matcher import NgramsMatcher, REFERENCE_FILE
 from tempfile import NamedTemporaryFile
-from time import time
+
+from django.test import TestCase
+
+from linksight.api.matchers.ngrams_matcher import NgramsMatcher
 
 
 def create_test_file(content):
@@ -29,6 +29,32 @@ class LinkSightMatcherTest(TestCase):
 
         assert result[0]['matched_barangay'] == 'TEACHERS VILLAGE WEST'
         assert result[1]['matched_barangay'] == 'TEACHERS VILLAGE EAST'
+
+    def test_linksight_column_name_clash(self):
+        '''
+        If the dataset contains field names that are in conflict with the field names of the
+        matcher's output, it should still be able to return the correct values mapped to the
+        correct fields
+        '''
+        header = ','.join(['matched_barangay',
+                           'matched_city_municipality',
+                           'matched_province'])
+        body = '''Radiwan,Ivana,Batanes'''
+
+        test = "{}\n{}".format(header, body)
+        dataset_path = create_test_file(test)
+
+        columns = OrderedDict([
+            ('bgy', 'matched_barangay'),
+            ('municity', 'matched_city_municipality'),
+            ('prov', 'matched_province')
+        ])
+        matcher = self.create_matcher(dataset_path, columns=columns)
+        result = list(matcher.get_matches())
+
+        assert result[0]['matched_barangay'] == 'RADIWAN'
+        assert result[0]['matched_city_municipality'] == 'IVANA'
+        assert result[0]['matched_province'] == 'BATANES'
 
     def test_cases(self):
         with open('data/tests/test-cases.csv') as f:
@@ -71,5 +97,8 @@ class LinkSightMatcherTest(TestCase):
         ('prov', 'prov')
     ])
 
-    def create_matcher(self, dataset):
-        return NgramsMatcher(dataset, self.columns)
+    def create_matcher(self, dataset, columns=''):
+        if not columns:
+            columns = self.columns
+
+        return NgramsMatcher(dataset, columns)
