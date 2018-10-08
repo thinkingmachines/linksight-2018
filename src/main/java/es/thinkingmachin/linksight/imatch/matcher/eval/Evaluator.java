@@ -32,9 +32,9 @@ public class Evaluator {
                 if (match == null) {
                     countNull++;
                 } else {
-                    System.out.println("Raw: " + Address.fromCsvRow(row, new String[]{"source_brgy", "source_municity", "source_prov"}));
-                    System.out.println("Matched: "+ match);
-                    System.out.println();
+//                    System.out.println("Raw: " + Address.fromCsvRow(row, new String[]{"source_brgy", "source_municity", "source_prov"}));
+//                    System.out.println("Matched: "+ match);
+//                    System.out.println();
                 }
             }
             countTotal++;

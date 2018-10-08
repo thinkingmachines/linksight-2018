@@ -25,7 +25,7 @@ public class FuzzyStringMap<T> {
 
     private PreDict createPredictModel() {
         PreDictSettings settings = new PreDictSettings();
-        settings.accuracyLevel(PreDict.AccuracyLevel.maximum);
+        settings.accuracyLevel(PreDict.AccuracyLevel.fast);
         CommunityCustomization custom = new CommunityCustomization(settings);
         return new PreDict(custom);
     }

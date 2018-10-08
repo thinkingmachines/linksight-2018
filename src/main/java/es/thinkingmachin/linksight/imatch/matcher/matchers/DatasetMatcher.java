@@ -34,7 +34,8 @@ public class DatasetMatcher {
         }
 
         stopwatch.stop();
-        System.out.println("Done. Matching took " + stopwatch.elapsed(TimeUnit.MILLISECONDS) + " msec.\n");
+        long duration = stopwatch.elapsed(TimeUnit.MILLISECONDS);
+        System.out.println("Matching took " + (duration/1000.0) + " sec at "+ (matchedRows.size()*1000.0/duration) +" rows/sec.");
         return matchedRows;
     }
 }

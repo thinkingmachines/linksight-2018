@@ -4,7 +4,6 @@ import com.google.common.collect.Ordering;
 import es.thinkingmachin.linksight.imatch.matcher.core.Address;
 import es.thinkingmachin.linksight.imatch.matcher.core.Interlevel;
 import es.thinkingmachin.linksight.imatch.matcher.matchers.AddressMatcher;
-import es.thinkingmachin.linksight.imatch.matcher.model.FuzzyStringMap;
 import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
 import org.apache.commons.math3.util.Pair;
 
@@ -43,7 +42,6 @@ public class TreeAddressMatcher implements AddressMatcher {
     }
 
     private LinkedList<BfsTraversed> getCandidateMatches(Address address) {
-//        System.out.println(address);
         LinkedList<BfsTraversed> possibleMatches = new LinkedList<>();
         LinkedList<BfsTraversed> queue = new LinkedList<>();
         queue.add(new BfsTraversed(reference.root, 0, null));
@@ -53,34 +51,23 @@ public class TreeAddressMatcher implements AddressMatcher {
         while (!queue.isEmpty()) {
             curNode = queue.removeFirst();
 
-//            System.out.println("Cur node: "+curNode.node.getReferenceRow());
-
             int curNodeLevel = (curNode.node.level == null) ? Interlevel.values().length : curNode.node.level.ordinal();
-//            if (curNode.node.level != null)
-//                System.out.println("Cur node level: "+curNode.node.level+" ordinal: "+curNode.node.level.ordinal());
             Interlevel childNodeLevel = Interlevel.indexed[curNodeLevel - 1];
             String term = address.getTermAtLevel(childNodeLevel);
-//            System.out.println("Getting fuzzy children for term "+term);
 
             List<String> transformedTerms = getTransformedTerms(term);
             List<Pair<AddressTreeNode, Double>> fuzzyChildren = new LinkedList<>();
             for (String t : transformedTerms) {
                 fuzzyChildren.addAll(curNode.node.fuzzyStringMap.getFuzzy(t));
             }
-//            System.out.println("Fuzzy children: "+fuzzyChildren.size());
 
             for (Pair<AddressTreeNode, Double> fuzzyChild : fuzzyChildren) {
                 AddressTreeNode childNode = fuzzyChild.getKey();
                 double childScore = fuzzyChild.getValue();
-//                System.out.println("\tChild: "+childNode.getReferenceRow()+", score: "+childScore);
                 BfsTraversed bfsTraversed = new BfsTraversed(childNode, childScore, curNode);
-
-//                System.out.println("\tChild node level: " + childNodeLevel);
-//                System.out.println("\tAddress minlevel: "+address.minLevel);
 
                 // Enqueue children
                 if (childNodeLevel.ordinal() > address.minLevel.ordinal()) {
-//                    System.out.println("\tEnq "+bfsTraversed.node.getReferenceRow());
                     queue.add(bfsTraversed);
                 }
 
@@ -89,10 +76,6 @@ public class TreeAddressMatcher implements AddressMatcher {
                     possibleMatches.add(bfsTraversed);
                 }
             }
-        }
-//        assert !possibleMatches.isEmpty();
-        if (possibleMatches.isEmpty()) {
-            System.out.println(address);
         }
         return possibleMatches;
     }
