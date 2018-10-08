@@ -31,7 +31,7 @@ class LinkSightMatcherTest(TestCase):
         assert result[1]['matched_barangay'] == 'TEACHERS VILLAGE EAST'
 
     def test_cases(self):
-        with open('data/test-cases.csv') as f:
+        with open('data/tests/test-cases.csv') as f:
             for test_case in csv.DictReader(f):
                 self._test_case(test_case)
 
