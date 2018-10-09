@@ -5,7 +5,6 @@ import es.thinkingmachin.linksight.imatch.matcher.core.Address;
 import es.thinkingmachin.linksight.imatch.matcher.core.Interlevel;
 import es.thinkingmachin.linksight.imatch.matcher.matchers.AddressMatcher;
 import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 import org.apache.commons.math3.util.Pair;
 

@@ -1,51 +1,91 @@
 package es.thinkingmachin.linksight.imatch.server;
 
+import com.google.common.base.Throwables;
 import de.siegmar.fastcsv.writer.CsvAppender;
 import de.siegmar.fastcsv.writer.CsvWriter;
 import es.thinkingmachin.linksight.imatch.matcher.dataset.Dataset;
-import es.thinkingmachin.linksight.imatch.matcher.dataset.ReferenceDataset;
-import es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset;
-import es.thinkingmachin.linksight.imatch.matcher.eval.Evaluator;
 import es.thinkingmachin.linksight.imatch.matcher.matchers.DatasetMatcher;
 import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
 import es.thinkingmachin.linksight.imatch.matcher.tree.TreeAddressMatcher;
 import es.thinkingmachin.linksight.imatch.matcher.tree.TreeReference;
+import es.thinkingmachin.linksight.imatch.server.jobs.CsvMatchingJob;
+import es.thinkingmachin.linksight.imatch.server.jobs.Job;
+import es.thinkingmachin.linksight.imatch.server.messaging.Request;
+import es.thinkingmachin.linksight.imatch.server.messaging.Response;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
+import org.zeromq.ZMQ;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
 
-    // Reference
-    private static ReferenceDataset referenceDataset = new ReferenceDataset(
-            "data/psgc-locations.csv",
-            new String[]{"bgy", "municity", "prov"},
-            "code",
-            "candidate_terms"
-    );
+    // ZeroMQ
+    private final String ipcPath;
 
-    private static Dataset dataset = new Dataset(
-            "data/lgu201.csv",
-            new String[]{"LOCATION", "citymun_m", "province_m"}
-    );
+    // Job handling
+    private final PublishSubject<Job> jobQueue = PublishSubject.create();
+    private final ConcurrentHashMap<String, Response> jobResults = new ConcurrentHashMap<>();
+    private final Disposable mainProcessing;
 
-    public static void main(String[] args) throws Exception {
-        TreeReference reference = new TreeReference(referenceDataset);
-        DatasetMatcher matcher = new DatasetMatcher(new TreeAddressMatcher(reference));
+    // Matcher
+    public TreeReference reference;
+    public DatasetMatcher matcher;
 
-        List<ReferenceMatch> matches = matcher.getTopMatches(dataset);
-        int allCount = 0;
-        int nullCount = 0;
-        for (ReferenceMatch match : matches) {
-            if (match == null) nullCount++;
-            allCount++;
+    public Server(String ipcPath) throws IOException {
+        this.ipcPath = ipcPath;
+        this.reference = new TreeReference(TreeReference.DEFAULT_REF_DATASET);
+        this.matcher = new DatasetMatcher(new TreeAddressMatcher(this.reference));
+        this.mainProcessing = jobQueue.toFlowable(BackpressureStrategy.BUFFER)
+                .observeOn(Schedulers.single())
+                .subscribe(job -> jobResults.put(job.id, job.run()));
+    }
+
+    public void start() {
+        ZMQ.Context context = ZMQ.context(1);
+        ZMQ.Socket socket = context.socket(ZMQ.REP);
+        socket.bind(ipcPath);
+
+        while (true) {
+            String received = socket.recvStr(Charset.defaultCharset());
+            try {
+                socket.send(handleRequest(received).toJson());
+            } catch (Throwable e) {
+                System.out.println("Error handling request: "+received);
+                System.out.println("\tStack trace:" + Throwables.getStackTraceAsString(e));
+                socket.send(Response.createFailed(e).toJson());
+            }
         }
-        System.out.println("All count: "+allCount);
-        System.out.println("Null count: "+nullCount);
-        writeOutput(matches, "output/lgu201.csv");
+    }
+
+    private Response handleRequest(String message) {
+        Request request = Request.fromJson(message);
+        if (request == null) {
+            throw new RuntimeException("Received malformed JSON: "+message);
+        }
+        switch (request.type) {
+            case SUBMIT_JOB:
+                Dataset dataset = new Dataset(request.csvPath, request.columns);
+                jobResults.remove(request.id);
+                jobQueue.onNext(new CsvMatchingJob(request.id, matcher, dataset));
+                return Response.createInProgress();
+            case GET_JOB_RESULT:
+                if (!jobResults.containsKey(request.id)) {
+                    return Response.createInProgress();
+                } else {
+                    return jobResults.get(request.id);
+                }
+            default:
+                throw new NotImplementedException();
+        }
     }
 
     private static void writeOutput(List<ReferenceMatch> matches, String filePath) throws IOException {
@@ -56,7 +96,7 @@ public class Server {
             // Header
             csvAppender.appendLine("brgy", "municity", "prov", "score");
             // Values
-            for (ReferenceMatch match: matches) {
+            for (ReferenceMatch match : matches) {
                 String[] terms;
                 if (match == null) {
                     terms = new String[0];

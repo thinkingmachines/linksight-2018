@@ -18,6 +18,13 @@ public class TreeReference {
     private final ReferenceDataset referenceDataset;
     public final AddressTreeNode root;
 
+    public static ReferenceDataset DEFAULT_REF_DATASET = new ReferenceDataset(
+            "data/psgc-locations.csv",
+            new String[]{"bgy", "municity", "prov"},
+            "code",
+            "candidate_terms"
+    );
+
     public TreeReference(ReferenceDataset referenceDataset) throws IOException {
         this.referenceDataset = referenceDataset;
         this.root = new AddressTreeNode(null, null);
@@ -37,7 +44,7 @@ public class TreeReference {
             }
         }
         stopwatch.stop();
-        System.out.println("Done. Indexing took " + stopwatch.elapsed(TimeUnit.SECONDS) + " sec.\n");
+        System.out.println("Constructing tree reference took " + stopwatch.elapsed(TimeUnit.SECONDS) + " sec.\n");
     }
 
     private void addReferenceRow(ReferenceRow row) {

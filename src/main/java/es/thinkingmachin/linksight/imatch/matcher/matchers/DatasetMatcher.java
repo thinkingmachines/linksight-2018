@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 public class DatasetMatcher {
 
-    private AddressMatcher addressMatcher;
+    private final AddressMatcher addressMatcher;
 
     public DatasetMatcher(AddressMatcher addressMatcher) {
         this.addressMatcher = addressMatcher;
