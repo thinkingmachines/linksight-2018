@@ -4,6 +4,7 @@ import es.thinkingmachin.linksight.imatch.matcher.dataset.Dataset;
 import es.thinkingmachin.linksight.imatch.matcher.matchers.DatasetMatcher;
 import es.thinkingmachin.linksight.imatch.server.messaging.Response;
 
+import java.io.File;
 import java.io.IOException;
 
 public class CsvMatchingJob extends Job {
@@ -20,8 +21,8 @@ public class CsvMatchingJob extends Job {
     @Override
     public Response run() {
         try {
-            if (false) matcher.getTopMatches(dataset);
-            return Response.createSuccess("success!");
+            File output = matcher.getPossibleMatches(dataset);
+            return Response.createSuccess(output.getAbsolutePath());
         } catch (IOException e) {
             return Response.createFailed(e);
         }

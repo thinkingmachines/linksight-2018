@@ -1,14 +1,14 @@
-import pandas as pd
-import zmq
 import json
 import time
 
+import zmq
+import pandas as pd
+
 from testing.base_matcher import BaseMatcher
-from tempfile import NamedTemporaryFile
 
 REQUEST_TIMEOUT = 500
 SERVER_ENDPOINT = "ipc:///tmp/ipchello"
-RESPONSE_POLLING_SEC = 0.1
+RESPONSE_POLLING_SEC = 0.05
 STAGING_CSV = "/tmp/matcher{}.csv"
 
 
@@ -62,6 +62,8 @@ class IMatchMatcher(BaseMatcher):
                 continue
             if status == "done":
                 return response
+            if status == "failed":
+                raise ValueError(response["content"])
             raise ValueError("Unknown status: " + status)
 
     def _create_job_request(self):
@@ -72,6 +74,7 @@ class IMatchMatcher(BaseMatcher):
             "columns": self.columns,
         }
 
+    @property
     def get_matches(self):
         self._create_client()
 
@@ -84,6 +87,11 @@ class IMatchMatcher(BaseMatcher):
         job_result = self._wait_for_job()
         print(job_result)
 
+        # Cleanup
         self._destroy_client()
-        # TODO: transform job result into output
-        return job_result
+
+        # Process result
+        out_path = job_result["content"]
+        df = pd.read_csv(out_path)
+        for row in df.itertuples(index=True):
+            yield row._asdict()
