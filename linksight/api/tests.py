@@ -1,10 +1,11 @@
 import csv
 from collections import OrderedDict
+from django.test import TestCase
+from linksight.api.matchers.ngrams_matcher import NgramsMatcher
+from linksight.api.profiling import get_processing_time
 from tempfile import NamedTemporaryFile
 
-from django.test import TestCase
-
-from linksight.api.matchers.ngrams_matcher import NgramsMatcher
+SPEED_CLEAN_FILE = 'data/tests/speed-clean.csv.gz'
 
 
 def create_test_file(content):
@@ -100,11 +101,7 @@ class LinkSightMatcherTest(TestCase):
     def create_matcher(self, dataset, columns=''):
         return NgramsMatcher(dataset, columns or self.columns)
 
-    def test_time_vs_reference(self):
-        print('Testing time vs. reference file...')
-        start = time()
-        matcher = self.create_matcher(REFERENCE_FILE)
-        list(matcher.get_matches())
-        duration = time() - start
-        print('Time: {}'.format(duration))
-        assert duration < 300
+    def test_time_vs_clean(self):
+        matcher = self.create_matcher(SPEED_CLEAN_FILE)
+        (duration, result) = get_processing_time(matcher)
+        assert duration < 10
