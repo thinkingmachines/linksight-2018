@@ -16,12 +16,17 @@ import environ
 
 # Load .env file
 env = environ.Env(
-    DEBUG=(bool, False),
-    HOST=(str, 'http://localhost:3000'),
     ALLOWED_HOSTS=(list, ['127.0.0.1', 'localhost']),
+    APPROVED_EMAILS_ROW_KEY=(str, ''),
+    APPROVED_EMAILS_SHEET_ID=(str, ''),
+    APPROVED_EMAILS_SHEET_RANGE=(str, ''),
+    DEBUG=(bool, False),
     EMAIL_PORT=(int, 25),
-    SENTRY_DSN=(str, None),
+    HOST=(str, 'http://localhost:3000'),
     LOGIN_REDIRECT_URL=(str, 'http://localhost:3000/upload'),
+    SENTRY_DSN=(str, None),
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=(str, ''),
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=(str, ''),
 )
 env.read_env('.env')
 
