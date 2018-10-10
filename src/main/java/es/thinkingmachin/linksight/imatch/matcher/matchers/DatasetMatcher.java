@@ -63,6 +63,7 @@ public class DatasetMatcher {
             csv.writeHeaderRow();
             for (i = 0; (row = parser.nextRow()) != null; i++) {
                 Address address = Address.fromCsvRow(row, dataset.locFields);
+                if (address.terms.length == 0) continue; // Ignore blank rows
                 long startTime = System.nanoTime();
                 List<ReferenceMatch> matches = addressMatcher.getTopMatches(address, 4);
                 double matchTime = (System.nanoTime() - startTime) / 1e9;

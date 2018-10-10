@@ -5,7 +5,6 @@ import es.thinkingmachin.linksight.imatch.matcher.matchers.DatasetMatcher;
 import es.thinkingmachin.linksight.imatch.server.messaging.Response;
 
 import java.io.File;
-import java.io.IOException;
 
 public class CsvMatchingJob extends Job {
 
@@ -23,7 +22,9 @@ public class CsvMatchingJob extends Job {
         try {
             File output = matcher.getPossibleMatches(dataset);
             return Response.createSuccess(output.getAbsolutePath());
-        } catch (IOException e) {
+        } catch (Throwable e) {
+            System.out.println("Error running matching.");
+            e.printStackTrace();
             return Response.createFailed(e);
         }
     }
