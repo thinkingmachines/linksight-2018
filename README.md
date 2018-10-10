@@ -1,4 +1,5 @@
 # LinkSight
+[![Build Status](https://travis-ci.org/thinkingmachines/linksight.svg?branch=master)](https://travis-ci.org/thinkingmachines/linksight)
 
 This web app takes a list of barangay, municipality, city, and province names and looks up their closest matches in the [Philippine Standard Geographic Code (PSGC)](http://nap.psa.gov.ph/activestats/psgc/default.asp). It's useful if you're trying to standardize location names for merging location datasets from diverse sources.
 
