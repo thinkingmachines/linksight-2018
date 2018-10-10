@@ -92,6 +92,6 @@ class IMatchMatcher(BaseMatcher):
 
         # Process result
         out_path = job_result["content"]
-        df = pd.read_csv(out_path)
-        for row in df.itertuples(index=True):
+        df = pd.read_csv(out_path, keep_default_na=False)
+        for row in df.itertuples(index=False):
             yield row._asdict()
