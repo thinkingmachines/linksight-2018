@@ -38,12 +38,14 @@ public class Server {
 
     // Matcher
     public TreeReference reference;
+    public TreeAddressMatcher addressMatcher;
     public DatasetMatcher matcher;
 
     public Server(String ipcPath) throws IOException {
         this.ipcPath = ipcPath;
         this.reference = new TreeReference(TreeReference.DEFAULT_REF_DATASET);
-        this.matcher = new DatasetMatcher(new TreeAddressMatcher(this.reference));
+        this.addressMatcher = new TreeAddressMatcher(this.reference);
+        this.matcher = new DatasetMatcher(addressMatcher);
         this.mainProcessing = jobQueue.toFlowable(BackpressureStrategy.BUFFER)
                 .observeOn(Schedulers.single())
                 .subscribe(job -> jobResults.put(job.id, job.run()));

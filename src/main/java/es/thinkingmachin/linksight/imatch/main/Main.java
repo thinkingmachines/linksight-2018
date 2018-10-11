@@ -1,25 +1,33 @@
 package es.thinkingmachin.linksight.imatch.main;
 
+import es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset;
+import es.thinkingmachin.linksight.imatch.matcher.eval.Evaluator;
+import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
+import es.thinkingmachin.linksight.imatch.matcher.tree.TreeExplorer;
 import es.thinkingmachin.linksight.imatch.server.Server;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         CommandLine cli = getCliArgs(args);
         if (cli == null) return;
 
         String runMode = cli.getOptionValue("mode");
         String ipcAddr = cli.getOptionValue("ipcaddr", "ipc:///tmp/ipchello");
 
-        if (runMode.equals("server")) {
-            runServer(ipcAddr);
-        } else if (runMode.equals("test")) {
-            runTests();
-        } else {
-            throw new IllegalArgumentException("Unknown mode: " + runMode);
+        switch (runMode) {
+            case "server":
+                runServer(ipcAddr);
+                break;
+            case "test":
+                runTests();
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown mode: " + runMode);
         }
     }
 
@@ -45,7 +53,13 @@ public class Main {
         }
     }
 
-    private static void runTests() {
-        System.out.println("Tests!");
+    private static void runTests() throws IOException {
+        Server server = new Server(null);
+        TreeExplorer treeExplorer = new TreeExplorer(server.reference);
+        treeExplorer.launchRepl();
+//        Server server = new Server(null);
+//        TestDataset test = TestDataset.BuiltIn.IMAN_TEST;
+//        ArrayList<ReferenceMatch> matches = server.matcher.getTopMatches(test);
+//        Evaluator.evaluate(matches, test);
     }
 }

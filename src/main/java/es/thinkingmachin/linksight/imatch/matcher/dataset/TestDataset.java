@@ -24,5 +24,12 @@ public class TestDataset extends Dataset {
                 "expected_psgc"
 
         );
+
+        public static TestDataset IMAN_TEST = new TestDataset(
+                "data/iman-test.csv",
+                new String[]{"source_brgy", "source_municity", "source_prov"},
+                "expected_psgc"
+
+        );
     }
 }

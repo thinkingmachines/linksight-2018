@@ -31,11 +31,13 @@ public class Evaluator {
                 //Wrong
                 if (match == null) {
                     countNull++;
+                    System.out.println("Null match:");
                 } else {
-//                    System.out.println("Raw: " + Address.fromCsvRow(row, new String[]{"source_brgy", "source_municity", "source_prov"}));
-//                    System.out.println("Matched: "+ match);
-//                    System.out.println();
+                    System.out.println("Wrong match:");
                 }
+                System.out.println("\tRaw: " + Address.fromCsvRow(row, new String[]{"source_brgy", "source_municity", "source_prov"}));
+                System.out.println("\tMatched: "+ match);
+                System.out.println();
             }
             countTotal++;
         }

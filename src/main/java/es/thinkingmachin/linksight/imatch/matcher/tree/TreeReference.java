@@ -27,7 +27,7 @@ public class TreeReference {
 
     public TreeReference(ReferenceDataset referenceDataset) throws IOException {
         this.referenceDataset = referenceDataset;
-        this.root = new AddressTreeNode(null, null);
+        this.root = new AddressTreeNode(null, null, null);
         startIndexing();
     }
 
