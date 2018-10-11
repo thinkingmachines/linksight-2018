@@ -1,6 +1,7 @@
 package es.thinkingmachin.linksight.imatch.matcher.tree;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -49,8 +50,11 @@ public class TreeExplorer {
                     }
                     curNode = curNode.children.get(term);
                     break;
-                case "fz":
-
+                case "fzy":
+                    String word = String.join(" ", Arrays.copyOfRange(terms, 1, terms.length));
+                    curNode.fuzzyStringMap.getFuzzy(word).stream()
+                            .sorted(Comparator.comparingDouble(p -> -p.getValue()))
+                            .forEach(p -> System.out.println("\t" + p.getKey().term + ":\t" + p.getValue()));
                     break;
                 case "exit":
                     exit = true;
