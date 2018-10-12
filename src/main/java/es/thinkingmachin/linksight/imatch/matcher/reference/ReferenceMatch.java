@@ -1,16 +1,18 @@
 package es.thinkingmachin.linksight.imatch.matcher.reference;
 
+import es.thinkingmachin.linksight.imatch.matcher.tree.AddressTreeNode;
+
 public class ReferenceMatch {
-    public final ReferenceRow referenceRow;
+    public final AddressTreeNode match;
     public final double score;
 
-    public ReferenceMatch(ReferenceRow referenceRow, double score) {
-        this.referenceRow = referenceRow;
+    public ReferenceMatch(AddressTreeNode match, double score) {
+        this.match = match;
         this.score = score;
     }
 
     @Override
     public String toString() {
-        return referenceRow.toString() + " score: " + score;
+        return match.toString() + " score: " + score;
     }
 }

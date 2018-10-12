@@ -3,6 +3,7 @@ package es.thinkingmachin.linksight.imatch.matcher.io;
 import de.siegmar.fastcsv.writer.CsvAppender;
 import es.thinkingmachin.linksight.imatch.matcher.core.Address;
 import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 
@@ -47,16 +48,17 @@ public class CsvOutput {
 
         if (match != null) {
             // matched_*
-            writeAddressFields(match.referenceRow.aliasAddress);
+            throw new NotImplementedException();
+//            writeAddressFields(match.referenceRow.aliasAddress);
 
             // code
-            csvAppender.appendField(Long.toString(match.referenceRow.psgc));
+//            csvAppender.appendField(Long.toString(match.referenceRow.psgc));
 
             // total_score
-            csvAppender.appendField(String.format("%f", match.score));
+//            csvAppender.appendField(String.format("%f", match.score));
 
             // match_type
-            csvAppender.appendField(match.score == 1.0 ? "exact" : "near");
+//            csvAppender.appendField(match.score == 1.0 ? "exact" : "near");
         } else {
             // no matched_*, code
             for (int i = 0; i < 4; i++) {

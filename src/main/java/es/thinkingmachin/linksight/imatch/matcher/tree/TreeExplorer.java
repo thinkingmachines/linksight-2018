@@ -26,9 +26,8 @@ public class TreeExplorer {
             String[] terms = input.split("\\s+");
             switch (terms[0]) {
                 case "ls":
-                    System.out.println(curNode.term + " Interlevel: " + (curNode.level == null ? "root" : curNode.level));
                     System.out.println("Children:");
-                    curNode.children.keySet().stream()
+                    curNode.getChildTerms().stream()
                             .sorted()
                             .forEach(s -> System.out.println("\t- " + s));
                     break;
@@ -44,17 +43,18 @@ public class TreeExplorer {
                         if (curNode == null) curNode = reference.root;
                         continue;
                     }
-                    if (!curNode.children.containsKey(term)) {
+                    AddressTreeNode childNode = curNode.getChildWithOrigTerm(term);
+                    if (childNode == null) {
                         System.out.println("Cannot find term: " + term);
                         continue;
                     }
-                    curNode = curNode.children.get(term);
+                    curNode = childNode;
                     break;
                 case "fzy":
                     String word = String.join(" ", Arrays.copyOfRange(terms, 1, terms.length));
                     curNode.fuzzyStringMap.getFuzzy(word).stream()
                             .sorted(Comparator.comparingDouble(p -> -p.getValue()))
-                            .forEach(p -> System.out.println("\t" + p.getKey().term + ":\t" + p.getValue()));
+                            .forEach(p -> System.out.println("\t" + p.getKey().getOrigTerm() + ":\t" + p.getValue()));
                     break;
                 case "exit":
                     exit = true;
@@ -70,7 +70,7 @@ public class TreeExplorer {
     private void printPrompt() {
         StringBuilder sb = new StringBuilder();
         String ancestry = curNode.getAncestry().stream()
-                .map(n -> (n.term == null) ? "🌲" : n.term)
+                .map(n -> (n.getOrigTerm() == null) ? "🌲" : n.getOrigTerm())
                 .collect(Collectors.joining(" ➤ "));
         sb.append(ancestry);
         sb.append(": ");

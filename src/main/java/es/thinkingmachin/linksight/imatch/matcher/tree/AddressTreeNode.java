@@ -1,62 +1,71 @@
 package es.thinkingmachin.linksight.imatch.matcher.tree;
 
-import es.thinkingmachin.linksight.imatch.matcher.core.Interlevel;
 import es.thinkingmachin.linksight.imatch.matcher.model.FuzzyStringMap;
-import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceRow;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class AddressTreeNode {
 
-    // Identifiers
-    public final String term;
-    public final Interlevel level;
+    // Node Properties
+    private String origTerm;
+    public final String psgc;
+    private ArrayList<String> aliases;
 
     // Child-related
     public final FuzzyStringMap<AddressTreeNode> fuzzyStringMap;
-    public final HashMap<String, AddressTreeNode> children = new HashMap<>();   // Standard Term -> AddressTreeNode
+    public final List<AddressTreeNode> children = new ArrayList<>();  // Can be updated at child-add time
+    private final HashMap<String, AddressTreeNode> childrenMap = new HashMap<>();  // Maps origTerm -> node. Can only be created at indexing time
 
     // Parent-related
     public final AddressTreeNode parent;
 
-    private ReferenceRow referenceRow;
-    private static int psgcBad = 0;
-
-    public AddressTreeNode(String term, Interlevel level, AddressTreeNode parent) {
+    AddressTreeNode(String psgc, AddressTreeNode parent) {
         this.fuzzyStringMap = new FuzzyStringMap<>();
-        this.term = term;
-        this.level = level;
+        this.aliases = new ArrayList<>();
+        this.psgc = psgc;
         this.parent = parent;
     }
 
-    public void addChild(Interlevel level, String stdTerm, String aliasTerm) {
-        if (!children.containsKey(stdTerm)) {
-            // First time to add child node
-            AddressTreeNode newNode = new AddressTreeNode(stdTerm, level, this);
-            children.put(stdTerm, newNode);
-            fuzzyStringMap.put(stdTerm, newNode);
+    static AddressTreeNode createRoot() {
+        return new AddressTreeNode(null, null);
+    }
+
+    void addChild(AddressTreeNode node) {
+        children.add(node);
+    }
+
+    String getOrigTerm() {
+        return origTerm;
+    }
+
+    void createSearchIndex() {
+        for (AddressTreeNode child : children) {
+            assert child.origTerm != null;
+            childrenMap.put(child.origTerm, child);
+            fuzzyStringMap.put(child.origTerm, child);
+            for (String alias : child.aliases) {
+                fuzzyStringMap.addKeyAlias(child.origTerm, alias);
+            }
         }
-        // Add alias term
-        fuzzyStringMap.addKeyAlias(stdTerm, aliasTerm);
     }
 
-    public AddressTreeNode getChild(String stdTerm) {
-        return children.get(stdTerm);
-    }
-
-    public ReferenceRow getReferenceRow() {
-        return referenceRow;
-    }
-
-    public void setReferenceRow(ReferenceRow referenceRow) {
-        if (this.referenceRow != null && referenceRow.psgc != this.referenceRow.psgc) {
-//            throw new Error("Reference row has already been set: from "+this.referenceRow.psgc+" to "+referenceRow.psgc);
-            psgcBad++;
-            System.out.println("PSGC BAD: "+psgcBad);
+    void addAlias(String alias, boolean isOriginal) {
+        if (isOriginal) {
+            if (origTerm != null) {
+                System.out.println("Warning: more than one original term for "+origTerm);
+            }
+            origTerm = alias;
         }
-        this.referenceRow = referenceRow;
+        aliases.add(alias);
+    }
+
+    Set<String> getChildTerms() {
+        return childrenMap.keySet();
+    }
+
+    AddressTreeNode getChildWithOrigTerm(String origTerm) {
+        return childrenMap.getOrDefault(origTerm, null);
     }
 
     public List<AddressTreeNode> getAncestry() {

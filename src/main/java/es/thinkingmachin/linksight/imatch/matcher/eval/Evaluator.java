@@ -25,7 +25,7 @@ public class Evaluator {
             long correct_psgc = Long.parseLong(row.getField(testDataset.correctPsgcField));
             if (i >= matchedAddresses.size()) break;
             ReferenceMatch match = matchedAddresses.get(i);
-            if (match != null && match.referenceRow.psgc == correct_psgc) {
+            if (match != null && Long.parseLong(match.match.psgc) == correct_psgc) {
                 countCorrect++;
             } else {
                 //Wrong

@@ -43,7 +43,7 @@ public class Server {
 
     public Server(String ipcPath) throws IOException {
         this.ipcPath = ipcPath;
-        this.reference = new TreeReference(TreeReference.DEFAULT_REF_DATASET);
+        this.reference = new TreeReference(TreeReference.DEFAULT_PSGC_DATASET);
         this.addressMatcher = new TreeAddressMatcher(this.reference);
         this.matcher = new DatasetMatcher(addressMatcher);
         this.mainProcessing = jobQueue.toFlowable(BackpressureStrategy.BUFFER)
@@ -87,40 +87,6 @@ public class Server {
                 }
             default:
                 throw new NotImplementedException();
-        }
-    }
-
-    private static void writeOutput(List<ReferenceMatch> matches, String filePath) throws IOException {
-        File file = new File(filePath);
-        CsvWriter csvWriter = new CsvWriter();
-
-        try (CsvAppender csvAppender = csvWriter.append(file, StandardCharsets.UTF_8)) {
-            // Header
-            csvAppender.appendLine("brgy", "municity", "prov", "score");
-            // Values
-            for (ReferenceMatch match : matches) {
-                String[] terms;
-                if (match == null) {
-                    terms = new String[0];
-                } else {
-                    assert match.referenceRow != null;
-                    assert match.referenceRow.stdAddress != null;
-                    terms = match.referenceRow.stdAddress.terms;
-                }
-                assert terms.length <= 3;
-                for (int i = 0; i < 3 - terms.length; i++) {
-                    csvAppender.appendField("");
-                }
-                for (String term : terms) {
-                    csvAppender.appendField(term);
-                }
-                if (match != null) {
-                    csvAppender.appendField(String.format("%.2f", match.score));
-                } else {
-                    csvAppender.appendField("");
-                }
-                csvAppender.endLine();
-            }
         }
     }
 }

@@ -1,45 +1,34 @@
 package es.thinkingmachin.linksight.imatch.matcher.core;
 
 import de.siegmar.fastcsv.reader.CsvRow;
-import es.thinkingmachin.linksight.imatch.matcher.reference.Reference;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 public class Address {
     public final String[] terms;
-    public final Interlevel minLevel;
-    private String[] modelCleanedTerms;
 
-    public Address(String[] terms, Interlevel minLevel) {
+    public Address(String[] terms) {
         this.terms = terms;
-        this.minLevel = minLevel;
-    }
-
-    public void cleanTerms(Reference reference) {
-        if (modelCleanedTerms != null) return;
-        modelCleanedTerms = new String[terms.length];
-        for (int i = 0; i < terms.length; i++) {
-            modelCleanedTerms[i] = reference.predictModel.cleanIndexWord(terms[i]);
-        }
     }
 
     public static Address fromCsvRow(CsvRow csvRow, String[] locFields) {
-        if (locFields.length != 3) {
-            throw new IllegalArgumentException("Only 3 location fields are supported right now.");
-        }
-        Interlevel minLevel = null;
-        String[] terms = new String[Interlevel.indexed.length];
-        int ctr = 0;
-        for (int i = 0; i < Interlevel.indexed.length; i++) {
-            String value = csvRow.getField(locFields[i]);
-            value = (value.length() == 0) ? null : value;
-            if (value == null) continue;
-            minLevel = (minLevel == null) ? Interlevel.indexed[i] : minLevel;
-            terms[ctr] = value;
-            ctr++;
-        }
-        return new Address(Arrays.copyOf(terms, ctr), minLevel);
+//        if (locFields.length != 3) {
+//            throw new IllegalArgumentException("Only 3 location fields are supported right now.");
+//        }
+//        Interlevel minLevel = null;
+//        String[] terms = new String[Interlevel.indexed.length];
+//        int ctr = 0;
+//        for (int i = 0; i < Interlevel.indexed.length; i++) {
+//            String value = csvRow.getField(locFields[i]);
+//            value = (value.length() == 0) ? null : value;
+//            if (value == null) continue;
+//            minLevel = (minLevel == null) ? Interlevel.indexed[i] : minLevel;
+//            terms[ctr] = value;
+//            ctr++;
+//        }
+//        return new Address(Arrays.copyOf(terms, ctr), minLevel);
+        throw new NotImplementedException();
     }
 
     public String getTerm(int index) {
@@ -47,22 +36,11 @@ public class Address {
     }
 
     public String getTerm(int index, boolean clean) {
-        if (terms == null || index >= terms.length) return null;
-        if (!clean) return terms[index];
-        if (modelCleanedTerms == null) throw new Error("Please clean the terms first.");
-        return modelCleanedTerms[index];
-    }
-
-    public String getTermAtLevel(Interlevel level, boolean clean) {
-        if (level.ordinal() < minLevel.ordinal()) {
-            throw new Error("Requested level too small: getting level "+level+" from address "+this);
-        }
-        int index = level.ordinal() - minLevel.ordinal();
-        return getTerm(index, clean);
-    }
-
-    public String getTermAtLevel(Interlevel level) {
-        return getTermAtLevel(level, false);
+//        if (terms == null || index >= terms.length) return null;
+//        if (!clean) return terms[index];
+//        if (modelCleanedTerms == null) throw new Error("Please clean the terms first.");
+//        return modelCleanedTerms[index];
+        throw new NotImplementedException();
     }
 
     @Override
@@ -70,21 +48,18 @@ public class Address {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Address address = (Address) o;
-        return Arrays.equals(terms, address.terms) &&
-                minLevel == address.minLevel &&
-                Arrays.equals(modelCleanedTerms, address.modelCleanedTerms);
+        return Arrays.equals(terms, address.terms);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(minLevel);
-        result = 31 * result + Arrays.hashCode(terms);
-        result = 31 * result + Arrays.hashCode(modelCleanedTerms);
+        int result = Arrays.hashCode(terms);
+        result = 31 * result;
         return result;
     }
 
     @Override
     public String toString() {
-        return "[" + String.join(",", terms) + "] Level: "+minLevel;
+        return Arrays.toString(terms);
     }
 }

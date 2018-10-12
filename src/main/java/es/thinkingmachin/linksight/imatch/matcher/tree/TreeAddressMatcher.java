@@ -2,11 +2,11 @@ package es.thinkingmachin.linksight.imatch.matcher.tree;
 
 import com.google.common.collect.Ordering;
 import es.thinkingmachin.linksight.imatch.matcher.core.Address;
-import es.thinkingmachin.linksight.imatch.matcher.core.Interlevel;
 import es.thinkingmachin.linksight.imatch.matcher.matchers.AddressMatcher;
 import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
 import io.reactivex.annotations.Nullable;
 import org.apache.commons.math3.util.Pair;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -32,13 +32,14 @@ public class TreeAddressMatcher implements AddressMatcher {
 
     @Override
     public List<ReferenceMatch> getTopMatches(Address address, int numMatches) {
-        List<BfsTraversed> candidates = getCandidateMatches(address);
-        List<BfsTraversed> bestN = Ordering.natural().greatestOf(candidates, numMatches);
-
-        return bestN.stream()
-                .filter(b -> b.node.getReferenceRow() != null)
-                .map(b -> new ReferenceMatch(b.node.getReferenceRow(), b.overallScore))
-                .collect(Collectors.toList());
+//        List<BfsTraversed> candidates = getCandidateMatches(address);
+//        List<BfsTraversed> bestN = Ordering.natural().greatestOf(candidates, numMatches);
+//
+//        return bestN.stream()
+//                .filter(b -> b.node.getReferenceRow() != null)
+//                .map(b -> new ReferenceMatch(b.node.getReferenceRow(), b.overallScore))
+//                .collect(Collectors.toList());
+        throw new NotImplementedException();
     }
 
     private static double getOverallScore(double[] scores) {
@@ -46,43 +47,44 @@ public class TreeAddressMatcher implements AddressMatcher {
     }
 
     private LinkedList<BfsTraversed> getCandidateMatches(Address address) {
-        LinkedList<BfsTraversed> possibleMatches = new LinkedList<>();
-        LinkedList<BfsTraversed> queue = new LinkedList<>();
-        queue.add(new BfsTraversed(reference.root, 0, null));
-
-        // BFS
-        BfsTraversed curNode;
-        while (!queue.isEmpty()) {
-            curNode = queue.removeFirst();
-
-            int curNodeLevel = (curNode.node.level == null) ? Interlevel.values().length : curNode.node.level.ordinal();
-            Interlevel childNodeLevel = Interlevel.indexed[curNodeLevel - 1];
-            String term = address.getTermAtLevel(childNodeLevel);
-            if (term == null) return new LinkedList<>(); // TODO: Handle skipped interlevel
-
-            List<String> transformedTerms = getTransformedTerms(term);
-            List<Pair<AddressTreeNode, Double>> fuzzyChildren = new LinkedList<>();
-            for (String t : transformedTerms) {
-                fuzzyChildren.addAll(curNode.node.fuzzyStringMap.getFuzzy(t));
-            }
-
-            for (Pair<AddressTreeNode, Double> fuzzyChild : fuzzyChildren) {
-                AddressTreeNode childNode = fuzzyChild.getKey();
-                double childScore = fuzzyChild.getValue();
-                BfsTraversed bfsTraversed = new BfsTraversed(childNode, childScore, curNode);
-
-                // Enqueue children
-                if (childNodeLevel.ordinal() > address.minLevel.ordinal()) {
-                    queue.add(bfsTraversed);
-                }
-
-                // Add to possible matches
-                if (childNodeLevel.ordinal() == address.minLevel.ordinal()) {
-                    possibleMatches.add(bfsTraversed);
-                }
-            }
-        }
-        return possibleMatches;
+//        LinkedList<BfsTraversed> possibleMatches = new LinkedList<>();
+//        LinkedList<BfsTraversed> queue = new LinkedList<>();
+//        queue.add(new BfsTraversed(reference.root, 0, null));
+//
+//        // BFS
+//        BfsTraversed curNode;
+//        while (!queue.isEmpty()) {
+//            curNode = queue.removeFirst();
+//
+//            int curNodeLevel = (curNode.node.level == null) ? Interlevel.values().length : curNode.node.level.ordinal();
+//            Interlevel childNodeLevel = Interlevel.indexed[curNodeLevel - 1];
+//            String term = address.getTermAtLevel(childNodeLevel);
+//            if (term == null) return new LinkedList<>(); // TODO: Handle skipped interlevel
+//
+//            List<String> transformedTerms = getTransformedTerms(term);
+//            List<Pair<AddressTreeNode, Double>> fuzzyChildren = new LinkedList<>();
+//            for (String t : transformedTerms) {
+//                fuzzyChildren.addAll(curNode.node.fuzzyStringMap.getFuzzy(t));
+//            }
+//
+//            for (Pair<AddressTreeNode, Double> fuzzyChild : fuzzyChildren) {
+//                AddressTreeNode childNode = fuzzyChild.getKey();
+//                double childScore = fuzzyChild.getValue();
+//                BfsTraversed bfsTraversed = new BfsTraversed(childNode, childScore, curNode);
+//
+//                // Enqueue children
+//                if (childNodeLevel.ordinal() > address.minLevel.ordinal()) {
+//                    queue.add(bfsTraversed);
+//                }
+//
+//                // Add to possible matches
+//                if (childNodeLevel.ordinal() == address.minLevel.ordinal()) {
+//                    possibleMatches.add(bfsTraversed);
+//                }
+//            }
+//        }
+//        return possibleMatches;
+        throw new NotImplementedException();
     }
 
     private static List<String> getTransformedTerms(String term) {

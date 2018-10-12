@@ -16,7 +16,7 @@ public class FuzzyStringMap<T> {
     private final PreDict preDict;
     private final Map<String, T> strMap;
 
-    private static int badCounts = 0;
+    public static int badCounts = 0;
 
     public FuzzyStringMap() {
         this.preDict = createPredictModel();
@@ -33,9 +33,8 @@ public class FuzzyStringMap<T> {
     public void put(String key, T value) {
         key = preDict.cleanIndexWord(key);
         if (strMap.containsKey(key) && strMap.get(key) != value) {
-            System.out.println("WARNING: More than once instance of key '" + key + "' was added. Ignoring.");
+            System.out.println("WARNING: More than once PSGC for key '" + key + "' was added. Ignoring.");
             badCounts++;
-            System.out.println("Alias Bad: " + badCounts);
         }
         strMap.putIfAbsent(key, value);
         preDict.indexWord(key);
@@ -54,6 +53,7 @@ public class FuzzyStringMap<T> {
     }
 
     public void addKeyAlias(String key, String alias) {
+        if (key.equals(alias)) return;
         put(alias, getExact(key));
     }
 }

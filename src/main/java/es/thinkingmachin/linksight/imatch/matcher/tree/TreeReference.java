@@ -2,67 +2,67 @@ package es.thinkingmachin.linksight.imatch.matcher.tree;
 
 import com.google.common.base.Stopwatch;
 import de.siegmar.fastcsv.reader.CsvParser;
-import de.siegmar.fastcsv.reader.CsvReader;
 import de.siegmar.fastcsv.reader.CsvRow;
-import es.thinkingmachin.linksight.imatch.matcher.dataset.ReferenceDataset;
-import es.thinkingmachin.linksight.imatch.matcher.core.Interlevel;
-import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceRow;
+import es.thinkingmachin.linksight.imatch.matcher.core.Psgc;
+import es.thinkingmachin.linksight.imatch.matcher.dataset.PsgcDataset;
+import es.thinkingmachin.linksight.imatch.matcher.model.FuzzyStringMap;
+import es.thinkingmachin.linksight.imatch.matcher.reference.PsgcRow;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class TreeReference {
 
-    private final ReferenceDataset referenceDataset;
     public final AddressTreeNode root;
 
-    public static ReferenceDataset DEFAULT_REF_DATASET = new ReferenceDataset(
-            "data/psgc-locations.csv",
-            new String[]{"bgy", "municity", "prov"},
+    private final PsgcDataset psgcDataset;
+    private final HashMap<Long, AddressTreeNode> allNodes = new HashMap<>();
+
+    public static PsgcDataset DEFAULT_PSGC_DATASET = new PsgcDataset(
+            "data/clean-psgc.csv",
+            "location",
+            "original",
             "code",
-            "candidate_terms"
+            "interlevel"
     );
 
-    public TreeReference(ReferenceDataset referenceDataset) throws IOException {
-        this.referenceDataset = referenceDataset;
-        this.root = new AddressTreeNode(null, null, null);
-        startIndexing();
+    public TreeReference(PsgcDataset psgcDataset) throws IOException {
+        this.psgcDataset = psgcDataset;
+        this.root = AddressTreeNode.createRoot();
+        initialize();
     }
 
-    private void startIndexing() throws IOException {
+    private void initialize() throws IOException {
         Stopwatch stopwatch = Stopwatch.createStarted();
-        File file = new File(referenceDataset.csvPath);
-        CsvReader csvReader = new CsvReader();
-        csvReader.setContainsHeader(true);
-        try (CsvParser csvParser = csvReader.parse(file, StandardCharsets.UTF_8)) {
+
+        // Create PSGC tree
+        System.out.println("Creating tree...");
+        try (CsvParser csvParser = psgcDataset.getCsvParser()) {
             CsvRow row;
             while ((row = csvParser.nextRow()) != null) {
-                ReferenceRow referenceRow = ReferenceRow.fromCsvRow(row, referenceDataset);
-                addReferenceRow(referenceRow);
+                addPsgcRow(PsgcRow.fromCsvRow(row, psgcDataset));
             }
         }
+
+        // Create search indices
+        System.out.println("Creating search indices...");
+        root.createSearchIndex();
+        allNodes.values().forEach(AddressTreeNode::createSearchIndex);
+        System.out.println("No. of bad aliases: "+ FuzzyStringMap.badCounts);
+
         stopwatch.stop();
         System.out.println("Constructing tree reference took " + stopwatch.elapsed(TimeUnit.SECONDS) + " sec.\n");
     }
 
-    private void addReferenceRow(ReferenceRow row) {
-        assert row.aliasAddress.terms.length == row.stdAddress.terms.length: "Unequal alias and std address: "+row.aliasAddress+" and "+row.stdAddress;
-        int numTerms = row.aliasAddress.terms.length;
-
-        AddressTreeNode currentNode = root;
-        for (int i = numTerms - 1; i >= 0; i--) {
-            assert numTerms <= 3: row.aliasAddress + " does not have <= 3 terms";
-            Interlevel level = Interlevel.indexed[Interlevel.values().length - numTerms + i];
-            String aliasTerm = row.aliasAddress.getTerm(i);
-            String stdTerm = row.stdAddress.getTerm(i);
-            assert stdTerm != null: "Std term is null: "+row.stdAddress;
-            currentNode.addChild(level, stdTerm, aliasTerm);
-            currentNode = currentNode.getChild(stdTerm);
-            if (i == 0) currentNode.setReferenceRow(row);
+    private void addPsgcRow(PsgcRow row) {
+        if (!allNodes.containsKey(row.psgc)) {  // Add new node
+            long parentPsgc = Psgc.getParent(row.psgc);
+            AddressTreeNode parentNode = (parentPsgc == Psgc.NONE) ? root : allNodes.get(parentPsgc);
+            AddressTreeNode node = new AddressTreeNode(row.psgcStr, parentNode);
+            allNodes.put(row.psgc, node);
+            parentNode.addChild(node);
         }
+        allNodes.get(row.psgc).addAlias(row.location, row.isOriginal);
     }
-
-
 }
