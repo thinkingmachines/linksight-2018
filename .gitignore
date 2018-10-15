@@ -1,6 +1,6 @@
 # Python
 __pycache__/
-venv/
+/venv/
 
 # Django
 /media/
@@ -26,10 +26,12 @@ yarn-error.log*
 
 # Testing
 clean-psgc.csv
+/.coverage
+/htmlcov/
 
 # Google Cloud
-service-account-key.json
+/service-account-key.json
 
 # Ansible
-deploy/*.retry
-deploy/hosts.yml
+/deploy/*.retry
+/deploy/hosts.yml
