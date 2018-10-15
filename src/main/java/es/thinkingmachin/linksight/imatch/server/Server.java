@@ -4,6 +4,7 @@ import com.google.common.base.Throwables;
 import de.siegmar.fastcsv.writer.CsvAppender;
 import de.siegmar.fastcsv.writer.CsvWriter;
 import es.thinkingmachin.linksight.imatch.matcher.dataset.Dataset;
+import es.thinkingmachin.linksight.imatch.matcher.dataset.PsgcDataset;
 import es.thinkingmachin.linksight.imatch.matcher.matchers.DatasetMatcher;
 import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
 import es.thinkingmachin.linksight.imatch.matcher.tree.TreeAddressMatcher;
@@ -26,6 +27,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static es.thinkingmachin.linksight.imatch.matcher.tree.TreeReference.DEFAULT_PSGC_DATASET;
+import static es.thinkingmachin.linksight.imatch.matcher.tree.TreeReference.EXTRA_PSGC_DATASET;
+
 public class Server {
 
     // ZeroMQ
@@ -43,7 +47,7 @@ public class Server {
 
     public Server(String ipcPath) throws IOException {
         this.ipcPath = ipcPath;
-        this.reference = new TreeReference(TreeReference.DEFAULT_PSGC_DATASET);
+        this.reference = new TreeReference(new PsgcDataset[]{ DEFAULT_PSGC_DATASET, EXTRA_PSGC_DATASET });
         this.addressMatcher = new TreeAddressMatcher(this.reference);
         this.matcher = new DatasetMatcher(addressMatcher);
         this.mainProcessing = jobQueue.toFlowable(BackpressureStrategy.BUFFER)
@@ -61,7 +65,7 @@ public class Server {
             try {
                 socket.send(handleRequest(received).toJson());
             } catch (Throwable e) {
-                System.out.println("Error handling request: "+received);
+                System.out.println("Error handling request: " + received);
                 System.out.println("\tStack trace:" + Throwables.getStackTraceAsString(e));
                 socket.send(Response.createFailed(e).toJson());
             }
@@ -71,7 +75,7 @@ public class Server {
     private Response handleRequest(String message) {
         Request request = Request.fromJson(message);
         if (request == null) {
-            throw new RuntimeException("Received malformed JSON: "+message);
+            throw new RuntimeException("Received malformed JSON: " + message);
         }
         switch (request.type) {
             case SUBMIT_JOB:

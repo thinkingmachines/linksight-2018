@@ -25,34 +25,31 @@ public class TreeExplorer {
             if (input == null) break;
             String[] terms = input.split("\\s+");
             switch (terms[0]) {
+                case "cat":
+                    AddressTreeNode c = getNode(terms);
+                    if (c == null) continue;
+                    System.out.println("Node: "+c.getOrigTerm());
+                    System.out.println("PSGC: "+c.psgc);
+                    System.out.println("Aliases:");
+                    for (String alias: c.aliases) {
+                        System.out.println("\t- "+alias);
+                    }
+                    break;
                 case "ls":
                     System.out.println("Children:");
-                    curNode.getChildTerms().stream()
+                    curNode.children.stream()
+                            .map(child -> "[" + child.psgc +"] "+child.getOrigTerm())
                             .sorted()
                             .forEach(s -> System.out.println("\t- " + s));
                     break;
                 case "cd":
-                    if (terms.length <= 1) {
-                        System.out.println("Usage: cd [term]");
-                        continue;
-                    }
-                    String term = String.join(" ", Arrays.copyOfRange(terms, 1, terms.length));
-                    term = term.trim().toUpperCase();
-                    if (term.equals("..")) {
-                        curNode = curNode.parent;
-                        if (curNode == null) curNode = reference.root;
-                        continue;
-                    }
-                    AddressTreeNode childNode = curNode.getChildWithOrigTerm(term);
-                    if (childNode == null) {
-                        System.out.println("Cannot find term: " + term);
-                        continue;
-                    }
+                    AddressTreeNode childNode = getNode(terms);
+                    if (childNode == null) continue;
                     curNode = childNode;
                     break;
                 case "fzy":
                     String word = String.join(" ", Arrays.copyOfRange(terms, 1, terms.length));
-                    curNode.fuzzyStringMap.getFuzzy(word).stream()
+                    curNode.childIndex.namesFuzzyMap.getFuzzy(word).stream()
                             .sorted(Comparator.comparingDouble(p -> -p.getValue()))
                             .forEach(p -> System.out.println("\t" + p.getKey().getOrigTerm() + ":\t" + p.getValue()));
                     break;
@@ -65,6 +62,26 @@ public class TreeExplorer {
             }
         }
         System.out.println("Exiting REPL");
+    }
+
+    private AddressTreeNode getNode(String[] terms) {
+        if (terms.length <= 1) {
+            System.out.println("Usage: cd [term]");
+            return null;
+        }
+        String term = String.join(" ", Arrays.copyOfRange(terms, 1, terms.length));
+        term = term.trim().toUpperCase();
+        if (term.equals("..")) {
+            AddressTreeNode nextNode = curNode.parent;
+            if (nextNode == null) nextNode = reference.root;
+            return nextNode;
+        }
+        AddressTreeNode childNode =  curNode.childIndex.getNodeWithOrigTerm(term);
+        if (childNode == null) {
+            System.out.println("Cannot find term");
+            return null;
+        }
+        return childNode;
     }
 
     private void printPrompt() {

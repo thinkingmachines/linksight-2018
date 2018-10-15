@@ -1,26 +1,23 @@
 package es.thinkingmachin.linksight.imatch.matcher.model;
 
+import com.google.common.collect.HashMultimap;
 import de.cxp.predict.PreDict;
 import de.cxp.predict.api.PreDictSettings;
 import de.cxp.predict.api.SuggestItem;
 import de.cxp.predict.customizing.CommunityCustomization;
 import org.apache.commons.math3.util.Pair;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class FuzzyStringMap<T> {
 
     private final PreDict preDict;
-    private final Map<String, T> strMap;
-
-    public static int badCounts = 0;
+    private final HashMultimap<String, T> strMultiMap;
 
     public FuzzyStringMap() {
         this.preDict = createPredictModel();
-        this.strMap = new HashMap<>();
+        this.strMultiMap = HashMultimap.create();
     }
 
     private PreDict createPredictModel() {
@@ -32,28 +29,24 @@ public class FuzzyStringMap<T> {
 
     public void put(String key, T value) {
         key = preDict.cleanIndexWord(key);
-        if (strMap.containsKey(key) && strMap.get(key) != value) {
-            System.out.println("WARNING: More than once PSGC for key '" + key + "' was added. Ignoring.");
-            badCounts++;
-        }
-        strMap.putIfAbsent(key, value);
+        strMultiMap.put(key, value);
         preDict.indexWord(key);
     }
 
-    public T getExact(String key) {
+    public Set<T> getExact(String key) {
         key = preDict.cleanIndexWord(key);
-        return strMap.get(key);
+        return strMultiMap.get(key);
     }
 
-    public List<Pair<T, Double>> getFuzzy(String key) {
+    public Set<Pair<T, Double>> getFuzzy(String key) {
         List<SuggestItem> suggestions = preDict.lookup(key);
-        return suggestions.stream()
-                .map(s -> new Pair<>(strMap.get(s.term), s.proximity))
-                .collect(Collectors.toList());
-    }
-
-    public void addKeyAlias(String key, String alias) {
-        if (key.equals(alias)) return;
-        put(alias, getExact(key));
+        Set<Pair<T, Double>> fuzzyPairs = new HashSet<>();
+        for (SuggestItem s : suggestions) {
+            Set<T> values = strMultiMap.get(s.term);
+            for (T value : values) {
+                fuzzyPairs.add(new Pair<>(value, s.proximity));
+            }
+        }
+        return fuzzyPairs;
     }
 }

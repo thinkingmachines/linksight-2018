@@ -1,27 +1,25 @@
 package es.thinkingmachin.linksight.imatch.matcher.tree;
 
-import es.thinkingmachin.linksight.imatch.matcher.model.FuzzyStringMap;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 public class AddressTreeNode {
 
     // Node Properties
     private String origTerm;
     public final String psgc;
-    private ArrayList<String> aliases;
+    ArrayList<String> aliases;
 
     // Child-related
-    public final FuzzyStringMap<AddressTreeNode> fuzzyStringMap;
-    public final List<AddressTreeNode> children = new ArrayList<>();  // Can be updated at child-add time
-    private final HashMap<String, AddressTreeNode> childrenMap = new HashMap<>();  // Maps origTerm -> node. Can only be created at indexing time
+    public AddressTreeNodeIndex childIndex;
+    public final List<AddressTreeNode> children = new ArrayList<>();
 
     // Parent-related
     public final AddressTreeNode parent;
 
     AddressTreeNode(String psgc, AddressTreeNode parent) {
-        this.fuzzyStringMap = new FuzzyStringMap<>();
         this.aliases = new ArrayList<>();
         this.psgc = psgc;
         this.parent = parent;
@@ -40,32 +38,19 @@ public class AddressTreeNode {
     }
 
     void createSearchIndex() {
-        for (AddressTreeNode child : children) {
-            assert child.origTerm != null;
-            childrenMap.put(child.origTerm, child);
-            fuzzyStringMap.put(child.origTerm, child);
-            for (String alias : child.aliases) {
-                fuzzyStringMap.addKeyAlias(child.origTerm, alias);
-            }
-        }
+        childIndex = new AddressTreeNodeIndex();
+        children.forEach(child -> childIndex.indexChild(child));
     }
 
     void addAlias(String alias, boolean isOriginal) {
         if (isOriginal) {
             if (origTerm != null) {
+                // One known instance: NCR, CITY OF MANILA, FIRST DISTRICT (NOT A PROVINCE)
                 System.out.println("Warning: more than one original term for "+origTerm);
             }
             origTerm = alias;
         }
         aliases.add(alias);
-    }
-
-    Set<String> getChildTerms() {
-        return childrenMap.keySet();
-    }
-
-    AddressTreeNode getChildWithOrigTerm(String origTerm) {
-        return childrenMap.getOrDefault(origTerm, null);
     }
 
     public List<AddressTreeNode> getAncestry() {
@@ -76,5 +61,19 @@ public class AddressTreeNode {
             node = node.parent;
         }
         return ancestry;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AddressTreeNode that = (AddressTreeNode) o;
+        return Objects.equals(origTerm, that.origTerm) &&
+                Objects.equals(psgc, that.psgc);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(origTerm, psgc);
     }
 }

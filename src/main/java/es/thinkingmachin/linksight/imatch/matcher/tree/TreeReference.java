@@ -16,7 +16,7 @@ public class TreeReference {
 
     public final AddressTreeNode root;
 
-    private final PsgcDataset psgcDataset;
+    private final PsgcDataset[] psgcDatasets;
     private final HashMap<Long, AddressTreeNode> allNodes = new HashMap<>();
 
     public static PsgcDataset DEFAULT_PSGC_DATASET = new PsgcDataset(
@@ -27,8 +27,16 @@ public class TreeReference {
             "interlevel"
     );
 
-    public TreeReference(PsgcDataset psgcDataset) throws IOException {
-        this.psgcDataset = psgcDataset;
+    public static PsgcDataset EXTRA_PSGC_DATASET = new PsgcDataset(
+            "data/extra-psgc.csv",
+            "location",
+            "original",
+            "code",
+            "interlevel"
+    );
+
+    public TreeReference(PsgcDataset[] psgcDatasets) throws IOException {
+        this.psgcDatasets = psgcDatasets;
         this.root = AddressTreeNode.createRoot();
         initialize();
     }
@@ -38,10 +46,12 @@ public class TreeReference {
 
         // Create PSGC tree
         System.out.println("Creating tree...");
-        try (CsvParser csvParser = psgcDataset.getCsvParser()) {
-            CsvRow row;
-            while ((row = csvParser.nextRow()) != null) {
-                addPsgcRow(PsgcRow.fromCsvRow(row, psgcDataset));
+        for (PsgcDataset psgcDataset : psgcDatasets) {
+            try (CsvParser csvParser = psgcDataset.getCsvParser()) {
+                CsvRow row;
+                while ((row = csvParser.nextRow()) != null) {
+                    addPsgcRow(PsgcRow.fromCsvRow(row, psgcDataset));
+                }
             }
         }
 
@@ -49,7 +59,6 @@ public class TreeReference {
         System.out.println("Creating search indices...");
         root.createSearchIndex();
         allNodes.values().forEach(AddressTreeNode::createSearchIndex);
-        System.out.println("No. of bad aliases: "+ FuzzyStringMap.badCounts);
 
         stopwatch.stop();
         System.out.println("Constructing tree reference took " + stopwatch.elapsed(TimeUnit.SECONDS) + " sec.\n");
