@@ -10,3 +10,4 @@ before_script:
 script:
   - python manage.py test
 cache: pip
+after_success: coveralls

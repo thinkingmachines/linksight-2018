@@ -1,3 +1,4 @@
+coveralls
 django
 django-cors-headers
 django-environ
