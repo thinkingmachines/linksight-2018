@@ -10,11 +10,7 @@ def get_accuracy(answer_key_file, result):
         if i['match_type'] == 'exact':
             exact += 1
         else:
-            print('No exact match found for [{},{},{}]'.format(
-                i['source_barangay'],
-                i['source_city_municipality'],
-                i['source_province']
-            ))
+            pass
     return exact / len(result)
 
 
