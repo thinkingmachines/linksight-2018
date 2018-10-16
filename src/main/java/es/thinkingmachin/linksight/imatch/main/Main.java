@@ -26,6 +26,9 @@ public class Main {
             case "test":
                 runTests();
                 break;
+            case "explorer":
+                runExplorer();
+                break;
             default:
                 throw new IllegalArgumentException("Unknown mode: " + runMode);
         }
@@ -33,7 +36,7 @@ public class Main {
 
     private static CommandLine getCliArgs(String[] args) {
         Options options = new Options();
-        options.addRequiredOption("m", "mode", true, "Run mode: 'server', 'test'")
+        options.addRequiredOption("m", "mode", true, "Run mode: 'server', 'test', 'explorer'")
                 .addOption("i", "ipcaddr", true, "Path to the IPC address, should start with ipc://");
         CommandLineParser parser = new DefaultParser();
         try {
@@ -54,12 +57,15 @@ public class Main {
     }
 
     private static void runTests() throws IOException {
-//        Server server = new Server(null);
-//        TreeExplorer treeExplorer = new TreeExplorer(server.reference);
-//        treeExplorer.launchRepl();
         Server server = new Server(null);
         TestDataset test = TestDataset.BuiltIn.HAPPY_PATH;
         ArrayList<ReferenceMatch> matches = server.matcher.getTopMatches(test);
         Evaluator.evaluate(matches, test);
+    }
+
+    private static void runExplorer() throws IOException {
+        Server server = new Server(null);
+        TreeExplorer treeExplorer = new TreeExplorer(server.reference);
+        treeExplorer.launchRepl();
     }
 }
