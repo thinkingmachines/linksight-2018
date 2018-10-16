@@ -7,10 +7,7 @@ import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
 import io.reactivex.annotations.Nullable;
 import org.apache.commons.math3.util.Pair;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TreeAddressMatcher implements AddressMatcher {
@@ -41,34 +38,45 @@ public class TreeAddressMatcher implements AddressMatcher {
                 .collect(Collectors.toList());
     }
 
-    private LinkedList<BfsTraversed> getCandidateMatches(String[] searchStrings) {
-        List<String> transformedTerms = getTransformedTerms(searchStrings);
+    private LinkedList<BfsTraversed> getCandidateMatches(String[] locValues) {
+        List<String>[] searchStrings = createSearchStrings(locValues);
         LinkedList<BfsTraversed> possibleMatches = new LinkedList<>();
         LinkedList<BfsTraversed> queue = new LinkedList<>();
-        queue.add(new BfsTraversed(reference.entryPoint, 0, null));
+        queue.add(new BfsTraversed(reference.entryPoint, 0, null, searchStrings));
 
         // BFS
         BfsTraversed curNode;
         while (!queue.isEmpty()) {
             curNode = queue.removeFirst();
 
-            List<Pair<AddressTreeNode, Double>> fuzzyChildren = new LinkedList<>();
-            for (String t : transformedTerms) {
-                fuzzyChildren.addAll(curNode.node.childIndex.namesFuzzyMap.getFuzzy(t));
-            }
+            for (int i = 0; i < curNode.remainingTerms.length; i++) {
+                List<String> locValue = curNode.remainingTerms[i];
+                int numTerms = locValue.size();
+                for (int j = 0; j < numTerms; j++) {
+                    for (int k = j; k <= numTerms; k++) {
+                        String candidate = String.join(" ",locValue.subList(j, k));
+                        Set<Pair<AddressTreeNode, Double>> fuzzyChildren = curNode.node.childIndex.namesFuzzyMap.getFuzzy(candidate);
+                        for (Pair<AddressTreeNode, Double> fuzzyChild : fuzzyChildren) {
+                            AddressTreeNode childNode = fuzzyChild.getKey();
+                            double childScore = fuzzyChild.getValue();
 
-            for (Pair<AddressTreeNode, Double> fuzzyChild : fuzzyChildren) {
-                AddressTreeNode childNode = fuzzyChild.getKey();
-                double childScore = fuzzyChild.getValue();
-                BfsTraversed bfsTraversed = new BfsTraversed(childNode, childScore, curNode);
+                            List<String>[] newRemainingTerms = curNode.remainingTerms.clone();
+                            LinkedList<String> newList = new LinkedList<>(locValue);
+                            newList.subList(j, k).clear();
+                            newRemainingTerms[i] = newList;
 
-                // Enqueue (BFS) if child has children
-                if (childNode.hasChildren()) {
-                    queue.add(bfsTraversed);
+                            BfsTraversed bfsTraversed = new BfsTraversed(childNode, childScore, curNode, newRemainingTerms);
+
+                            // Enqueue (BFS) if child has children
+                            if (childNode.hasChildren()) {
+                                queue.add(bfsTraversed);
+                            }
+
+                            // Add to possible matches
+                            possibleMatches.add(bfsTraversed);
+                        }
+                    }
                 }
-
-                // Add to possible matches
-                possibleMatches.add(bfsTraversed);
             }
         }
 //        if (true) {
@@ -78,19 +86,13 @@ public class TreeAddressMatcher implements AddressMatcher {
         return possibleMatches;
     }
 
-    private static List<String> getTransformedTerms(String[] searchStrings) {
-        LinkedList<String> terms = new LinkedList<>();
-        for (String searchString : searchStrings) {
-            terms.add(searchString);
-            String[] words = searchString.split("[\\s@&.?$+-]+");
-            if (words.length > 1) {
-                terms.addAll(Arrays.asList(words));
-            }
-            for (int i = 0; i < words.length - 1; i++) {
-                terms.add(words[i] + " " + words[i + 1]);
-            }
+    private List<String>[] createSearchStrings(String[] locValues) {
+        List<String>[] searchStrings = new List[locValues.length];
+        for (int i = 0;  i < locValues.length; i++) {
+            String[] words = locValues[i].split("[\\s@&.?$+-]+");
+            searchStrings[i] = Arrays.asList(words);
         }
-        return terms;
+        return searchStrings;
     }
 
     private static class BfsTraversed {
@@ -98,13 +100,15 @@ public class TreeAddressMatcher implements AddressMatcher {
         final AddressTreeNode node;
         final double[] scores;
         final double overallScore;
+        final List<String>[] remainingTerms;
 
-        BfsTraversed(AddressTreeNode node, double score, BfsTraversed parent) {
+        BfsTraversed(AddressTreeNode node, double score, BfsTraversed parent, List<String>[] remainingTerms) {
             this.node = node;
-            if (parent != null) {
+            this.remainingTerms = remainingTerms;
+            if (parent != null) { // child
                 scores = Arrays.copyOf(parent.scores, parent.scores.length + 1);
                 scores[parent.scores.length] = score;
-            } else {
+            } else { // parent
                 scores = new double[0];
             }
             this.overallScore = scores.length > 0 ? getOverallScore(scores) : 0;
