@@ -54,12 +54,12 @@ public class Main {
     }
 
     private static void runTests() throws IOException {
-        Server server = new Server(null);
-        TreeExplorer treeExplorer = new TreeExplorer(server.reference);
-        treeExplorer.launchRepl();
 //        Server server = new Server(null);
-//        TestDataset test = TestDataset.BuiltIn.IMAN_TEST;
-//        ArrayList<ReferenceMatch> matches = server.matcher.getTopMatches(test);
-//        Evaluator.evaluate(matches, test);
+//        TreeExplorer treeExplorer = new TreeExplorer(server.reference);
+//        treeExplorer.launchRepl();
+        Server server = new Server(null);
+        TestDataset test = TestDataset.BuiltIn.HAPPY_PATH;
+        ArrayList<ReferenceMatch> matches = server.matcher.getTopMatches(test);
+        Evaluator.evaluate(matches, test);
     }
 }

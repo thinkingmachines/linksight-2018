@@ -12,7 +12,7 @@ public class TreeExplorer {
 
     public TreeExplorer(TreeReference reference) {
         this.reference = reference;
-        this.curNode = reference.root;
+        this.curNode = reference.entryPoint;
     }
 
     public void launchRepl() {
@@ -71,10 +71,12 @@ public class TreeExplorer {
         }
         String term = String.join(" ", Arrays.copyOfRange(terms, 1, terms.length));
         term = term.trim().toUpperCase();
-        if (term.equals("..")) {
+        if (term.equalsIgnoreCase("..")) {
             AddressTreeNode nextNode = curNode.parent;
             if (nextNode == null) nextNode = reference.root;
             return nextNode;
+        } else if (term.equalsIgnoreCase("entrypoint")) {
+            return reference.entryPoint;
         }
         AddressTreeNode childNode =  curNode.childIndex.getNodeWithOrigTerm(term);
         if (childNode == null) {

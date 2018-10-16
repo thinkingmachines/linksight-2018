@@ -18,4 +18,8 @@ public class Psgc {
         }
         throw new Error("Bad PSGC: "+psgc);
     }
+
+    public static int getLevel(String psgc) {
+        return getLevel(Long.parseLong(psgc));
+    }
 }

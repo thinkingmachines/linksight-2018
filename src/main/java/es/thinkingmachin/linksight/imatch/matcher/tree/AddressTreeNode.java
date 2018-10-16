@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class AddressTreeNode {
 
@@ -75,5 +76,20 @@ public class AddressTreeNode {
     @Override
     public int hashCode() {
         return Objects.hash(origTerm, psgc);
+    }
+
+    public boolean hasChildren() {
+        return !children.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        List<String> strings = getAncestry().stream()
+                .map(node -> node.origTerm)
+                .collect(Collectors.toList());
+        if (strings.size() > 2) {
+            strings = strings.subList(2, strings.size());
+        }
+        return "["+String.join(", ", strings)+"], PSGC:"+psgc;
     }
 }

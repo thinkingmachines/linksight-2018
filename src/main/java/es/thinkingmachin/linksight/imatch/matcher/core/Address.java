@@ -13,34 +13,18 @@ public class Address {
     }
 
     public static Address fromCsvRow(CsvRow csvRow, String[] locFields) {
-//        if (locFields.length != 3) {
-//            throw new IllegalArgumentException("Only 3 location fields are supported right now.");
-//        }
-//        Interlevel minLevel = null;
-//        String[] terms = new String[Interlevel.indexed.length];
-//        int ctr = 0;
-//        for (int i = 0; i < Interlevel.indexed.length; i++) {
-//            String value = csvRow.getField(locFields[i]);
-//            value = (value.length() == 0) ? null : value;
-//            if (value == null) continue;
-//            minLevel = (minLevel == null) ? Interlevel.indexed[i] : minLevel;
-//            terms[ctr] = value;
-//            ctr++;
-//        }
-//        return new Address(Arrays.copyOf(terms, ctr), minLevel);
-        throw new NotImplementedException();
-    }
-
-    public String getTerm(int index) {
-        return getTerm(index, false);
-    }
-
-    public String getTerm(int index, boolean clean) {
-//        if (terms == null || index >= terms.length) return null;
-//        if (!clean) return terms[index];
-//        if (modelCleanedTerms == null) throw new Error("Please clean the terms first.");
-//        return modelCleanedTerms[index];
-        throw new NotImplementedException();
+        if (locFields.length != 3) {
+            throw new IllegalArgumentException("Only 3 location fields are supported right now.");
+        }
+        String[] terms = new String[locFields.length];
+        int ctr = 0;
+        for (String locField : locFields) {
+            String value = csvRow.getField(locField);
+            if (value == null || value.length() == 0) continue;
+            terms[ctr] = value;
+            ctr++;
+        }
+        return new Address(Arrays.copyOf(terms, ctr));
     }
 
     @Override

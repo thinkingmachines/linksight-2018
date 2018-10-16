@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class TreeReference {
 
     public final AddressTreeNode root;
+    public final AddressTreeNode entryPoint;
 
     private final PsgcDataset[] psgcDatasets;
     private final HashMap<Long, AddressTreeNode> allNodes = new HashMap<>();
@@ -38,6 +39,7 @@ public class TreeReference {
     public TreeReference(PsgcDataset[] psgcDatasets) throws IOException {
         this.psgcDatasets = psgcDatasets;
         this.root = AddressTreeNode.createRoot();
+        this.entryPoint = AddressTreeNode.createRoot();
         initialize();
     }
 
@@ -55,13 +57,24 @@ public class TreeReference {
             }
         }
 
+        createEntryPoint();
+
         // Create search indices
         System.out.println("Creating search indices...");
         root.createSearchIndex();
+        entryPoint.createSearchIndex();
         allNodes.values().forEach(AddressTreeNode::createSearchIndex);
 
         stopwatch.stop();
         System.out.println("Constructing tree reference took " + stopwatch.elapsed(TimeUnit.SECONDS) + " sec.\n");
+    }
+
+    private void createEntryPoint() {
+        for (AddressTreeNode node : allNodes.values()) {
+            if (Psgc.getLevel(node.psgc) == 1) {    // Provinces
+                entryPoint.addChild(node);
+            }
+        }
     }
 
     private void addPsgcRow(PsgcRow row) {
