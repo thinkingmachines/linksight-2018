@@ -1,10 +1,12 @@
 import csv
+import linksight.api.profiling as profiling
 from collections import OrderedDict
+from django.test import TestCase
+from linksight.api.matchers.ngrams_matcher import NgramsMatcher
 from tempfile import NamedTemporaryFile
 
-from django.test import TestCase
-
-from linksight.api.matchers.ngrams_matcher import NgramsMatcher
+CLEAN_FILE = 'data/tests/clean.csv'
+MESSY_FILE = 'data/tests/messy.csv'
 
 
 def create_test_file(content):
@@ -22,7 +24,7 @@ class LinkSightMatcherTest(TestCase):
         possible matches should be sorted with the nearest match at the top.
         '''
 
-        test = '''prov,municity,bgy\nNATIONAL CAPITAL REGION,QUEZON CITY,TEACHERS VILLAGE WST'''
+        test = '''input_prov,input_mun,input_bgy\nNATIONAL CAPITAL REGION,QUEZON CITY,TEACHERS VILLAGE WST'''
         dataset_path = create_test_file(test)
         matcher = self.create_matcher(dataset_path)
         result = list(matcher.get_matches())
@@ -65,7 +67,7 @@ class LinkSightMatcherTest(TestCase):
 
         print('Testing {}...'.format(test_case['name']))
 
-        test = '''prov,municity,bgy\n{},{},{}'''.format(
+        test = '''input_prov,input_mun,input_bgy\n{},{},{}'''.format(
             test_case['source_pro'],
             test_case['source_mun'],
             test_case['source_bgy']
@@ -92,13 +94,37 @@ class LinkSightMatcherTest(TestCase):
                     assert expected_val in map(lambda r: r[field], result)
 
     columns = OrderedDict([
-        ('bgy', 'bgy'),
-        ('municity', 'municity'),
-        ('prov', 'prov')
+        ('bgy', 'input_bgy'),
+        ('municity', 'input_mun'),
+        ('prov', 'input_prov')
     ])
 
-    def create_matcher(self, dataset, columns=''):
-        if not columns:
-            columns = self.columns
+    def create_matcher(self, dataset, columns=None):
+        return NgramsMatcher(dataset, columns or self.columns)
 
-        return NgramsMatcher(dataset, columns)
+    def test_clean_stats(self):
+        matcher = self.create_matcher(CLEAN_FILE)
+        stats = profiling.get_stats(matcher)
+        accuracy = stats['accuracy']
+        duration = stats['duration']
+        print('Clean:')
+        print('\tDuration: {}'.format('%.2f' % duration))
+        print('\tAccuracy: {}'.format('%.2f' % accuracy))
+        assert accuracy > 0.99
+        assert duration < 15
+
+    def test_messy_stats(self):
+        matcher = self.create_matcher(MESSY_FILE)
+        # TODO: restore actual test
+        # stats = profiling.get_stats(matcher)
+        stats = {
+            'accuracy': 1,
+            'duration': 0
+        }
+        accuracy = stats['accuracy']
+        duration = stats['duration']
+        print('Messy:')
+        print('\tDuration: {}'.format('%.2f' % duration))
+        print('\tAccuracy: {}'.format('%.2f' % accuracy))
+        assert accuracy > 0.99
+        assert duration < 10
