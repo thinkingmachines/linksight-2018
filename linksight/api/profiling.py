@@ -19,4 +19,7 @@ def get_stats(matcher):
     result = list(matcher.get_matches())
     duration = time() - start
     accuracy = get_accuracy(matcher.dataset_file, result)
-    return (duration, accuracy)
+    return {
+        'accuracy': accuracy,
+        'duration': duration
+    }

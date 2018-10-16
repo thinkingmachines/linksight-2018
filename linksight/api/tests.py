@@ -104,7 +104,9 @@ class LinkSightMatcherTest(TestCase):
 
     def test_clean_stats(self):
         matcher = self.create_matcher(CLEAN_FILE)
-        (duration, accuracy) = profiling.get_stats(matcher)
+        stats = profiling.get_stats(matcher)
+        accuracy = stats['accuracy']
+        duration = stats['duration']
         print('Clean:')
         print('\tDuration: {}'.format('%.2f' % duration))
         print('\tAccuracy: {}'.format('%.2f' % accuracy))
@@ -114,8 +116,13 @@ class LinkSightMatcherTest(TestCase):
     def test_messy_stats(self):
         matcher = self.create_matcher(MESSY_FILE)
         # TODO: restore actual test
-        # (duration, accuracy) = profiling.get_stats(matcher)
-        (duration, accuracy) = 0, 1
+        # stats = profiling.get_stats(matcher)
+        stats = {
+            'accuracy': 1,
+            'duration': 0
+        }
+        accuracy = stats['accuracy']
+        duration = stats['duration']
         print('Messy:')
         print('\tDuration: {}'.format('%.2f' % duration))
         print('\tAccuracy: {}'.format('%.2f' % accuracy))
