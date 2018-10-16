@@ -49,11 +49,12 @@ public class TreeAddressMatcher implements AddressMatcher {
         while (!queue.isEmpty()) {
             curNode = queue.removeFirst();
 
+            int aliasMaxWords = curNode.node.maxChildAliasWords;
             for (int i = 0; i < curNode.remainingTerms.length; i++) {
                 List<String> locValue = curNode.remainingTerms[i];
                 int numTerms = locValue.size();
                 for (int j = 0; j < numTerms; j++) {
-                    for (int k = j; k <= numTerms; k++) {
+                    for (int k = j; k <= Math.min(j + aliasMaxWords, numTerms); k++) {
                         String candidate = String.join(" ",locValue.subList(j, k));
                         Set<Pair<AddressTreeNode, Double>> fuzzyChildren = curNode.node.childIndex.namesFuzzyMap.getFuzzy(candidate);
                         for (Pair<AddressTreeNode, Double> fuzzyChild : fuzzyChildren) {
@@ -64,7 +65,6 @@ public class TreeAddressMatcher implements AddressMatcher {
                             LinkedList<String> newList = new LinkedList<>(locValue);
                             newList.subList(j, k).clear();
                             newRemainingTerms[i] = newList;
-
                             BfsTraversed bfsTraversed = new BfsTraversed(childNode, childScore, curNode, newRemainingTerms);
 
                             // Enqueue (BFS) if child has children

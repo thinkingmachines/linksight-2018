@@ -1,5 +1,7 @@
 package es.thinkingmachin.linksight.imatch.matcher.tree;
 
+import es.thinkingmachin.linksight.imatch.matcher.core.Util;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,6 +17,7 @@ public class AddressTreeNode {
 
     // Child-related
     public AddressTreeNodeIndex childIndex;
+    public int maxChildAliasWords;
     public final List<AddressTreeNode> children = new ArrayList<>();
 
     // Parent-related
@@ -41,13 +44,16 @@ public class AddressTreeNode {
     void createSearchIndex() {
         childIndex = new AddressTreeNodeIndex();
         children.forEach(child -> childIndex.indexChild(child));
+        children.forEach(child -> child.aliases.forEach(alias -> {
+            maxChildAliasWords = Math.max(Util.splitTerm(alias).length, maxChildAliasWords);
+        }));
     }
 
     void addAlias(String alias, boolean isOriginal) {
         if (isOriginal) {
             if (origTerm != null) {
                 // One known instance: NCR, CITY OF MANILA, FIRST DISTRICT (NOT A PROVINCE)
-                System.out.println("Warning: more than one original term for "+origTerm);
+                System.out.println("Warning: more than one original term for " + origTerm);
             }
             origTerm = alias;
         }
@@ -90,6 +96,6 @@ public class AddressTreeNode {
         if (strings.size() > 2) {
             strings = strings.subList(2, strings.size());
         }
-        return "["+String.join(", ", strings)+"], PSGC:"+psgc;
+        return "[" + String.join(", ", strings) + "], PSGC:" + psgc;
     }
 }
