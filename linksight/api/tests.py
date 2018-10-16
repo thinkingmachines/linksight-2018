@@ -16,7 +16,7 @@ def create_test_file(content):
     return temp.name
 
 
-class LinkSightMatcherTest(TestCase):
+class MatcherTestBase():
 
     def test_return_possible_matches(self):
         '''
@@ -100,7 +100,7 @@ class LinkSightMatcherTest(TestCase):
     ])
 
     def create_matcher(self, dataset, columns=None):
-        return NgramsMatcher(dataset, columns or self.columns)
+        return self.matcher_class(dataset, columns or self.columns)
 
     def test_clean_stats(self):
         matcher = self.create_matcher(CLEAN_FILE)
@@ -128,3 +128,7 @@ class LinkSightMatcherTest(TestCase):
         print('\tAccuracy: {}'.format('%.2f' % accuracy))
         assert accuracy > 0.99
         assert duration < 10
+
+
+class NgramsMatcherTest(MatcherTestBase, TestCase):
+    matcher_class = NgramsMatcher
