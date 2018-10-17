@@ -3,7 +3,6 @@ import re
 import time
 from collections import Counter, OrderedDict
 from functools import lru_cache, partial
-from multiprocessing import Pool
 
 import pandas as pd
 
@@ -131,12 +130,7 @@ class NgramsMatcher(BaseMatcher):
             (search_tuple, candidate_tuple)
             for candidate_tuple in shortlist
         ]
-        # use multiprocessing to run fuzzy matching
-        pool = Pool(2)
-        results = pool.map(self.score_matches, candidate_pairs)
-        pool.close()
-        pool.join()
-        return results
+        return map(self.score_matches, candidate_pairs)
 
     def search_reference(self, search_tuple, ngram_table, nresults):
         # if the search tuple only has one element (bgy, prov, municity), it

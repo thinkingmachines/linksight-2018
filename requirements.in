@@ -1,3 +1,4 @@
+celery[gevent,redis]
 coveralls
 django
 django-cors-headers
@@ -8,6 +9,7 @@ django-storages[google]
 djangorestframework
 djangorestframework-csv
 djangorestframework-link-header-pagination
+flower
 fuzzywuzzy[speedup]
 google-api-python-client
 gunicorn

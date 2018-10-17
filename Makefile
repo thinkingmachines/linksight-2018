@@ -1,4 +1,4 @@
-.PHONY: install ssh
+.PHONY: install ssh dev worker flower
 install: venv requirements.txt
 	venv/bin/pip-sync
 venv:
@@ -11,3 +11,9 @@ ssh:
 		ssh \
 		--zone asia-southeast1-b \
 		linksight
+dev:
+	python manage.py runserver
+worker:
+	celery -A linksight worker -P gevent --loglevel INFO
+flower:
+	celery -A linksight flower
