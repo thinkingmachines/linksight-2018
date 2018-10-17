@@ -61,12 +61,12 @@ public class TreeAddressMatcher implements AddressMatcher {
                         Set<Pair<AddressTreeNode, Double>> fuzzyChildren = curNode.node.childIndex.namesFuzzyMap.getFuzzy(candidate);
                         for (Pair<AddressTreeNode, Double> fuzzyChild : fuzzyChildren) {
                             AddressTreeNode childNode = fuzzyChild.getKey();
-                            double childScore = fuzzyChild.getValue() * getWordCoverageScore(numTerms, k - j);
-                            if (row.getOriginalLineNumber() == 279) {
-                                System.out.println("Child node: "+childNode.getOrigTerm()+" score: "+childScore+", candidate: "+candidate+" jk: "+j+","+k);
-                                System.out.println("- Cur node: "+curNode.node.getOrigTerm());
-                                System.out.println("- Num terms: "+numTerms);
-                            }
+                            double childScore = fuzzyChild.getValue();// * BfsTraversed.getWordCoverageScore(numTerms - k + j);
+//                            if (row.getOriginalLineNumber() == 1089) {
+//                                System.out.println("Child node: "+childNode.getOrigTerm()+" score: "+childScore+", candidate: "+candidate+" jk: "+j+","+k);
+//                                System.out.println("- Cur node: "+curNode.node.getOrigTerm());
+//                                System.out.println("- Num terms: "+numTerms);
+//                            }
 
                             List<String>[] newRemainingTerms = curNode.remainingTerms.clone();
                             LinkedList<String> newList = new LinkedList<>(locValue);
@@ -91,10 +91,6 @@ public class TreeAddressMatcher implements AddressMatcher {
 //            throw new Error();
 //        }
         return possibleMatches;
-    }
-
-    private double getWordCoverageScore(int totalWords, int coveredWords) {
-        return Math.pow(0.7, totalWords - coveredWords);
     }
 
     private List<String>[] createSearchStrings(String[] locValues) {
@@ -125,14 +121,14 @@ public class TreeAddressMatcher implements AddressMatcher {
             this.overallScore = scores.length > 0 ? getOverallScore(scores) : 0;
         }
 
-        private static double getOverallScore(double[] scores) {
-            return Arrays.stream(scores).average().getAsDouble();
+        private double getOverallScore(double[] scores) {
+            double avgScore = Arrays.stream(scores).average().getAsDouble();
+            return avgScore * getWordCoverageScore(getTotalRemaining());
         }
 
         public static Comparator<BfsTraversed> createComparator() {
             return Comparator
-                    .<BfsTraversed>comparingDouble(b -> b.scores.length)
-                    .thenComparingDouble(b -> b.overallScore);
+                    .comparingDouble(b -> b.overallScore);
         }
 
         @Override
@@ -142,6 +138,18 @@ public class TreeAddressMatcher implements AddressMatcher {
                     ", scores=" + Arrays.toString(scores) +
                     ", overallScore=" + overallScore +
                     '}';
+        }
+
+        public int getTotalRemaining() {
+            int total = 0;
+            for (List<String> l : remainingTerms) {
+                total += l.size();
+            }
+            return total;
+        }
+
+        static double getWordCoverageScore(int remainingWords) {
+            return Math.max(Math.pow(0.9, remainingWords), 0.4);
         }
     }
 }

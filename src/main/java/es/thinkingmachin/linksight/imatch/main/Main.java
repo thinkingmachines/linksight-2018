@@ -10,6 +10,10 @@ import org.apache.commons.cli.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset.BuiltIn.FUZZY_200;
+import static es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset.BuiltIn.HAPPY_PATH;
+import static es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset.BuiltIn.IMAN_TEST;
+
 public class Main {
 
     public static void main(String[] args) throws Exception {
@@ -58,9 +62,13 @@ public class Main {
 
     private static void runTests() throws IOException {
         Server server = new Server(null);
-        TestDataset test = TestDataset.BuiltIn.HAPPY_PATH;
-        ArrayList<ReferenceMatch> matches = server.matcher.getTopMatches(test);
-        Evaluator.evaluate(matches, test);
+        TestDataset[] tests = new TestDataset[]{FUZZY_200, HAPPY_PATH , IMAN_TEST};
+        for (TestDataset test : tests) {
+            System.out.println("Test dataset: "+test.name);
+            ArrayList<ReferenceMatch> matches = server.matcher.getTopMatches(test);
+            Evaluator.evaluate(matches, test);
+            System.out.println();
+        }
     }
 
     private static void runExplorer() throws IOException {

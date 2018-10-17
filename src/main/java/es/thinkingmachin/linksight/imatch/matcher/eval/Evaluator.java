@@ -1,11 +1,11 @@
 package es.thinkingmachin.linksight.imatch.matcher.eval;
 
-import es.thinkingmachin.linksight.imatch.matcher.core.Address;
-import es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset;
-import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
 import de.siegmar.fastcsv.reader.CsvParser;
 import de.siegmar.fastcsv.reader.CsvReader;
 import de.siegmar.fastcsv.reader.CsvRow;
+import es.thinkingmachin.linksight.imatch.matcher.core.Address;
+import es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset;
+import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +37,7 @@ public class Evaluator {
                 }
                 System.out.println("\tRaw: " + Address.fromCsvRow(row, new String[]{"source_brgy", "source_municity", "source_prov"}));
                 System.out.println("\tMatched: "+ match);
+                System.out.println("\tCorrect PSGC: "+correct_psgc);
                 System.out.println();
             }
             countTotal++;
