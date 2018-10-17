@@ -61,7 +61,7 @@ class DatasetMatchSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         obj = super().create(validated_data)
-        obj.generate_match_items(**validated_data)
+        obj.match_dataset(**validated_data)
         return obj
 
 

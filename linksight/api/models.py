@@ -5,13 +5,13 @@ from collections import OrderedDict
 from functools import partial
 
 import pandas as pd
+
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import Q
-
-from linksight.api.matchers.ngrams_matcher import NgramsMatcher
 from linksight.api.matchers.search_tuple import create_search_tuple, to_index
+from linksight.api.tasks import match_dataset
 
 
 class Dataset(models.Model):
@@ -79,15 +79,10 @@ class Match(models.Model):
             ('prov', self.source_prov_col),
         ])
 
-    def generate_match_items(self, **kwargs):
-        matcher = NgramsMatcher(dataset_file=self.dataset.file,
-                                columns=self.loc_columns)
-        matches = matcher.get_matches()
+    def match_dataset(self, **kwargs):
+        result = match_dataset.apply_async((self.id,), expires=360)
+        result.get()
 
-        MatchItem.objects.bulk_create([
-            MatchItem(**match_item, match=self, chosen=False)
-            for match_item in matches
-        ])
 
     def save_choices(self, match_choices):
 
