@@ -1,7 +1,9 @@
 package es.thinkingmachin.linksight.imatch.matcher.tree;
 
 import com.google.common.collect.Ordering;
+import de.siegmar.fastcsv.reader.CsvRow;
 import es.thinkingmachin.linksight.imatch.matcher.core.Address;
+import es.thinkingmachin.linksight.imatch.matcher.core.Util;
 import es.thinkingmachin.linksight.imatch.matcher.matchers.AddressMatcher;
 import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
 import io.reactivex.annotations.Nullable;
@@ -20,25 +22,25 @@ public class TreeAddressMatcher implements AddressMatcher {
 
     @Nullable
     @Override
-    public ReferenceMatch getTopMatch(Address address) {
+    public ReferenceMatch getTopMatch(Address address, CsvRow row) {
         if (address.terms.length == 0) return null;
-        List<ReferenceMatch> matches = getTopMatches(address, 1);
+        List<ReferenceMatch> matches = getTopMatches(address, 1, row);
         if (matches.isEmpty()) return null;
         return matches.get(0);
     }
 
     @Override
-    public List<ReferenceMatch> getTopMatches(Address address, int numMatches) {
-        List<BfsTraversed> candidates = getCandidateMatches(address.terms);
+    public List<ReferenceMatch> getTopMatches(Address address, int numMatches, CsvRow row) {
+        List<BfsTraversed> candidates = getCandidateMatches(address.terms, row);
         List<BfsTraversed> bestN = Ordering.from(BfsTraversed.createComparator())
                 .greatestOf(candidates, numMatches);
 
         return bestN.stream()
-                .map(b -> new ReferenceMatch(b.node, b.overallScore))
+                .map(b -> new ReferenceMatch(b.node, b.overallScore, b.scores))
                 .collect(Collectors.toList());
     }
 
-    private LinkedList<BfsTraversed> getCandidateMatches(String[] locValues) {
+    private LinkedList<BfsTraversed> getCandidateMatches(String[] locValues, CsvRow row) {
         List<String>[] searchStrings = createSearchStrings(locValues);
         LinkedList<BfsTraversed> possibleMatches = new LinkedList<>();
         LinkedList<BfsTraversed> queue = new LinkedList<>();
@@ -54,12 +56,17 @@ public class TreeAddressMatcher implements AddressMatcher {
                 List<String> locValue = curNode.remainingTerms[i];
                 int numTerms = locValue.size();
                 for (int j = 0; j < numTerms; j++) {
-                    for (int k = j; k <= Math.min(j + aliasMaxWords, numTerms); k++) {
+                    for (int k = j + 1; k <= Math.min(j + aliasMaxWords, numTerms); k++) {
                         String candidate = String.join(" ",locValue.subList(j, k));
                         Set<Pair<AddressTreeNode, Double>> fuzzyChildren = curNode.node.childIndex.namesFuzzyMap.getFuzzy(candidate);
                         for (Pair<AddressTreeNode, Double> fuzzyChild : fuzzyChildren) {
                             AddressTreeNode childNode = fuzzyChild.getKey();
-                            double childScore = fuzzyChild.getValue();
+                            double childScore = fuzzyChild.getValue() * getWordCoverageScore(numTerms, k - j);
+                            if (row.getOriginalLineNumber() == 279) {
+                                System.out.println("Child node: "+childNode.getOrigTerm()+" score: "+childScore+", candidate: "+candidate+" jk: "+j+","+k);
+                                System.out.println("- Cur node: "+curNode.node.getOrigTerm());
+                                System.out.println("- Num terms: "+numTerms);
+                            }
 
                             List<String>[] newRemainingTerms = curNode.remainingTerms.clone();
                             LinkedList<String> newList = new LinkedList<>(locValue);
@@ -86,10 +93,14 @@ public class TreeAddressMatcher implements AddressMatcher {
         return possibleMatches;
     }
 
+    private double getWordCoverageScore(int totalWords, int coveredWords) {
+        return Math.pow(0.7, totalWords - coveredWords);
+    }
+
     private List<String>[] createSearchStrings(String[] locValues) {
         List<String>[] searchStrings = new List[locValues.length];
         for (int i = 0;  i < locValues.length; i++) {
-            String[] words = locValues[i].split("[\\s@&.?$+-]+");
+            String[] words = Util.splitTerm(locValues[i]);
             searchStrings[i] = Arrays.asList(words);
         }
         return searchStrings;

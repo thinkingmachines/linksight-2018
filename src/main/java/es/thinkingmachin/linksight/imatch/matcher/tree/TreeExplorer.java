@@ -49,6 +49,7 @@ public class TreeExplorer {
                     break;
                 case "fzy":
                     String word = String.join(" ", Arrays.copyOfRange(terms, 1, terms.length));
+                    System.out.println("Clean term: "+curNode.childIndex.namesFuzzyMap.preDict.cleanIndexWord(word));
                     curNode.childIndex.namesFuzzyMap.getFuzzy(word).stream()
                             .sorted(Comparator.comparingDouble(p -> -p.getValue()))
                             .forEach(p -> System.out.println("\t" + p.getKey().getOrigTerm() + ":\t" + p.getValue()));

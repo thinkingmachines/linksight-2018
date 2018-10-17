@@ -5,15 +5,18 @@ import de.cxp.predict.PreDict;
 import de.cxp.predict.api.PreDictSettings;
 import de.cxp.predict.api.SuggestItem;
 import de.cxp.predict.customizing.CommunityCustomization;
+import de.cxp.predict.customizing.PreDictCustomizing;
 import org.apache.commons.math3.util.Pair;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class FuzzyStringMap<T> {
 
-    private final PreDict preDict;
+    public final PreDict preDict;
     private final HashMultimap<String, T> strMultiMap;
+    public PreDictCustomizing customization;
 
     public FuzzyStringMap() {
         this.preDict = createPredictModel();
@@ -23,8 +26,8 @@ public class FuzzyStringMap<T> {
     private PreDict createPredictModel() {
         PreDictSettings settings = new PreDictSettings();
         settings.accuracyLevel(PreDict.AccuracyLevel.fast);
-        CommunityCustomization custom = new CommunityCustomization(settings);
-        return new PreDict(custom);
+        customization = new PredictCustomization(settings);
+        return new PreDict(customization);
     }
 
     public void put(String key, T value) {
@@ -48,5 +51,36 @@ public class FuzzyStringMap<T> {
             }
         }
         return fuzzyPairs;
+    }
+
+    private static class PredictCustomization extends CommunityCustomization {
+
+        private static final Pattern removePattern = Pattern.compile("[^\\p{L}\\p{N}\\p{Z}]");
+
+        PredictCustomization(PreDictSettings settings) {
+            super(settings);
+        }
+
+        @Override
+        public String cleanIndexWord(String word) {
+            return cleanWord(word);
+        }
+
+        @Override
+        public String cleanSearchWord(String searchWord) {
+            return cleanWord(searchWord);
+        }
+
+        public String cleanWord(String word) {
+            word = removePattern.matcher(word)
+                    .replaceAll("")
+                    .toLowerCase()
+                    .replaceAll("ñ", "n")
+                    .replaceAll("barangay|bgy", "bgy")
+                    .replaceAll("poblacion", "pob")
+                    .replaceAll("not a province|capital|\\(|\\)|city of|city", "")
+                    .replaceAll("\\s+", " ");
+            return word;
+        }
     }
 }
