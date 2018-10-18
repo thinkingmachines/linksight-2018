@@ -77,6 +77,7 @@ public class FuzzyStringMap<T> {
                     .toLowerCase()
                     .replaceAll("ñ", "n")
                     .replaceAll("barangay|bgy", "bgy")
+                    .replaceAll("occidental", "occ")
                     .replaceAll("poblacion", "pob")
                     .replaceAll("not a province|capital|\\(|\\)|city of|city", "")
                     .replaceAll("\\s+", " ");
