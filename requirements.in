@@ -20,3 +20,4 @@ python-magic
 raven
 recordlinkage
 social-auth-app-django
+tornado<5

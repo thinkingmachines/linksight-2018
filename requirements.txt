@@ -6,7 +6,7 @@
 #
 amqp==2.3.2               # via kombu
 appnope==0.1.0            # via ipython
-autopep8==1.4             # via django-silk
+autopep8==1.4.1           # via django-silk
 babel==2.6.0              # via flower
 backcall==0.1.0           # via ipython
 billiard==3.5.0.4         # via celery
@@ -84,7 +84,7 @@ six==1.11.0               # via djangorestframework-csv, google-api-core, google
 social-auth-app-django==2.1.0
 social-auth-core==1.7.0   # via social-auth-app-django
 sqlparse==0.2.4           # via django-silk
-tornado==5.1.1            # via flower
+tornado==4.5.3
 traitlets==4.3.2          # via ipython
 unicodecsv==0.14.1        # via djangorestframework-csv
 uritemplate==3.0.0        # via google-api-python-client

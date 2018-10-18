@@ -84,6 +84,12 @@ steps:
   - '-t=gcr.io/$PROJECT_ID/nginx:$TAG_NAME'
   - '-t=gcr.io/$PROJECT_ID/nginx:$BUILD_ID'
   - '--cache-from=gcr.io/$PROJECT_ID/nginx:$TAG_NAME'
+  - --build-arg
+  - 'NODE_IMAGE=gcr.io/linksight-208514/node:${BUILD_ID}'
+  - --build-arg
+  - 'PYTHON_IMAGE=gcr.io/linksight-208514/python:${BUILD_ID}'
+  - --build-arg
+  - 'TAG_NAME=${TAG_NAME}'
   - .
 
 # Push images to GCR

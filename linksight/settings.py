@@ -20,6 +20,8 @@ env = environ.Env(
     APPROVED_EMAILS_ROW_KEY=(str, None),
     APPROVED_EMAILS_SHEET_ID=(str, None),
     APPROVED_EMAILS_SHEET_RANGE=(str, None),
+    CELERY_BROKER_URL=(str, 'redis://localhost:6379/0'),
+    CELERY_RESULT_BACKEND=(str, 'redis://localhost:6379/0'),
     DEBUG=(bool, False),
     EMAIL_HOST_PASSWORD=(str, None),
     EMAIL_HOST_USER=(str, None),
@@ -253,7 +255,7 @@ APPROVED_EMAILS_ROW_KEY = env('APPROVED_EMAILS_ROW_KEY')
 
 # Celery
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = env('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND')
 CELERY_TASK_TIME_LIMIT = 360
 
