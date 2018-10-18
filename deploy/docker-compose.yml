@@ -10,11 +10,40 @@ services:
       POSTGRES_DB: linksight
     restart: unless-stopped
 
-  python:
+  redis:
+    image: redis:4.0
+    command: redis-server --appendonly yes
+    volumes:
+    - redis_data:/data
+    network_mode: host
+    restart: unless-stopped
+
+  api:
     image: gcr.io/linksight-208514/python:${BUILD_ID}
     network_mode: host
     depends_on:
     - db
+    - redis
+    restart: unless-stopped
+
+  worker:
+    image: gcr.io/linksight-208514/python:${BUILD_ID}
+    command: venv/bin/celery -A linksight worker -P gevent --loglevel INFO
+    network_mode: host
+    depends_on:
+    - db
+    - redis
+    restart: unless-stopped
+
+  flower:
+    image: gcr.io/linksight-208514/python:${BUILD_ID}
+    command: venv/bin/flower -A linksight --conf=linksight/flower.py --address=0.0.0.0 --url_prefix=flower
+    network_mode: host
+    expose:
+    - 5555
+    depends_on:
+    - db
+    - redis
     restart: unless-stopped
 
   nginx:
@@ -23,8 +52,10 @@ services:
     - /etc/letsencrypt:/etc/letsencrypt:ro
     network_mode: host
     depends_on:
-    - python
+    - api
+    - flower
     restart: unless-stopped
 
 volumes:
   db_data:
+  redis_data:

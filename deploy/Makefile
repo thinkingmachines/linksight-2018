@@ -1,6 +1,6 @@
 .PHONY: secrets deploy-staging
 
-deploy-staging: cloudbuild.yml
+deploy-staging: cloudbuild.yml secrets
 	gcloud builds --project linksight-208514 \
 		submit \
 		--config cloudbuild.yml \

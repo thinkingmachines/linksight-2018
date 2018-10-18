@@ -16,4 +16,4 @@ dev:
 worker:
 	celery -A linksight worker -P gevent --loglevel INFO
 flower:
-	celery -A linksight flower
+	flower -A linksight --conf=linksight/flower.py

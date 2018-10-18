@@ -1,4 +1,11 @@
+ARG NODE_IMAGE
+ARG PYTHON_IMAGE
+
+FROM ${NODE_IMAGE} AS node
+FROM ${PYTHON_IMAGE} AS python
+
 FROM nginx:latest
-COPY --from=gcr.io/linksight-208514/node /usr/src/app/build/ /var/www
-COPY --from=gcr.io/linksight-208514/python /usr/src/app/static/ /var/www
-COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
+ARG TAG_NAME
+COPY --from=node /usr/src/app/build/ /var/www
+COPY --from=python /usr/src/app/static/ /var/www
+COPY deploy/nginx-${TAG_NAME}.conf /etc/nginx/conf.d/default.conf

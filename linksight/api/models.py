@@ -83,7 +83,6 @@ class Match(models.Model):
         result = match_dataset.apply_async((self.id,), expires=360)
         result.get()
 
-
     def save_choices(self, match_choices):
 
         # Save choices
