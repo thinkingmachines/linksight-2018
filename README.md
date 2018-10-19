@@ -21,82 +21,70 @@ to contribute, please send us an email at
 
 ## Development
 
-### React App
+1. Install pm2
+
+    ```sh
+    npm install -g pm2
+    ```
 
 1. Install dependencies
 
     ```sh
-    cd app
-    npm install
-    ```
-
-1. Run server
-
-    ```sh
-    npm start
-    ```
-
-### Django API
-
-1. Install dependencies
-
-    ```sh
-    make install
+    make
     ```
 
 1. Set configuration values
 
-    ```
+    ```sh
     cp .env{.template,}
     ```
 
     | Config name | Description |
     | - | - |
-    | DEBUG | Toggles running the server in debug mode |
-    | DATABASE_URL | See [DJ-Database-URL](https://github.com/kennethreitz/dj-database-url) |
-    | SECRET_KEY | String used to provide cryptographic signing of sessions, etc. |
-    | EMAIL_PORT | Port to use when sending email |
-    | EMAIL_HOST_USER | User for sending email |
-    | EMAIL_HOST_PASSWORD | Password for above |
-    | SOCIAL_AUTH_GOOGLE_OAUTH2_KEY | Key for Google OAuth2 |
-    | SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET | Secret for Google OAuth2 |
-    | GOOGLE_APPLICATION_CREDENTIALS | Path to the Google Cloud Service Account key file used to retrieve the list of approved emails |
+    | APPROVED_EMAILS_ROW_KEY | The row key for approved emails |
     | APPROVED_EMAILS_SHEET_ID | Google Sheets ID of th list of approved emails |
     | APPROVED_EMAILS_SHEET_RANGE | The sheet range for approved emails |
-    | APPROVED_EMAILS_ROW_KEY | The row key for approved emails |
+    | DATABASE_URL | See [DJ-Database-URL](https://github.com/kennethreitz/dj-database-url) |
+    | DEBUG | Toggles running the server in debug mode |
+    | EMAIL_HOST_PASSWORD | Password for above |
+    | EMAIL_HOST_USER | User for sending email |
+    | EMAIL_PORT | Port to use when sending email |
+    | FLOWER_OAUTH2_REDIRECT_URI | Redirect url for Flower auth |
+    | GOOGLE_APPLICATION_CREDENTIALS | Path to the Google Cloud Service Account key file used to retrieve the list of approved emails |
+    | GOOGLE_OAUTH2_KEY | Key for Google OAuth2 |
+    | GOOGLE_OAUTH2_SECRET | Secret for Google OAuth2 |
+    | SECRET_KEY | String used to provide cryptographic signing of sessions, etc. |
 
     If you are a member of the official LinkSight development team, you can ask
     for access to the template with secrets filled in.
 
 1. Install postgresql and run the following in `psql`:
 
-    ```
-    CREATE DATABASE linksight;
+    ```sh
+    createdb linksight
     ```
 
     Make sure that you can connect using the `DATABASE_URL` you used in `.env`.
 
-1. Run the server
+1. Run migrations
 
     ```sh
-    source venv/bin/activate
-    python manage.py migrate
-    python manage.py runserver
+    venv/bin/python manage.py migrate
+    ```
+
+1. Start services
+
+    ```sh
+    pm2 start
     ```
 
 1. Go to [http://localhost:3000/](http://localhost:3000/)
-
-### Components Catalog
-
-```sh
-npm run catalog-start
-```
 
 ### Testing
 
 ```sh
 gunzip -k data/clean-psgc.csv.gz
-python manage.py test
+venv/bin/python manage.py test
 ```
 
 You can run specific subsets of tests [like so](https://docs.djangoproject.com/en/2.1/topics/testing/overview/#running-tests).
@@ -106,8 +94,7 @@ You can run specific subsets of tests [like so](https://docs.djangoproject.com/e
 #### Staging
 
 ```sh
-cd deploy
-make
+cd deploy && make
 ```
 
 #### Production

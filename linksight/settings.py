@@ -29,8 +29,8 @@ env = environ.Env(
     HOST=(str, 'http://localhost:3000'),
     LOGIN_REDIRECT_URL=(str, 'http://localhost:3000/upload'),
     SENTRY_DSN=(str, None),
-    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=(str, None),
-    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=(str, None),
+    GOOGLE_OAUTH2_KEY=(str, None),
+    GOOGLE_OAUTH2_SECRET=(str, None),
 )
 env.read_env('.env')
 
@@ -233,8 +233,8 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = LOGIN_REDIRECT_URL
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env('GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env('GOOGLE_OAUTH2_SECRET')
 SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = ['thinkingmachin.es']
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
