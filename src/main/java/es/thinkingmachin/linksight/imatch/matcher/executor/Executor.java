@@ -1,4 +1,4 @@
-package es.thinkingmachin.linksight.imatch.matcher.matching.executor;
+package es.thinkingmachin.linksight.imatch.matcher.executor;
 
 import es.thinkingmachin.linksight.imatch.matcher.core.Address;
 import es.thinkingmachin.linksight.imatch.matcher.io.source.InputSource;

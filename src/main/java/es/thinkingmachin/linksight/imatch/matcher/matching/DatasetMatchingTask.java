@@ -4,10 +4,8 @@ import com.google.common.base.Stopwatch;
 import es.thinkingmachin.linksight.imatch.matcher.core.Address;
 import es.thinkingmachin.linksight.imatch.matcher.io.sink.OutputSink;
 import es.thinkingmachin.linksight.imatch.matcher.io.source.InputSource;
-import es.thinkingmachin.linksight.imatch.matcher.matching.executor.Executor;
+import es.thinkingmachin.linksight.imatch.matcher.executor.Executor;
 import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
-import es.thinkingmachin.linksight.imatch.server.jobs.Job;
-import es.thinkingmachin.linksight.imatch.server.messaging.Response;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -33,14 +31,19 @@ public class DatasetMatchingTask {
 
     public void run() throws Throwable {
         try {
-            System.out.println("Starting matching...");
+            System.out.println("\nStarting matching: "+inputSource.getName());
             Stopwatch stopwatch = Stopwatch.createStarted();
             inputSource.open();
             outputSink.open();
             executor.execute(inputSource, this::matchAddress);
             stopwatch.stop();
             long duration = stopwatch.elapsed(TimeUnit.MILLISECONDS);
-            System.out.println("Matching took " + (duration / 1000.0) + " sec at " + (outputSink.getSize() * 1000.0 / duration) + " rows/sec.");
+
+            // Stats
+            System.out.println("Matching done:");
+            System.out.println("- Time: "+(duration / 1000.0)+" sec");
+            System.out.println(String.format("- Speed: %.3f rows/sec", inputSource.getCurrentCount() * 1000.0 / duration));
+            System.out.println("- Output: "+outputSink.getName());
         } catch (Throwable e) {
             cleanup();
             throw e;

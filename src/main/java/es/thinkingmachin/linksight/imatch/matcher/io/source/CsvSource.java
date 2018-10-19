@@ -14,6 +14,7 @@ public class CsvSource implements InputSource {
 
     private CsvParser parser;
     private CsvRow nextRow;
+    private int curCount;
 
     public CsvSource(Dataset dataset) {
         this.dataset = dataset;
@@ -21,6 +22,7 @@ public class CsvSource implements InputSource {
 
     @Override
     public void open() throws IOException {
+        curCount = 0;
         this.parser = dataset.getCsvParser();
         getNextRow();
     }
@@ -48,11 +50,21 @@ public class CsvSource implements InputSource {
         return address;
     }
 
+    @Override
+    public String getName() {
+        return "[CSV] "+dataset.csvPath;
+    }
+
     private void getNextRow() {
         try {
             this.nextRow = parser.nextRow();
+            curCount++;
         } catch (IOException e) {
             this.nextRow = null;
         }
+    }
+
+    public int getCurrentCount() {
+        return curCount;
     }
 }

@@ -16,6 +16,10 @@ public interface InputSource extends Iterator<Address> {
 
     boolean close();
 
+    int getCurrentCount();
+
+    String getName();
+
     default Stream<Address> stream() {
         Spliterator<Address> spl = Spliterators.spliteratorUnknownSize(this, Spliterator.ORDERED);
         return StreamSupport.stream(spl, false);

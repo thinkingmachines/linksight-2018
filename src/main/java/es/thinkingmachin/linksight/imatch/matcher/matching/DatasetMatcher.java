@@ -3,7 +3,7 @@ package es.thinkingmachin.linksight.imatch.matcher.matching;
 import es.thinkingmachin.linksight.imatch.matcher.dataset.Dataset;
 import es.thinkingmachin.linksight.imatch.matcher.io.sink.OutputSink;
 import es.thinkingmachin.linksight.imatch.matcher.io.source.InputSource;
-import es.thinkingmachin.linksight.imatch.matcher.matching.executor.Executor;
+import es.thinkingmachin.linksight.imatch.matcher.executor.Executor;
 import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 

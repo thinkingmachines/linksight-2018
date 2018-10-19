@@ -22,6 +22,7 @@ public class AddressTreeNode {
 
     // Parent-related
     public final AddressTreeNode parent;
+    public String[] address; // order: province, municity, bgy
 
     AddressTreeNode(String psgc, AddressTreeNode parent) {
         this.aliases = new ArrayList<>();
@@ -47,6 +48,7 @@ public class AddressTreeNode {
         children.forEach(child -> child.aliases.forEach(alias -> {
             maxChildAliasWords = Math.max(Util.splitTerm(alias).length, maxChildAliasWords);
         }));
+        address = generateAddress();
     }
 
     void addAlias(String alias, boolean isOriginal) {
@@ -70,6 +72,16 @@ public class AddressTreeNode {
         return ancestry;
     }
 
+    private String[] generateAddress() {
+        List<String> strings = getAncestry().stream()
+                .map(node -> node.origTerm)
+                .collect(Collectors.toList());
+        if (strings.size() > 2) {
+            strings = strings.subList(2, strings.size());
+        }
+        return strings.toArray(new String[]{});
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -90,12 +102,16 @@ public class AddressTreeNode {
 
     @Override
     public String toString() {
-        List<String> strings = getAncestry().stream()
-                .map(node -> node.origTerm)
-                .collect(Collectors.toList());
-        if (strings.size() > 2) {
-            strings = strings.subList(2, strings.size());
+        StringBuilder str = new StringBuilder();
+        if (address != null) {
+            str.append("[");
+            str.append(String.join(", ", address));
+            str.append("]");
+        } else {
+            str.append("[Warning: Tree not yet generated]");
         }
-        return "[" + String.join(", ", strings) + "], PSGC:" + psgc;
+        str.append(", PSGC: ");
+        str.append(psgc);
+        return str.toString();
     }
 }

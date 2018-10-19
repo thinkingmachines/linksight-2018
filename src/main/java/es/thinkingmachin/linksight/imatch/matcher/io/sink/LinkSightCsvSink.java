@@ -4,7 +4,6 @@ import de.siegmar.fastcsv.writer.CsvAppender;
 import de.siegmar.fastcsv.writer.CsvWriter;
 import es.thinkingmachin.linksight.imatch.matcher.core.Address;
 import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +33,7 @@ public class LinkSightCsvSink implements OutputSink {
     @Override
     public void open() throws IOException {
         this.size = 0;
-        this.outputFile = Files.createTempFile("imatch-out-", ".tmp").toFile();
+        this.outputFile = Files.createTempFile("imatch-out-", ".csv").toFile();
         CsvWriter writer = new CsvWriter();
         this.csvAppender = writer.append(outputFile, StandardCharsets.UTF_8);
         csvAppender.appendLine(header);
@@ -61,24 +60,24 @@ public class LinkSightCsvSink implements OutputSink {
         csvAppender.appendField("");  // TODO: fix this
 
         // source_*
-        writeAddressFields(srcAddress);
+        writeAddressFields(srcAddress.terms);
 
         // match_time
         csvAppender.appendField(String.format("%f", matchTime));
 
         if (match != null) {
             // matched_*
-            throw new NotImplementedException();
-//            writeAddressFields(match.referenceRow.aliasAddress);
+
+            writeAddressFields(match.match.address);
 
             // code
-//            csvAppender.appendField(Long.toString(match.referenceRow.psgc));
+            csvAppender.appendField(match.match.psgc);
 
             // total_score
-//            csvAppender.appendField(String.format("%f", match.score));
+            csvAppender.appendField(String.format("%f", match.score));
 
             // match_type
-//            csvAppender.appendField(match.score == 1.0 ? "exact" : "near");
+            csvAppender.appendField(match.score == 1.0 ? "exact" : "near");
         } else {
             // no matched_*, code
             for (int i = 0; i < 4; i++) {
@@ -103,11 +102,16 @@ public class LinkSightCsvSink implements OutputSink {
         return size;
     }
 
-    private void writeAddressFields(Address address) throws IOException {
-        for (int i = address.terms.length - 1; i >= 0; i--) {
-            csvAppender.appendField(address.terms[i]);
+    @Override
+    public String getName() {
+        return "[CSV] "+outputFile.getAbsolutePath();
+    }
+
+    private void writeAddressFields(String[] address) throws IOException {
+        for (String term : address) {
+            csvAppender.appendField(term);
         }
-        for (int i = 0; i < 3 - address.terms.length; i++) {
+        for (int i = 0; i < 3 - address.length; i++) {
             csvAppender.appendField("");
         }
     }

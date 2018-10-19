@@ -80,6 +80,7 @@ public class TreeReference {
 
         stopwatch.stop();
         System.out.println("Constructing tree reference took " + stopwatch.elapsed(TimeUnit.SECONDS) + " sec.\n");
+        System.out.println("Server ready!");
     }
 
     private void createEntryPoint() {

@@ -5,7 +5,7 @@ import es.thinkingmachin.linksight.imatch.matcher.io.sink.LinkSightCsvSink;
 import es.thinkingmachin.linksight.imatch.matcher.io.source.CsvSource;
 import es.thinkingmachin.linksight.imatch.matcher.matching.AddressMatcher;
 import es.thinkingmachin.linksight.imatch.matcher.matching.DatasetMatchingTask;
-import es.thinkingmachin.linksight.imatch.matcher.matching.executor.SeriesExecutor;
+import es.thinkingmachin.linksight.imatch.matcher.executor.SeriesExecutor;
 import es.thinkingmachin.linksight.imatch.server.messaging.Response;
 
 public class LinkSightCsvMatchingJob extends Job {

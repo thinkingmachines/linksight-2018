@@ -16,4 +16,6 @@ public interface OutputSink {
     void addMatch(long index, Address srcAddress, double matchTime, ReferenceMatch match) throws IOException;
 
     int getSize();
+
+    String getName();
 }

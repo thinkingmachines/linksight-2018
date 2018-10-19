@@ -31,6 +31,11 @@ public class ListSink implements OutputSink {
         return matches.size();
     }
 
+    @Override
+    public String getName() {
+        return "[list]";
+    }
+
     public List<ReferenceMatch> getMatches() {
         return matches;
     }

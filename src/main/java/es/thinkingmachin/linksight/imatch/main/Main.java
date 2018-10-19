@@ -2,23 +2,19 @@ package es.thinkingmachin.linksight.imatch.main;
 
 import es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset;
 import es.thinkingmachin.linksight.imatch.matcher.eval.Evaluator;
-import es.thinkingmachin.linksight.imatch.matcher.io.sink.LinkSightCsvSink;
 import es.thinkingmachin.linksight.imatch.matcher.io.sink.ListSink;
 import es.thinkingmachin.linksight.imatch.matcher.io.source.CsvSource;
 import es.thinkingmachin.linksight.imatch.matcher.matching.DatasetMatchingTask;
-import es.thinkingmachin.linksight.imatch.matcher.matching.executor.SeriesExecutor;
-import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
+import es.thinkingmachin.linksight.imatch.matcher.executor.SeriesExecutor;
 import es.thinkingmachin.linksight.imatch.matcher.tree.TreeExplorer;
 import es.thinkingmachin.linksight.imatch.server.Server;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import static es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset.BuiltIn.FUZZY_200;
 import static es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset.BuiltIn.HAPPY_PATH;
 import static es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset.BuiltIn.IMAN_TEST;
-import static es.thinkingmachin.linksight.imatch.matcher.matching.DatasetMatchingTask.MatchesType.MULTIPLE;
 import static es.thinkingmachin.linksight.imatch.matcher.matching.DatasetMatchingTask.MatchesType.SINGLE;
 
 public class Main {
