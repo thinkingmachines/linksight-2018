@@ -1,13 +1,17 @@
-package es.thinkingmachin.linksight.imatch.matcher.io;
+package es.thinkingmachin.linksight.imatch.matcher.io.sink;
 
 import de.siegmar.fastcsv.writer.CsvAppender;
+import de.siegmar.fastcsv.writer.CsvWriter;
 import es.thinkingmachin.linksight.imatch.matcher.core.Address;
 import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
-public class CsvOutput {
+public class LinkSightCsvSink implements OutputSink {
     private static String[] header = {
             "dataset_index",
             "search_tuple",
@@ -23,19 +27,35 @@ public class CsvOutput {
             "match_type"
     };
 
-    private final CsvAppender csvAppender;
+    private CsvAppender csvAppender;
+    private File outputFile;
+    private int size;
 
-    public CsvOutput(CsvAppender csvAppender) {
-        this.csvAppender = csvAppender;
-    }
-
-    public void writeHeaderRow() throws IOException {
+    @Override
+    public void open() throws IOException {
+        this.size = 0;
+        this.outputFile = Files.createTempFile("imatch-out-", ".tmp").toFile();
+        CsvWriter writer = new CsvWriter();
+        this.csvAppender = writer.append(outputFile, StandardCharsets.UTF_8);
         csvAppender.appendLine(header);
     }
 
-    public void writeRow(int index, Address srcAddress, double matchTime, ReferenceMatch match) throws IOException {
+    @Override
+    public boolean close() {
+        try {
+            csvAppender.close();
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public void addMatch(long index, Address srcAddress, double matchTime, ReferenceMatch match) throws IOException {
+        size++;
+
         // dataset_index
-        csvAppender.appendField(Integer.toString(index));
+        csvAppender.appendField(Long.toString(index));
 
         // search_tuple
         csvAppender.appendField("");  // TODO: fix this
@@ -72,6 +92,15 @@ public class CsvOutput {
             csvAppender.appendField("no_match");
         }
         csvAppender.endLine();
+    }
+
+    public File getOutputFile() {
+        return outputFile;
+    }
+
+    @Override
+    public int getSize() {
+        return size;
     }
 
     private void writeAddressFields(Address address) throws IOException {

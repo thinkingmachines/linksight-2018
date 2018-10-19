@@ -2,6 +2,11 @@ package es.thinkingmachin.linksight.imatch.main;
 
 import es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset;
 import es.thinkingmachin.linksight.imatch.matcher.eval.Evaluator;
+import es.thinkingmachin.linksight.imatch.matcher.io.sink.LinkSightCsvSink;
+import es.thinkingmachin.linksight.imatch.matcher.io.sink.ListSink;
+import es.thinkingmachin.linksight.imatch.matcher.io.source.CsvSource;
+import es.thinkingmachin.linksight.imatch.matcher.matching.DatasetMatchingTask;
+import es.thinkingmachin.linksight.imatch.matcher.matching.executor.SeriesExecutor;
 import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
 import es.thinkingmachin.linksight.imatch.matcher.tree.TreeExplorer;
 import es.thinkingmachin.linksight.imatch.server.Server;
@@ -13,10 +18,12 @@ import java.util.ArrayList;
 import static es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset.BuiltIn.FUZZY_200;
 import static es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset.BuiltIn.HAPPY_PATH;
 import static es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset.BuiltIn.IMAN_TEST;
+import static es.thinkingmachin.linksight.imatch.matcher.matching.DatasetMatchingTask.MatchesType.MULTIPLE;
+import static es.thinkingmachin.linksight.imatch.matcher.matching.DatasetMatchingTask.MatchesType.SINGLE;
 
 public class Main {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Throwable {
         CommandLine cli = getCliArgs(args);
         if (cli == null) return;
 
@@ -41,7 +48,7 @@ public class Main {
     private static CommandLine getCliArgs(String[] args) {
         Options options = new Options();
         options.addRequiredOption("m", "mode", true, "Run mode: 'server', 'test', 'explorer'")
-                .addOption("i", "ipcaddr", true, "Path to the IPC address, should start with ipc://");
+                .addOption("i", "ipcaddr", true, "Path to the IPC address, should execute with ipc://");
         CommandLineParser parser = new DefaultParser();
         try {
             return parser.parse(options, args);
@@ -60,13 +67,17 @@ public class Main {
         }
     }
 
-    private static void runTests() throws IOException {
+    private static void runTests() throws Throwable {
         Server server = new Server(null);
         TestDataset[] tests = new TestDataset[]{FUZZY_200, HAPPY_PATH , IMAN_TEST};
         for (TestDataset test : tests) {
             System.out.println("Test dataset: "+test.name);
-            ArrayList<ReferenceMatch> matches = server.matcher.getTopMatches(test);
-            Evaluator.evaluate(matches, test);
+            CsvSource source = new CsvSource(test);
+            ListSink sink = new ListSink();
+            SeriesExecutor executor = new SeriesExecutor();
+            DatasetMatchingTask task = new DatasetMatchingTask(source, sink, executor, server.addressMatcher, SINGLE);
+            task.run();
+            Evaluator.evaluate(sink.getMatches(), test);
             System.out.println();
         }
     }

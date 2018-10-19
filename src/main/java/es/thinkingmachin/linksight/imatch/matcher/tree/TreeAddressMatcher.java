@@ -1,11 +1,11 @@
 package es.thinkingmachin.linksight.imatch.matcher.tree;
 
 import com.google.common.collect.Ordering;
-import de.siegmar.fastcsv.reader.CsvRow;
 import es.thinkingmachin.linksight.imatch.matcher.core.Address;
 import es.thinkingmachin.linksight.imatch.matcher.core.Util;
-import es.thinkingmachin.linksight.imatch.matcher.matchers.AddressMatcher;
+import es.thinkingmachin.linksight.imatch.matcher.matching.AddressMatcher;
 import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 import org.apache.commons.math3.util.Pair;
 
@@ -22,16 +22,18 @@ public class TreeAddressMatcher implements AddressMatcher {
 
     @Nullable
     @Override
-    public ReferenceMatch getTopMatch(Address address, CsvRow row) {
+    public ReferenceMatch getTopMatch(Address address) {
         if (address.terms.length == 0) return null;
-        List<ReferenceMatch> matches = getTopMatches(address, 1, row);
+        List<ReferenceMatch> matches = getTopMatches(address, 1);
         if (matches.isEmpty()) return null;
         return matches.get(0);
     }
 
+    @NonNull
     @Override
-    public List<ReferenceMatch> getTopMatches(Address address, int numMatches, CsvRow row) {
-        List<BfsTraversed> candidates = getCandidateMatches(address.terms, row);
+    public List<ReferenceMatch> getTopMatches(Address address, int numMatches) {
+        if (address.terms.length == 0) return Collections.emptyList();
+        List<BfsTraversed> candidates = getCandidateMatches(address.terms);
         List<BfsTraversed> bestN = Ordering.from(BfsTraversed.createComparator())
                 .greatestOf(candidates, numMatches);
 
@@ -40,7 +42,7 @@ public class TreeAddressMatcher implements AddressMatcher {
                 .collect(Collectors.toList());
     }
 
-    private LinkedList<BfsTraversed> getCandidateMatches(String[] locValues, CsvRow row) {
+    private LinkedList<BfsTraversed> getCandidateMatches(String[] locValues) {
         List<String>[] searchStrings = createSearchStrings(locValues);
         LinkedList<BfsTraversed> possibleMatches = new LinkedList<>();
         LinkedList<BfsTraversed> queue = new LinkedList<>();

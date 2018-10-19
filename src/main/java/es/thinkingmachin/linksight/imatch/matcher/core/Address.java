@@ -7,9 +7,11 @@ import java.util.Arrays;
 
 public class Address {
     public final String[] terms;
+    public final long rowNum;
 
-    public Address(String[] terms) {
+    public Address(String[] terms, long rowNum) {
         this.terms = terms;
+        this.rowNum = rowNum;
     }
 
     public static Address fromCsvRow(CsvRow csvRow, String[] locFields) {
@@ -24,7 +26,7 @@ public class Address {
             terms[ctr] = value;
             ctr++;
         }
-        return new Address(Arrays.copyOf(terms, ctr));
+        return new Address(Arrays.copyOf(terms, ctr), csvRow.getOriginalLineNumber());
     }
 
     @Override

@@ -1,15 +1,11 @@
 package es.thinkingmachin.linksight.imatch.server;
 
 import com.google.common.base.Throwables;
-import de.siegmar.fastcsv.writer.CsvAppender;
-import de.siegmar.fastcsv.writer.CsvWriter;
 import es.thinkingmachin.linksight.imatch.matcher.dataset.Dataset;
 import es.thinkingmachin.linksight.imatch.matcher.dataset.PsgcDataset;
-import es.thinkingmachin.linksight.imatch.matcher.matchers.DatasetMatcher;
-import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
 import es.thinkingmachin.linksight.imatch.matcher.tree.TreeAddressMatcher;
 import es.thinkingmachin.linksight.imatch.matcher.tree.TreeReference;
-import es.thinkingmachin.linksight.imatch.server.jobs.CsvMatchingJob;
+import es.thinkingmachin.linksight.imatch.server.jobs.LinkSightCsvMatchingJob;
 import es.thinkingmachin.linksight.imatch.server.jobs.Job;
 import es.thinkingmachin.linksight.imatch.server.messaging.Request;
 import es.thinkingmachin.linksight.imatch.server.messaging.Response;
@@ -20,11 +16,8 @@ import io.reactivex.subjects.PublishSubject;
 import org.zeromq.ZMQ;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static es.thinkingmachin.linksight.imatch.matcher.tree.TreeReference.DEFAULT_PSGC_DATASET;
@@ -43,13 +36,13 @@ public class Server {
     // Matcher
     public TreeReference reference;
     public TreeAddressMatcher addressMatcher;
-    public DatasetMatcher matcher;
+//    public DatasetMatcher matcher;
 
     public Server(String ipcPath) throws IOException {
         this.ipcPath = ipcPath;
         this.reference = new TreeReference(new PsgcDataset[]{ DEFAULT_PSGC_DATASET, EXTRA_PSGC_DATASET });
         this.addressMatcher = new TreeAddressMatcher(this.reference);
-        this.matcher = new DatasetMatcher(addressMatcher);
+//        this.matcher = new DatasetMatcher(addressMatcher);
         this.mainProcessing = jobQueue.toFlowable(BackpressureStrategy.BUFFER)
                 .observeOn(Schedulers.single())
                 .subscribe(job -> jobResults.put(job.id, job.run()));
@@ -81,7 +74,7 @@ public class Server {
             case SUBMIT_JOB:
                 Dataset dataset = new Dataset(request.csvPath, request.columns);
                 jobResults.remove(request.id);
-                jobQueue.onNext(new CsvMatchingJob(request.id, matcher, dataset));
+                jobQueue.onNext(new LinkSightCsvMatchingJob(request.id, addressMatcher, dataset));
                 return Response.createInProgress();
             case GET_JOB_RESULT:
                 if (!jobResults.containsKey(request.id)) {
