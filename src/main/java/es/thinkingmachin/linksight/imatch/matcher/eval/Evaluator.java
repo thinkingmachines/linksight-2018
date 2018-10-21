@@ -16,40 +16,37 @@ public class Evaluator {
     public static void evaluate(List<ReferenceMatch> matchedAddresses, TestDataset testDataset) throws IOException {
         CsvParser csvParser = createCsvParser(testDataset.csvPath);
         CsvRow row;
-        int i = -1;
         int countCorrect = 0;
         int countTotal = 0;
         int countNull = 0;
-        while ((row = csvParser.nextRow()) != null) {
-            i++;
-            long correct_psgc = Long.parseLong(row.getField(testDataset.correctPsgcField));
-            if (i >= matchedAddresses.size()) break;
+        for (int i = 0; (row = csvParser.nextRow()) != null; i++) {
+            if (i >= matchedAddresses.size()) throw new Error("Size mismatch!");
             ReferenceMatch match = matchedAddresses.get(i);
-            if (match != null && Long.parseLong(match.match.psgc) == correct_psgc) {
-                countCorrect++;
-            } else {
-                //Wrong
-                if (match == null) {
-                    countNull++;
-                    System.out.println("Null match:");
-                } else {
-                    System.out.println("Wrong match: (row "+row.getOriginalLineNumber()+")");
-                }
-                System.out.println("\tRaw: " + Address.fromCsvRow(row, new String[]{"source_brgy", "source_municity", "source_prov"}));
-                System.out.println("\tMatched: "+ match);
-                System.out.println("\tCorrect PSGC: "+correct_psgc);
-                System.out.println();
-            }
+
             countTotal++;
+            if (match == null) {
+                countNull++;
+                System.out.println("Null match: (row " + row.getOriginalLineNumber() + ")");
+                System.out.println("\tRaw: " + Address.fromCsvRow(row, testDataset.locFields));
+                System.out.println();
+            } else if (testDataset.hasCorrectField()) {
+                long correct_psgc = Long.parseLong(row.getField(testDataset.correctPsgcField));
+                if (Long.parseLong(match.match.psgc) == correct_psgc) {
+                    countCorrect++;
+                } else {
+                    //Wrong
+                    System.out.println("Wrong match: (row " + row.getOriginalLineNumber() + ")");
+                    System.out.println("\tRaw: " + Address.fromCsvRow(row, testDataset.locFields));
+                    System.out.println("\tMatched: " + match);
+                    System.out.println("\tCorrect PSGC: " + correct_psgc);
+                    System.out.println();
+                }
+            }
         }
         System.out.println("Correct: " + countCorrect);
         System.out.println("Total: " + countTotal);
         System.out.println("% correct: " + (countCorrect * 100.0 / countTotal));
-        System.out.println("Null: "+countNull);
-
-        if (matchedAddresses.size() != countTotal) {
-            throw new Error("Size mismatch! " + matchedAddresses.size() + " matched vs " + countTotal + " correct");
-        }
+        System.out.println("Null: " + countNull);
     }
 
 

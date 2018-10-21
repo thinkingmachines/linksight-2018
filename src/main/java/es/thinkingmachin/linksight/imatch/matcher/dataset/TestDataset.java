@@ -11,6 +11,10 @@ public class TestDataset extends Dataset {
         this.correctPsgcField = correctPsgcField;
     }
 
+    public boolean hasCorrectField() {
+        return correctPsgcField != null;
+    }
+
     public static class BuiltIn {
 
         public static TestDataset FUZZY_200 = new TestDataset(
@@ -35,6 +39,13 @@ public class TestDataset extends Dataset {
                 new String[]{"source_brgy", "source_municity", "source_prov"},
                 "expected_psgc"
 
+        );
+
+        public static TestDataset SSS_CLEAN = new TestDataset(
+                "SSS_TEST",
+                "data/sss_clean2.csv",
+                new String[]{"Barangay", "Municities", "Province"},
+                null
         );
     }
 }

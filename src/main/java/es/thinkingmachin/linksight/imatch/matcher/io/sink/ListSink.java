@@ -33,7 +33,7 @@ public class ListSink implements OutputSink {
 
     @Override
     public String getName() {
-        return "[list]";
+        return "[list] size: "+matches.size();
     }
 
     public List<ReferenceMatch> getMatches() {

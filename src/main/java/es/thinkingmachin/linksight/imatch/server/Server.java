@@ -36,16 +36,15 @@ public class Server {
     // Matcher
     public TreeReference reference;
     public TreeAddressMatcher addressMatcher;
-//    public DatasetMatcher matcher;
 
     public Server(String ipcPath) throws IOException {
         this.ipcPath = ipcPath;
         this.reference = new TreeReference(new PsgcDataset[]{ DEFAULT_PSGC_DATASET, EXTRA_PSGC_DATASET });
         this.addressMatcher = new TreeAddressMatcher(this.reference);
-//        this.matcher = new DatasetMatcher(addressMatcher);
         this.mainProcessing = jobQueue.toFlowable(BackpressureStrategy.BUFFER)
                 .observeOn(Schedulers.single())
                 .subscribe(job -> jobResults.put(job.id, job.run()));
+        addressMatcher.warmUp();
     }
 
     public void start() {
@@ -54,6 +53,7 @@ public class Server {
         socket.bind(ipcPath);
 
         while (true) {
+            System.out.println("\nServer ready!");
             String received = socket.recvStr(Charset.defaultCharset());
             try {
                 socket.send(handleRequest(received).toJson());

@@ -2,6 +2,8 @@ package es.thinkingmachin.linksight.imatch.main;
 
 import es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset;
 import es.thinkingmachin.linksight.imatch.matcher.eval.Evaluator;
+import es.thinkingmachin.linksight.imatch.matcher.executor.Executor;
+import es.thinkingmachin.linksight.imatch.matcher.executor.ParallelExecutor;
 import es.thinkingmachin.linksight.imatch.matcher.io.sink.ListSink;
 import es.thinkingmachin.linksight.imatch.matcher.io.source.CsvSource;
 import es.thinkingmachin.linksight.imatch.matcher.matching.DatasetMatchingTask;
@@ -12,9 +14,7 @@ import org.apache.commons.cli.*;
 
 import java.io.IOException;
 
-import static es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset.BuiltIn.FUZZY_200;
-import static es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset.BuiltIn.HAPPY_PATH;
-import static es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset.BuiltIn.IMAN_TEST;
+import static es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset.BuiltIn.*;
 import static es.thinkingmachin.linksight.imatch.matcher.matching.DatasetMatchingTask.MatchesType.SINGLE;
 
 public class Main {
@@ -65,12 +65,14 @@ public class Main {
 
     private static void runTests() throws Throwable {
         Server server = new Server(null);
-        TestDataset[] tests = new TestDataset[]{FUZZY_200, HAPPY_PATH , IMAN_TEST};
+//        TestDataset[] tests = new TestDataset[]{FUZZY_200, HAPPY_PATH, IMAN_TEST, SSS_CLEAN};
+        TestDataset[] tests = new TestDataset[]{SSS_CLEAN, HAPPY_PATH, FUZZY_200};
         for (TestDataset test : tests) {
             System.out.println("Test dataset: "+test.name);
             CsvSource source = new CsvSource(test);
             ListSink sink = new ListSink();
-            SeriesExecutor executor = new SeriesExecutor();
+            Executor executor = new ParallelExecutor();
+            executor = new SeriesExecutor();
             DatasetMatchingTask task = new DatasetMatchingTask(source, sink, executor, server.addressMatcher, SINGLE);
             task.run();
             Evaluator.evaluate(sink.getMatches(), test);

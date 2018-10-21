@@ -8,6 +8,13 @@ import de.siegmar.fastcsv.reader.CsvRow;
 import es.thinkingmachin.linksight.imatch.matcher.core.Psgc;
 import es.thinkingmachin.linksight.imatch.matcher.core.Util;
 import es.thinkingmachin.linksight.imatch.matcher.dataset.PsgcDataset;
+import es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset;
+import es.thinkingmachin.linksight.imatch.matcher.executor.Executor;
+import es.thinkingmachin.linksight.imatch.matcher.executor.ParallelExecutor;
+import es.thinkingmachin.linksight.imatch.matcher.executor.SeriesExecutor;
+import es.thinkingmachin.linksight.imatch.matcher.io.sink.ListSink;
+import es.thinkingmachin.linksight.imatch.matcher.io.source.CsvSource;
+import es.thinkingmachin.linksight.imatch.matcher.matching.DatasetMatchingTask;
 import es.thinkingmachin.linksight.imatch.matcher.model.FuzzyStringMap;
 import es.thinkingmachin.linksight.imatch.matcher.reference.PsgcRow;
 import org.apache.commons.collections4.multiset.HashMultiSet;
@@ -20,6 +27,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static es.thinkingmachin.linksight.imatch.matcher.matching.DatasetMatchingTask.MatchesType.SINGLE;
 
 public class TreeReference {
 
@@ -69,9 +78,6 @@ public class TreeReference {
         // Create entry point
         createEntryPoint();
 
-        // Generate extra aliases
-//        createExtraAliases();
-
         // Create search indices
         System.out.println("Creating search indices...");
         root.createSearchIndex();
@@ -79,8 +85,7 @@ public class TreeReference {
         allNodes.values().forEach(AddressTreeNode::createSearchIndex);
 
         stopwatch.stop();
-        System.out.println("Constructing tree reference took " + stopwatch.elapsed(TimeUnit.SECONDS) + " sec.\n");
-        System.out.println("Server ready!");
+        System.out.println("Constructing tree reference took " + stopwatch.elapsed(TimeUnit.SECONDS) + " sec.");
     }
 
     private void createEntryPoint() {
@@ -100,51 +105,5 @@ public class TreeReference {
             parentNode.addChild(node);
         }
         allNodes.get(row.psgc).addAlias(row.location, row.isOriginal);
-    }
-
-    private void createExtraAliases() {
-        HashMultimap<String, String> small = HashMultimap.create();
-        for (AddressTreeNode node : allNodes.values()) {
-            for (String alias : node.aliases) {
-                // Debug
-                String[] words = Util.splitTerm(alias);
-                for (String word : words) {
-                    if (word.length() <= 3) {
-                        small.put(word, alias);
-//                        System.out.println("Alias: " + alias + ", word: " + word);
-                    }
-                }
-            }
-//            HashMultimap<String, AddressTreeNode> possibleAliases = HashMultimap.create();
-//            for (AddressTreeNode child : node.children) {
-//                for (String alias : child.aliases) {
-//                    String[] words = Util.splitTerm(alias);
-//                    if (words.length == 1) continue;
-//                    for (String word : words) {
-//                        if (word.length() > 3) {
-//                            possibleAliases.put(word, child);
-//                        }
-//                    }
-//                }
-//            }
-//            for (String alias : possibleAliases.keySet()) {
-//                Set<AddressTreeNode> nodes = possibleAliases.get(alias);
-//                if (nodes.size() == 1) {
-//                    AddressTreeNode child = nodes.iterator().next();
-//                    System.out.println("Unique alias: "+alias+" from "+child.getOrigTerm());
-//                }
-//            }
-        }
-        List<Pair<String, Set<String>>> counts = small.keySet().stream()
-                .map(item -> new Pair<>(item, small.get(item)))
-                .sorted(Comparator.comparingInt(p -> -p.getValue().size()))
-                .collect(Collectors.toList());
-        for (Pair<String, Set<String>> p : counts) {
-            System.out.print(p.getKey()+" ("+p.getValue().size()+"): ");
-            Ordering.natural()
-                    .greatestOf(p.getValue(), 5)
-                    .forEach(s -> System.out.print(s+" | "));
-            System.out.println();
-        }
     }
 }

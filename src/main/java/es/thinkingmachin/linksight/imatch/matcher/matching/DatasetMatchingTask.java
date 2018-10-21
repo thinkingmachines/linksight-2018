@@ -30,8 +30,12 @@ public class DatasetMatchingTask {
     }
 
     public void run() throws Throwable {
+        run(true);
+    }
+
+    public void run(boolean verbose) throws Throwable {
         try {
-            System.out.println("\nStarting matching: "+inputSource.getName());
+            if (verbose) System.out.println("Starting matching: "+inputSource.getName());
             Stopwatch stopwatch = Stopwatch.createStarted();
             inputSource.open();
             outputSink.open();
@@ -40,10 +44,13 @@ public class DatasetMatchingTask {
             long duration = stopwatch.elapsed(TimeUnit.MILLISECONDS);
 
             // Stats
-            System.out.println("Matching done:");
-            System.out.println("- Time: "+(duration / 1000.0)+" sec");
-            System.out.println(String.format("- Speed: %.3f rows/sec", inputSource.getCurrentCount() * 1000.0 / duration));
-            System.out.println("- Output: "+outputSink.getName());
+            if (verbose) {
+                System.out.println("Matching done:");
+                System.out.println("- Time: " + (duration / 1000.0) + " sec");
+                System.out.println(String.format("- Speed: %.3f rows/sec", inputSource.getCurrentCount() * 1000.0 / duration));
+                System.out.println("- Output: " + outputSink.getName());
+                System.out.println();
+            }
         } catch (Throwable e) {
             cleanup();
             throw e;

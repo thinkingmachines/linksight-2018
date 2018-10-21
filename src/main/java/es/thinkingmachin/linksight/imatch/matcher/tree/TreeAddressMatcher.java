@@ -3,14 +3,24 @@ package es.thinkingmachin.linksight.imatch.matcher.tree;
 import com.google.common.collect.Ordering;
 import es.thinkingmachin.linksight.imatch.matcher.core.Address;
 import es.thinkingmachin.linksight.imatch.matcher.core.Util;
+import es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset;
+import es.thinkingmachin.linksight.imatch.matcher.executor.Executor;
+import es.thinkingmachin.linksight.imatch.matcher.executor.ParallelExecutor;
+import es.thinkingmachin.linksight.imatch.matcher.executor.SeriesExecutor;
+import es.thinkingmachin.linksight.imatch.matcher.io.sink.ListSink;
+import es.thinkingmachin.linksight.imatch.matcher.io.source.CsvSource;
 import es.thinkingmachin.linksight.imatch.matcher.matching.AddressMatcher;
+import es.thinkingmachin.linksight.imatch.matcher.matching.DatasetMatchingTask;
 import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 import org.apache.commons.math3.util.Pair;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static es.thinkingmachin.linksight.imatch.matcher.matching.DatasetMatchingTask.MatchesType.SINGLE;
 
 public class TreeAddressMatcher implements AddressMatcher {
 
@@ -18,6 +28,19 @@ public class TreeAddressMatcher implements AddressMatcher {
 
     public TreeAddressMatcher(TreeReference reference) {
         this.reference = reference;
+    }
+
+    public void warmUp() {
+        CsvSource source = new CsvSource(TestDataset.BuiltIn.FUZZY_200);
+        ListSink sink = new ListSink();
+        Executor executor =  new SeriesExecutor();
+        DatasetMatchingTask task = new DatasetMatchingTask(source, sink, executor, this, SINGLE);
+        try {
+            task.run(false);
+            System.out.println("\nWarm-up done!\n");
+        } catch (Throwable e) {
+            System.out.println("Error warming up matcher: "+e.getMessage());
+        }
     }
 
     @Nullable
@@ -33,7 +56,10 @@ public class TreeAddressMatcher implements AddressMatcher {
     @Override
     public List<ReferenceMatch> getTopMatches(Address address, int numMatches) {
         if (address.terms.length == 0) return Collections.emptyList();
-        List<BfsTraversed> candidates = getCandidateMatches(address.terms);
+
+        List<BfsTraversed> candidates = getCandidateMatches(address.terms, true);
+        if (candidates.isEmpty()) candidates = getCandidateMatches(address.terms, false);
+
         List<BfsTraversed> bestN = Ordering.from(BfsTraversed.createComparator())
                 .greatestOf(candidates, numMatches);
 
@@ -42,7 +68,8 @@ public class TreeAddressMatcher implements AddressMatcher {
                 .collect(Collectors.toList());
     }
 
-    private LinkedList<BfsTraversed> getCandidateMatches(String[] locValues) {
+
+    private LinkedList<BfsTraversed> getCandidateMatches(String[] locValues, boolean optimized) {
         List<String>[] searchStrings = createSearchStrings(locValues);
         LinkedList<BfsTraversed> possibleMatches = new LinkedList<>();
         LinkedList<BfsTraversed> queue = new LinkedList<>();
@@ -57,8 +84,11 @@ public class TreeAddressMatcher implements AddressMatcher {
             for (int i = 0; i < curNode.remainingTerms.length; i++) {
                 List<String> locValue = curNode.remainingTerms[i];
                 int numTerms = locValue.size();
-                for (int j = 0; j < numTerms; j++) {
+                forEachTerm: for (int j = 0; j < numTerms; j++) {
                     for (int k = j + 1; k <= Math.min(j + aliasMaxWords, numTerms); k++) {
+                        if (optimized) {
+                            k = numTerms;
+                        }
                         String candidate = String.join(" ",locValue.subList(j, k));
                         Set<Pair<AddressTreeNode, Double>> fuzzyChildren = curNode.node.childIndex.namesFuzzyMap.getFuzzy(candidate);
                         for (Pair<AddressTreeNode, Double> fuzzyChild : fuzzyChildren) {
@@ -82,8 +112,12 @@ public class TreeAddressMatcher implements AddressMatcher {
                             }
 
                             // Add to possible matches
+                            if (optimized && bfsTraversed.overallScore < 0.95) {
+                                continue;
+                            }
                             possibleMatches.add(bfsTraversed);
                         }
+                        if (optimized) break forEachTerm;
                     }
                 }
             }
