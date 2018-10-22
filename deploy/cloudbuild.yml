@@ -43,7 +43,7 @@ steps:
   args:
   - kms
   - decrypt
-  - '--ciphertext-file=deploy/$TAG_NAME.env.enc'
+  - '--ciphertext-file=deploy/secrets/$TAG_NAME/env.enc'
   - --plaintext-file=.env
   - --location=global
   - --keyring=linksight
@@ -117,7 +117,7 @@ steps:
   args:
   - kms
   - decrypt
-  - --ciphertext-file=deploy/ca.pem.enc
+  - '--ciphertext-file=deploy/secrets/$TAG_NAME/ca.pem.enc'
   - --plaintext-file=ca.pem
   - --location=global
   - --keyring=linksight
@@ -129,7 +129,7 @@ steps:
   args:
   - kms
   - decrypt
-  - --ciphertext-file=deploy/cert.pem.enc
+  - '--ciphertext-file=deploy/secrets/$TAG_NAME/cert.pem.enc'
   - --plaintext-file=cert.pem
   - --location=global
   - --keyring=linksight
@@ -141,7 +141,7 @@ steps:
   args:
   - kms
   - decrypt
-  - --ciphertext-file=deploy/key.pem.enc
+  - '--ciphertext-file=deploy/secrets/$TAG_NAME/key.pem.enc'
   - --plaintext-file=key.pem
   - --location=global
   - --keyring=linksight
