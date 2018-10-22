@@ -7,8 +7,6 @@ import java.util.List;
 
 public interface AddressMatcher {
 
-    ReferenceMatch getTopMatch(Address address);
-
     List<ReferenceMatch> getTopMatches(Address address, int numMatches);
 
 }

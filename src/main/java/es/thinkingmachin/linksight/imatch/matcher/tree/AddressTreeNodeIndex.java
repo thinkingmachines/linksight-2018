@@ -3,11 +3,10 @@ package es.thinkingmachin.linksight.imatch.matcher.tree;
 import es.thinkingmachin.linksight.imatch.matcher.model.FuzzyStringMap;
 
 import java.util.HashMap;
-import java.util.Set;
 
 public class AddressTreeNodeIndex {
-    final FuzzyStringMap<AddressTreeNode> namesFuzzyMap;
-    final HashMap<String, AddressTreeNode> origTermMap;
+    public final FuzzyStringMap<AddressTreeNode> namesFuzzyMap;
+    public final HashMap<String, AddressTreeNode> origTermMap;
 
 
     public AddressTreeNodeIndex() {
@@ -22,10 +21,6 @@ public class AddressTreeNodeIndex {
         for (String alias : child.aliases) {
             namesFuzzyMap.put(alias, child);
         }
-    }
-
-    Set<String> getOrigTerms() {
-        return origTermMap.keySet();
     }
 
     AddressTreeNode getNodeWithOrigTerm(String origTerm) {

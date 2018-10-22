@@ -19,36 +19,55 @@ public class Evaluator {
         int countCorrect = 0;
         int countTotal = 0;
         int countNull = 0;
+        int countScore095 = 0;
+        int countScore100 = 0;
+        int countBgyLevel = 0;
         for (int i = 0; (row = csvParser.nextRow()) != null; i++) {
             if (i >= matchedAddresses.size()) throw new Error("Size mismatch!");
             ReferenceMatch match = matchedAddresses.get(i);
 
             countTotal++;
             if (match == null) {
+                // No match at all
                 countNull++;
                 System.out.println("Null match: (row " + row.getOriginalLineNumber() + ")");
                 System.out.println("\tRaw: " + Address.fromCsvRow(row, testDataset.locFields));
                 System.out.println();
-            } else if (testDataset.hasCorrectField()) {
-                long correct_psgc = Long.parseLong(row.getField(testDataset.correctPsgcField));
-                if (Long.parseLong(match.match.psgc) == correct_psgc) {
-                    countCorrect++;
-                } else {
-                    //Wrong
-                    System.out.println("Wrong match: (row " + row.getOriginalLineNumber() + ")");
-                    System.out.println("\tRaw: " + Address.fromCsvRow(row, testDataset.locFields));
-                    System.out.println("\tMatched: " + match);
-                    System.out.println("\tCorrect PSGC: " + correct_psgc);
-                    System.out.println();
+            } else {
+                if (match.score >= 0.95) countScore095++;
+                if (match.score == 1) countScore100++;
+                if (match.match.address.length == 3) countBgyLevel++;
+
+                if (testDataset.hasCorrectField()) {
+                    // Correct answer provided
+                    long correct_psgc = Long.parseLong(row.getField(testDataset.correctPsgcField));
+                    if (Long.parseLong(match.match.psgc) == correct_psgc) {
+                        // Correct answer
+                        countCorrect++;
+                    } else {
+                        // Wrong answer
+                        System.out.println("Wrong match: (row " + row.getOriginalLineNumber() + ")");
+                        System.out.println("\tRaw: " + Address.fromCsvRow(row, testDataset.locFields));
+                        System.out.println("\tMatched: " + match);
+                        System.out.println("\tCorrect PSGC: " + correct_psgc);
+                        System.out.println();
+                    }
                 }
             }
         }
-        System.out.println("Correct: " + countCorrect);
-        System.out.println("Total: " + countTotal);
-        System.out.println("% correct: " + (countCorrect * 100.0 / countTotal));
-        System.out.println("Null: " + countNull);
+
+        System.out.println("Evaluation:");
+        System.out.println("\tTotal: " + countTotal);
+        printStat("Correct", countCorrect, countTotal);
+        printStat("Null", countNull, countTotal);
+        printStat("Score >= 0.95", countScore095, countTotal);
+        printStat("Score == 1.00", countScore100, countTotal);
+        printStat("Brgy Level", countBgyLevel, countTotal);
     }
 
+    private static void printStat(String name, int count, int total) {
+        System.out.println(String.format("\t%s: %d (%.3f%%)", name, count, count*100.0/total));
+    }
 
     private static CsvParser createCsvParser(String csvPath) throws IOException {
         File file = new File(csvPath);

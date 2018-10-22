@@ -3,7 +3,7 @@ package es.thinkingmachin.linksight.imatch.server;
 import com.google.common.base.Throwables;
 import es.thinkingmachin.linksight.imatch.matcher.dataset.Dataset;
 import es.thinkingmachin.linksight.imatch.matcher.dataset.PsgcDataset;
-import es.thinkingmachin.linksight.imatch.matcher.tree.TreeAddressMatcher;
+import es.thinkingmachin.linksight.imatch.matcher.tree.matcher.TreeAddressMatcher;
 import es.thinkingmachin.linksight.imatch.matcher.tree.TreeReference;
 import es.thinkingmachin.linksight.imatch.server.jobs.LinkSightCsvMatchingJob;
 import es.thinkingmachin.linksight.imatch.server.jobs.Job;
@@ -44,7 +44,6 @@ public class Server {
         this.mainProcessing = jobQueue.toFlowable(BackpressureStrategy.BUFFER)
                 .observeOn(Schedulers.single())
                 .subscribe(job -> jobResults.put(job.id, job.run()));
-        addressMatcher.warmUp();
     }
 
     public void start() {
