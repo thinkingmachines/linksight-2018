@@ -77,11 +77,11 @@ public class Main {
         Server server = new Server(null);
         TestDataset[] tests = new TestDataset[]{SSS_CLEAN, HAPPY_PATH, FUZZY_200};
         for (TestDataset test : tests) {
+            System.out.println("┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄");
             System.out.println("Test dataset: "+test.name);
             CsvSource source = new CsvSource(test);
             ListSink sink = new ListSink();
-            Executor executor = new ParallelExecutor();
-            executor = new SeriesExecutor();
+            Executor executor = new SeriesExecutor();
             DatasetMatchingTask task = new DatasetMatchingTask(source, sink, executor, server.addressMatcher, SINGLE);
             task.run();
             Evaluator.evaluate(sink.getMatches(), test);

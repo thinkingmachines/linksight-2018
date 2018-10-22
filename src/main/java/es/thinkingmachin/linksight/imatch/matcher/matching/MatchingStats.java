@@ -11,6 +11,7 @@ public class MatchingStats {
     public final LongAdder totalCount = new LongAdder();
     public final LongAdder nullCount = new LongAdder();
     public final LongAdder brgyLevelCount = new LongAdder();
+    public final LongAdder score075Count = new LongAdder();
     public final LongAdder score095Count = new LongAdder();
     public final LongAdder score100Count = new LongAdder();
 
@@ -20,6 +21,7 @@ public class MatchingStats {
             nullCount.increment();
         } else {
             if (match.scores.length == 3)  brgyLevelCount.increment();
+            if (match.score >= 0.75) score075Count.increment();
             if (match.score >= 0.95) score095Count.increment();
             if (match.score == 1) score100Count.increment();
         }
@@ -29,6 +31,7 @@ public class MatchingStats {
         System.out.println("Evaluation:");
         System.out.println("\tTotal: " + totalCount.longValue());
         printStat("Null", nullCount.longValue());
+        printStat("Score >= 0.75", score075Count.longValue());
         printStat("Score >= 0.95", score095Count.longValue());
         printStat("Score == 1.00", score100Count.longValue());
         printStat("Brgy Level", brgyLevelCount.longValue());
