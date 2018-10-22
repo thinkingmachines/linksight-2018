@@ -6,6 +6,7 @@ def create_search_tuple(row, columns):
     locations = locations.str.replace('POBLACION', 'pob', case=False)
     locations = locations.str.replace(r'[^A-Z0-9\s]', '', case=False).str.strip()
     values = locations.values.tolist()
+    values = list(filter(None, values))
     lowest_interlevel = None
     # Check lowest interlevel with values to determine lowest interlevel
     for lowest_interlevel in 'bgy', 'municity', 'prov':
