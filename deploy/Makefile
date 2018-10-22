@@ -1,15 +1,19 @@
-.PHONY: secrets deploy-staging
+.PHONY: deploy secrets
 
-staging: cloudbuild.yml secrets
+SECRETS_DIR = secrets/$(ENV)
+SECRETS = $(wildcard $(SECRETS_DIR)/cleartext/*)
+ENCRYPTED = $(patsubst $(SECRETS_DIR)/cleartext/%, $(SECRETS_DIR)/%.enc, $(SECRETS))
+
+deploy: secrets cloudbuild.yml
 	gcloud builds --project linksight-208514 \
 		submit \
 		--config cloudbuild.yml \
-		--substitutions=TAG_NAME=staging,_HOST=linksight-stg.thinkingmachin.es \
+		--substitutions=TAG_NAME=$(ENV),_HOST=$(HOST) \
 		..
 
-secrets: cert.pem.enc ca.pem.enc key.pem.enc staging.env.enc
+secrets: $(ENCRYPTED)
 
-%.enc: secrets/%
+$(SECRETS_DIR)/%.enc: $(SECRETS_DIR)/cleartext/%
 	gcloud kms --project linksight-208514 \
 		encrypt \
 		--plaintext-file=$< \
