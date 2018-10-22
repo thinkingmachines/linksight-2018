@@ -11,7 +11,7 @@ task buildFatJar(type: Jar) {
     manifest {
         attributes 'Implementation-Title': 'imatch server',
                 'Implementation-Version': version,
-                'Main-Class': 'es.thinkingmachin.linksight.imatch.server.Server'
+                'Main-Class': 'es.thinkingmachin.linksight.imatch.main.Main'
     }
     baseName = project.name + '-full'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
@@ -40,7 +40,10 @@ dependencies {
     compile 'de.siegmar:fastcsv:1.0.2'
     compile 'org.apache.commons:commons-collections4:4.2'
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.0'
+    compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
     compile group: 'org.zeromq', name: 'jzmq', version: '3.1.0'
     compile 'io.reactivex.rxjava2:rxjava:2.2.0'
+    compile group: 'com.google.guava', name: 'guava', version: '26.0-jre'
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
     compile files('libs/pre-dict-library-0.1.0-jar-with-dependencies.jar')
 }

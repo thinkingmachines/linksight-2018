@@ -1,16 +1,22 @@
 package es.thinkingmachin.linksight.imatch.matcher.reference;
 
-public class ReferenceMatch {
-    public final ReferenceRow referenceRow;
-    public final double score;
+import es.thinkingmachin.linksight.imatch.matcher.tree.AddressTreeNode;
 
-    public ReferenceMatch(ReferenceRow referenceRow, double score) {
-        this.referenceRow = referenceRow;
+import java.util.Arrays;
+
+public class ReferenceMatch {
+    public final AddressTreeNode match;
+    public final double score;
+    public final double[] scores;
+
+    public ReferenceMatch(AddressTreeNode match, double score, double[] scores) {
+        this.match = match;
         this.score = score;
+        this.scores = scores;
     }
 
     @Override
     public String toString() {
-        return referenceRow.toString() + " score: " + score;
+        return match.toString() + ", final score: " + score + ", all scores: "+ Arrays.toString(scores);
     }
 }
