@@ -7,7 +7,7 @@ __pycache__/
 /static/
 
 # Node
-/app/node_modules?
+/app/node_modules/
 /app/coverage/
 /app/build/
 npm-debug.log*
