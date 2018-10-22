@@ -146,8 +146,10 @@ class Match(models.Model):
         ):
             if source_col == matched_col:
                 front_cols.extend((matched_col,))
-            else:
+            elif source_col:
                 front_cols.extend((source_col, matched_col))
+            else:
+                joined_df.drop([matched_col], axis=1, inplace=True)
 
         mid_cols = [
             "psgc_linksight",
