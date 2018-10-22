@@ -2,7 +2,9 @@ import csv
 from collections import OrderedDict
 from tempfile import NamedTemporaryFile
 
+import numpy as np
 from django.test import TestCase
+
 from linksight.api import profiling
 from linksight.api.matchers.ngrams_matcher import NgramsMatcher
 
@@ -58,6 +60,23 @@ class MatcherTestBase():
         assert result[0]['matched_barangay'] == 'RADIWAN'
         assert result[0]['matched_city_municipality'] == 'IVANA'
         assert result[0]['matched_province'] == 'BATANES'
+
+    def test_nan_values_on_results(self):
+        '''
+        The results should not contain 'nan'
+        '''
+        header = ','.join(['input_bgy',
+                           'input_mun',
+                           'input_prov'])
+        body = ''',Ivana,Batanes'''
+
+        test = "{}\n{}".format(header, body)
+        dataset_path = create_test_file(test)
+
+        matcher = self.create_matcher(dataset_path)
+        result = list(matcher.get_matches())
+
+        assert np.nan not in list(result[0].values())
 
     def test_cases(self):
         with open('data/tests/test-cases.csv') as f:
