@@ -35,3 +35,6 @@ clean-psgc.csv
 # Ansible
 /deploy/*.retry
 /deploy/hosts.yml
+
+# Documentation
+docs/_build/
