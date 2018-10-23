@@ -35,3 +35,7 @@ clean-psgc.csv
 # Ansible
 /deploy/*.retry
 /deploy/hosts.yml
+
+# Terraform
+/deploy/.terraform/
+/deploy/*.tfplan

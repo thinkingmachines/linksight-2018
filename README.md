@@ -100,16 +100,5 @@ cd deploy && ENV=staging HOST=linksight-stg.thinkingmachin.es make deploy
 #### Production
 
 ```sh
-cd deploy && ENV=prod HOST=linksight.thinkingmachin.es make deploy
+cd deploy && ENV=production HOST=linksight.thinkingmachin.es make deploy
 ```
-
-#### Notes
-
-- Create docker certs in /etc/docker
-- Create /etc/docker/daemon.json
-- Update daemon arguments from the docker systemd service file
-- Set compute service account permissions:
-    ```sh
-    gcloud beta --project linksight-208514 compute instances set-scopes --scopes=default,storage-full,https://www.googleapis.com/auth/drive.readonly prod
-    ```
-
