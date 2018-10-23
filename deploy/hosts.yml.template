@@ -1,0 +1,10 @@
+production:
+  hosts:
+    127.0.0.1:
+      certbot_admin_email: you@example.com
+      certbot_create_if_missing: true
+      certbot_certs:
+        - domains:
+          - linksight.thinkingmachin.es
+      smtp_login: smtp@example.com
+      smtp_password: notapassword

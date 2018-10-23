@@ -1,4 +1,4 @@
-.PHONY: deploy secrets
+.PHONY: deploy secrets instance setup-instances setup-docker
 
 SECRETS_DIR = secrets/$(ENV)
 SECRETS = $(wildcard $(SECRETS_DIR)/cleartext/*)
@@ -21,3 +21,13 @@ $(SECRETS_DIR)/%.enc: $(SECRETS_DIR)/cleartext/%
 		--location=global \
 		--keyring=linksight \
 		--key=linksight
+
+instance:
+	terraform plan -out main.tfplan
+	terraform apply main.tfplan
+
+setup-instances:
+	ansible-playbook -i hosts.yml playbook.yml
+
+setup-docker:
+	ansible-playbook -i hosts.yml docker.yml

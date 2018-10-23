@@ -1,0 +1,28 @@
+- hosts: instances
+  become_user: root
+  become: yes
+
+  tasks:
+
+  - name: Copy certs and daemon.json
+    copy:
+      src: '{{ item.src }}'
+      dest: '{{ item.dest }}'
+    loop:
+      - { src: 'secrets/{{ env }}/cleartext/ca.pem', dest: '/etc/docker/' }
+      - { src: 'secrets/{{ env }}/cleartext/server-cert.pem', dest: '/etc/docker/' }
+      - { src: 'secrets/{{ env }}/cleartext/server-key.pem', dest: '/etc/docker/' }
+      - { src: 'daemon.json', dest: '/etc/docker/' }
+
+  - name: Update docker service
+    lineinfile:
+      path: /lib/systemd/system/docker.service
+      regexp: '^ExecStart'
+      line: 'ExecStart=/usr/bin/dockerd'
+
+  - name: Restart docker service
+    systemd:
+      name: docker
+      state: restarted
+      daemon_reload: yes
+
