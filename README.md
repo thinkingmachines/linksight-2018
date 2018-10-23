@@ -58,7 +58,7 @@ to contribute, please send us an email at
     If you are a member of the official LinkSight development team, you can ask
     for access to the template with secrets filled in.
 
-1. Install postgresql and run the following in `psql`:
+1. Install postgresql and run the following:
 
     ```sh
     createdb linksight
@@ -66,13 +66,13 @@ to contribute, please send us an email at
 
     Make sure that you can connect using the `DATABASE_URL` you used in `.env`.
 
-1. Run migrations
+1. Apply migrations:
 
     ```sh
     venv/bin/python manage.py migrate
     ```
 
-1. Start services
+1. Start services:
 
     ```sh
     pm2 start
