@@ -72,7 +72,7 @@ public class TreeAddressMatcher implements AddressMatcher {
 
             // Current node properties
             FuzzyStringMap<AddressTreeNode> fuzzyMap = curNode.node.childIndex.namesFuzzyMap;
-            int aliasMaxWords = curNode.node.maxChildAliasWords;
+            int aliasMaxWords = Math.min(curNode.node.maxChildAliasWords, 5);
 
             // For each phrase in remainingTerms
             for (int i = 0; i < curNode.remainingTerms.length; i++) {

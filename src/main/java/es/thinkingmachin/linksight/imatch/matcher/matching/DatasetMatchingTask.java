@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DatasetMatchingTask {
 
@@ -19,6 +20,7 @@ public class DatasetMatchingTask {
     private final Executor executor;
     private final AddressMatcher addressMatcher;
     private final MatchesType matchesType;
+    public final MatchingStats matchingStats;
 
     public DatasetMatchingTask(InputSource inputSource, OutputSink outputSink, Executor executor,
                                AddressMatcher addressMatcher, MatchesType matchesType) {
@@ -27,6 +29,7 @@ public class DatasetMatchingTask {
         this.executor = executor;
         this.addressMatcher = addressMatcher;
         this.matchesType = matchesType;
+        this.matchingStats = new MatchingStats();
     }
 
     public void run() throws Throwable {
@@ -69,6 +72,11 @@ public class DatasetMatchingTask {
         double matchTime = (System.nanoTime() - startTime) / 1e9;
         for (ReferenceMatch match : matches) {
             try {
+                matchingStats.addNewMatch(match);
+                long curCount = matchingStats.totalCount.longValue();
+                if (curCount % 10000 == 0) {
+                    System.out.println("Current count: "+curCount);
+                }
                 outputSink.addMatch(address.rowNum, address, matchTime, match);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);

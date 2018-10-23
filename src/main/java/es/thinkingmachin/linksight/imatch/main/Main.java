@@ -1,10 +1,13 @@
 package es.thinkingmachin.linksight.imatch.main;
 
+import es.thinkingmachin.linksight.imatch.matcher.dataset.Dataset;
 import es.thinkingmachin.linksight.imatch.matcher.dataset.TestDataset;
 import es.thinkingmachin.linksight.imatch.matcher.eval.Evaluator;
 import es.thinkingmachin.linksight.imatch.matcher.executor.Executor;
 import es.thinkingmachin.linksight.imatch.matcher.executor.ParallelExecutor;
+import es.thinkingmachin.linksight.imatch.matcher.io.sink.LinkSightCsvSink;
 import es.thinkingmachin.linksight.imatch.matcher.io.sink.ListSink;
+import es.thinkingmachin.linksight.imatch.matcher.io.sink.OutputSink;
 import es.thinkingmachin.linksight.imatch.matcher.io.source.CsvSource;
 import es.thinkingmachin.linksight.imatch.matcher.matching.DatasetMatchingTask;
 import es.thinkingmachin.linksight.imatch.matcher.executor.SeriesExecutor;
@@ -25,6 +28,8 @@ public class Main {
 
         String runMode = cli.getOptionValue("mode");
         String ipcAddr = cli.getOptionValue("ipcaddr", "ipc:///tmp/ipchello");
+        String fields = cli.getOptionValue("fields");
+        String dataset = cli.getOptionValue("dataset");
 
         switch (runMode) {
             case "server":
@@ -36,6 +41,9 @@ public class Main {
             case "explorer":
                 runExplorer();
                 break;
+            case "manual":
+                runManual(fields, dataset);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown mode: " + runMode);
         }
@@ -43,8 +51,10 @@ public class Main {
 
     private static CommandLine getCliArgs(String[] args) {
         Options options = new Options();
-        options.addRequiredOption("m", "mode", true, "Run mode: 'server', 'test', 'explorer'")
-                .addOption("i", "ipcaddr", true, "Path to the IPC address, should execute with ipc://");
+        options.addRequiredOption("m", "mode", true, "Run mode: 'server', 'test', 'explorer', 'manual'")
+                .addOption("i", "ipcaddr", true, "[Server Mode] Path to the IPC address, should execute with ipc://")
+                .addOption("d", "dataset", true, "[Manual Mode] Path to the dataset to match")
+                .addOption("f", "fields", true, "[Manual Mode] Comma-separated names of location fields to be used for matching");
         CommandLineParser parser = new DefaultParser();
         try {
             return parser.parse(options, args);
@@ -65,14 +75,13 @@ public class Main {
 
     private static void runTests() throws Throwable {
         Server server = new Server(null);
-//        TestDataset[] tests = new TestDataset[]{FUZZY_200, HAPPY_PATH, IMAN_TEST, SSS_CLEAN};
         TestDataset[] tests = new TestDataset[]{SSS_CLEAN, HAPPY_PATH, FUZZY_200};
         for (TestDataset test : tests) {
+            System.out.println("┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄");
             System.out.println("Test dataset: "+test.name);
             CsvSource source = new CsvSource(test);
             ListSink sink = new ListSink();
-            Executor executor = new ParallelExecutor();
-            executor = new SeriesExecutor();
+            Executor executor = new SeriesExecutor();
             DatasetMatchingTask task = new DatasetMatchingTask(source, sink, executor, server.addressMatcher, SINGLE);
             task.run();
             Evaluator.evaluate(sink.getMatches(), test);
@@ -84,5 +93,20 @@ public class Main {
         Server server = new Server(null);
         TreeExplorer treeExplorer = new TreeExplorer(server.reference);
         treeExplorer.launchRepl();
+    }
+
+    private static void runManual(String fields, String datasetPath) throws Throwable {
+        if (datasetPath == null || fields == null) {
+            System.out.println("Usage: imatch -m manual -d /path/to/input.csv -f bgy,municity,province");
+            return;
+        }
+        Dataset input = new Dataset(datasetPath, fields.split(","));
+        Server server = new Server(null);
+        CsvSource source = new CsvSource(input);
+        LinkSightCsvSink sink = new LinkSightCsvSink();
+        Executor executor = new SeriesExecutor();
+        DatasetMatchingTask task = new DatasetMatchingTask(source, sink, executor, server.addressMatcher, SINGLE);
+        task.run();
+        task.matchingStats.printStats();
     }
 }
