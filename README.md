@@ -115,12 +115,6 @@ You can run specific subsets of tests [like so](https://docs.djangoproject.com/e
     make setup-instances
     ```
 
-1. Setup docker:
-
-    ```sh
-    make setup-docker
-    ```
-
 #### Staging
 
 ```sh

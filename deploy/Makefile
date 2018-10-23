@@ -28,6 +28,3 @@ instance:
 
 setup-instances:
 	ansible-playbook -i hosts.yml playbook.yml
-
-setup-docker:
-	ansible-playbook -i hosts.yml docker.yml
