@@ -1,6 +1,7 @@
-production:
+instances:
   hosts:
     127.0.0.1:
+      env: staging
       certbot_admin_email: you@example.com
       certbot_create_if_missing: true
       certbot_certs:
