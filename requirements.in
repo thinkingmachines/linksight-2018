@@ -19,5 +19,6 @@ psycopg2-binary
 python-magic
 raven
 recordlinkage
+Sphinx
 social-auth-app-django
 tornado<5
