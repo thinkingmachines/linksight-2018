@@ -1,4 +1,4 @@
-.PHONY: deploy secrets instance setup-instances setup-docker
+.PHONY: deploy secrets instance setup-instances
 
 SECRETS_DIR = secrets/$(ENV)
 SECRETS = $(wildcard $(SECRETS_DIR)/cleartext/*)
