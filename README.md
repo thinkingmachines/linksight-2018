@@ -89,7 +89,37 @@ venv/bin/python manage.py test
 
 You can run specific subsets of tests [like so](https://docs.djangoproject.com/en/2.1/topics/testing/overview/#running-tests).
 
-### Deployment
+## Deployment
+
+> __NOTE__: Commands below must be executed within the `./deploy` directory.
+
+### Setup instances
+
+1. Create instances with terraform:
+
+    ```sh
+    make instance
+    ```
+
+    _Note the IP shown in the output._
+
+1. Configure instances from the inventory file:
+
+    ```sh
+    cp hosts.yml{.template,}
+    ```
+
+1. Setup instances:
+
+    ```sh
+    make setup-instances
+    ```
+
+1. Setup docker:
+
+    ```sh
+    make setup-docker
+    ```
 
 #### Staging
 
