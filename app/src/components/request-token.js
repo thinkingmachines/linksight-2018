@@ -59,20 +59,21 @@ class RequestToken extends React.Component {
 
 export default styled(RequestToken)`
   position: fixed;
-  top: 15px;
+  top: 0;
   right: 0;
   z-index: 2;
-  background: ${colors.monochrome[1]};
-  border: 1px solid ${colors.monochrome[2]};
-  border-right: 0;
-  border-bottom: 0;
-  .toggle, .token {
-    padding: 10px 15px;
-    border-bottom: 1px solid ${colors.monochrome[2]};
-  }
+  font-size: 12px;
+  line-height: 30px;
   .toggle {
     cursor: pointer;
-    background: ${colors.monochrome[0]};
+    text-align: right;
+    padding-right: 15px;
+  }
+  .token {
+    border: 1px solid ${colors.monochrome[2]};
+    border-top: 0;
+    background: ${colors.monochrome[1]};
+    padding: 10px 15px;
   }
   .token p {
     padding-bottom: 5px;
