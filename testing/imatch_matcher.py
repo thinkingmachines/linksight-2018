@@ -1,21 +1,20 @@
 import json
-import time
-
-import zmq
+import logging
 import pandas as pd
+import time
+import zmq
 
 from testing.base_matcher import BaseMatcher
 
-REQUEST_TIMEOUT = 500
-SERVER_ENDPOINT = "ipc:///tmp/ipchello"
+REQUEST_TIMEOUT = 2000
+DEFAULT_IPC_ENDPOINT = "ipc:///volume/imatch_ipc"
 RESPONSE_POLLING_SEC = 0.05
-STAGING_CSV = "/tmp/matcher{}.csv"
 
 
 # noinspection PyCompatibility
 class IMatchMatcher(BaseMatcher):
 
-    def __init__(self, dataset_file, columns):
+    def __init__(self, dataset_file, columns, ipc_endpoint=DEFAULT_IPC_ENDPOINT):
         super().__init__(dataset_file, columns)
         if type(dataset_file) == str:
             self.dataset_path = dataset_file
@@ -25,12 +24,14 @@ class IMatchMatcher(BaseMatcher):
         self.poll = zmq.Poller()
         self.id = "id://{}:{}".format(self.dataset_path, int(time.time() * 1e6))
         self.client = None
+        self.ipc_endpoint = ipc_endpoint
+        print("Using IPC endpoint: " + self.ipc_endpoint)
 
     def _create_client(self):
         if self.client is not None:
             self._destroy_client()
         self.client = self.context.socket(zmq.REQ)
-        self.client.connect(SERVER_ENDPOINT)
+        self.client.connect(self.ipc_endpoint)
         self.poll.register(self.client, zmq.POLLIN)
 
     def _destroy_client(self):
