@@ -27,7 +27,7 @@ public class Main {
         if (cli == null) return;
 
         String runMode = cli.getOptionValue("mode");
-        String ipcAddr = cli.getOptionValue("ipcaddr", "ipc:///tmp/ipchello");
+        String ipcAddr = cli.getOptionValue("ipcaddr");
         String fields = cli.getOptionValue("fields");
         String dataset = cli.getOptionValue("dataset");
 

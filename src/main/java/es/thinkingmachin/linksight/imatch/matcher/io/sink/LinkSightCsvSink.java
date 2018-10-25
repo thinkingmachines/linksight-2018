@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class LinkSightCsvSink implements OutputSink {
     private static String[] header = {
@@ -33,7 +35,9 @@ public class LinkSightCsvSink implements OutputSink {
     @Override
     public void open() throws IOException {
         this.size = 0;
-        this.outputFile = Files.createTempFile("imatch-out-", ".csv").toFile();
+        Path tempDir = Paths.get("/volume/out/");
+        tempDir.toFile().mkdirs();
+        this.outputFile = Files.createTempFile(tempDir, "imatch-out-", ".csv").toFile();
         CsvWriter writer = new CsvWriter();
         this.csvAppender = writer.append(outputFile, StandardCharsets.UTF_8);
         csvAppender.appendLine(header);
@@ -44,7 +48,7 @@ public class LinkSightCsvSink implements OutputSink {
         try {
             csvAppender.close();
             return true;
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             return false;
         }
     }

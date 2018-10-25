@@ -47,12 +47,14 @@ public class Server {
     }
 
     public void start() {
+        if (ipcPath == null) throw new IllegalArgumentException("Please specify the IPC path.");
+        System.out.println("Using IPC path: "+ipcPath);
         ZMQ.Context context = ZMQ.context(1);
         ZMQ.Socket socket = context.socket(ZMQ.REP);
         socket.bind(ipcPath);
+        System.out.println("\nServer ready!");
 
         while (true) {
-            System.out.println("\nServer ready!");
             String received = socket.recvStr(Charset.defaultCharset());
             try {
                 socket.send(handleRequest(received).toJson());
