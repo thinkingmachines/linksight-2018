@@ -15,9 +15,7 @@ const Sidebar = styled(props => (
           <div className='logo'>
             <Link to='/'><img src='/static/images/logo-light.svg' alt='logo' /></Link>
           </div>
-          <div className='tags'>
-            {props.children}
-          </div>
+          {props.children}
         </Cell>
         <Cell className='buttons' center>
           {props.button}
