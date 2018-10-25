@@ -13,6 +13,7 @@ import * as colors from './colors'
 
 // Components
 import Topbar from './components/topbar'
+import RequestToken from './components/request-token'
 
 // Pages
 import Home from './home'
@@ -38,6 +39,7 @@ class App extends React.Component {
     return (
       <div className={'app ' + this.props.className}>
         <Topbar />
+        <RequestToken />
         <Switch>
           <Route exact path='/' component={Home} />
           <Route exact path='/upload' component={Upload} />

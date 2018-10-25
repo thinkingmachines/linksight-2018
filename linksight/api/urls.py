@@ -3,6 +3,7 @@ from linksight.api import views
 
 urlpatterns = [
     path('users/<id>', views.user.user_detail),
+    path('users/<id>/tokens', views.user.user_tokens),
     path('datasets/', views.dataset.dataset_list),
     path('datasets/<uuid:id>/preview', views.dataset.dataset_preview),
     path('datasets/<uuid:id>/match', views.dataset.dataset_match),

@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'linksight.api',
 
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
     'raven.contrib.django.raven_compat',
     'silk',
@@ -183,6 +184,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'linksight.api.authentication.CsrfExemptSessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
 }

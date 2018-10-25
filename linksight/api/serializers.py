@@ -5,6 +5,7 @@ import magic
 from django.contrib.auth import get_user_model
 from linksight.api.models import Dataset, Match, MatchItem
 from rest_framework import serializers
+from rest_framework.authtoken.models import Token
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -12,6 +13,13 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ('username', 'email', 'first_name', 'last_name')
+
+
+class TokenSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Token
+        fields = '__all__'
 
 
 class DatasetSerializer(serializers.ModelSerializer):

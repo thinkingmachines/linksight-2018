@@ -1,9 +1,10 @@
 import csv
-import linksight.api.profiling as profiling
 from collections import OrderedDict
-from django.test import TestCase
-from linksight.api.matchers.ngrams_matcher import NgramsMatcher
 from tempfile import NamedTemporaryFile
+
+from django.test import TestCase
+from linksight.api import profiling
+from linksight.api.matchers.ngrams_matcher import NgramsMatcher
 
 CLEAN_FILE = 'data/tests/clean.csv'
 MESSY_FILE = 'data/tests/messy.csv'
