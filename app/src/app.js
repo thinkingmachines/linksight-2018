@@ -39,7 +39,7 @@ class App extends React.Component {
     return (
       <div className={'app ' + this.props.className}>
         <Topbar />
-        <RequestToken />
+        <Route path='/:path' component={RequestToken} />
         <Switch>
           <Route exact path='/' component={Home} />
           <Route exact path='/upload' component={Upload} />
