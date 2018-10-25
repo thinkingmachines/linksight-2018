@@ -14,13 +14,12 @@ const Topbar = styled(({className}) => (
   </div>
 ))`
   background-color: ${colors.monochrome[2]};
-  text-align: center;
+  text-align: left;
   font-size: 12px;
+  line-height: 30px;
   height: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   position: relative;
+  padding-left: 15px;
   z-index: 1;
   a {
     margin-left: 5px;
