@@ -47,12 +47,14 @@ public class Server {
     }
 
     public void start() {
+        if (ipcPath == null) throw new IllegalArgumentException("Please specify the IPC path.");
+        System.out.println("Using IPC path: "+ipcPath);
         ZMQ.Context context = ZMQ.context(1);
         ZMQ.Socket socket = context.socket(ZMQ.REP);
         socket.bind(ipcPath);
+        System.out.println("\nServer ready!");
 
         while (true) {
-            System.out.println("\nServer ready!");
             String received = socket.recvStr(Charset.defaultCharset());
             try {
                 socket.send(handleRequest(received).toJson());
@@ -66,6 +68,7 @@ public class Server {
 
     private Response handleRequest(String message) {
         Request request = Request.fromJson(message);
+        System.out.println("Received message: "+message);
         if (request == null) {
             throw new RuntimeException("Received malformed JSON: " + message);
         }
@@ -76,6 +79,7 @@ public class Server {
                 jobQueue.onNext(new LinkSightCsvMatchingJob(request.id, addressMatcher, dataset));
                 return Response.createInProgress();
             case GET_JOB_RESULT:
+                System.out.println("Sent Response");
                 if (!jobResults.containsKey(request.id)) {
                     return Response.createInProgress();
                 } else {

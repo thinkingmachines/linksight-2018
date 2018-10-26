@@ -1,0 +1,19 @@
+task buildDockerImage(type: Exec) {
+    executable 'docker'
+    args = ['build', '-t', 'imatch', '.']
+}
+
+task runDockerImage(type: Exec, dependsOn: 'buildDockerImage') {
+    executable 'docker'
+    args = ['run', '-v', "${projectDir}/testing/volume:/volume", 'imatch']
+}
+
+task buildPythonDockerImage(type: Exec) {
+    executable 'docker'
+    args = ['build', '-t', 'imatch_py_test', 'testing']
+}
+
+task runPythonTester(type: Exec, dependsOn: 'buildPythonDockerImage') {
+    executable 'docker'
+    args = ['run', '-v', "${projectDir}/testing/volume:/volume", 'imatch_py_test']
+}
