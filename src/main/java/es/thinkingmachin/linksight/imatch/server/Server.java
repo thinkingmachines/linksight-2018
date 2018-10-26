@@ -68,6 +68,7 @@ public class Server {
 
     private Response handleRequest(String message) {
         Request request = Request.fromJson(message);
+        System.out.println("Received message: "+message);
         if (request == null) {
             throw new RuntimeException("Received malformed JSON: " + message);
         }
@@ -78,6 +79,7 @@ public class Server {
                 jobQueue.onNext(new LinkSightCsvMatchingJob(request.id, addressMatcher, dataset));
                 return Response.createInProgress();
             case GET_JOB_RESULT:
+                System.out.println("Sent Response");
                 if (!jobResults.containsKey(request.id)) {
                     return Response.createInProgress();
                 } else {
