@@ -43,14 +43,17 @@ class IMatchMatcher(BaseMatcher):
     def _send_message(self, msg_object):
         # Send message
         message = json.dumps(msg_object)
+        msg_object['time'] = time.time()
         self.client.send(message.encode())
-
+        print("Sent message "+str(message.encode()))
         # Poll for response
         socks = dict(self.poll.poll(REQUEST_TIMEOUT))
         if socks.get(self.client) == zmq.POLLIN:  # Response received
+            print("Got response")
             response = self.client.recv_json()
             return response
         else:  # Polling timed out
+            print("Timeout!")
             self._destroy_client()
             raise ValueError("Cannot contact server")
 
