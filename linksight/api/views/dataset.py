@@ -6,7 +6,6 @@ from linksight.api.serializers import (DatasetMatchSerializer,
 from rest_framework.decorators import api_view, parser_classes
 from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.response import Response
-from silk.profiling.profiler import silk_profile
 
 
 @api_view(['POST'])
@@ -30,7 +29,6 @@ def dataset_preview(request, id):
 
 @api_view(['POST'])
 @parser_classes((JSONParser,))
-@silk_profile(name='Match dataset')
 def dataset_match(request, id):
     serializer = DatasetMatchSerializer(data=request.data)
     if serializer.is_valid():
