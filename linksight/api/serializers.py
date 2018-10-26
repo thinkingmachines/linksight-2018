@@ -61,15 +61,19 @@ class DatasetPreviewSerializer(serializers.BaseSerializer):
 
 
 class DatasetMatchSerializer(serializers.ModelSerializer):
+    export = serializers.BooleanField(default=False, write_only=True)
 
     class Meta:
         model = Match
         fields = '__all__'
         read_only_fields = ('dataset',)
+        depth = 1
 
     def create(self, validated_data):
+        export = validated_data.pop('export', False)
         obj = super().create(validated_data)
-        obj.match_dataset(**validated_data)
+        obj.match_dataset(export=export)
+        obj.refresh_from_db()
         return obj
 
 
@@ -98,5 +102,7 @@ class MatchSaveChoicesSerializer(serializers.BaseSerializer):
         match_choices = validated_data['match_choices']
         match = validated_data['match']
         match.save_choices(match_choices)
+        match.refresh_from_db()
+        match.export()
         return validated_data
 

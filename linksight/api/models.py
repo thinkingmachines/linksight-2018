@@ -9,7 +9,7 @@ import pandas as pd
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
-from django.db.models import Q
+from django.db.models import Min, Q
 from linksight.api.matchers.search_tuple import create_search_tuple, to_index
 from linksight.api.tasks import match_dataset
 
@@ -79,20 +79,25 @@ class Match(models.Model):
             ('prov', self.source_prov_col),
         ])
 
-    def match_dataset(self, **kwargs):
+    def match_dataset(self, export=False):
         result = match_dataset.apply_async((self.id,), expires=360)
         result.get()
 
+        if export:
+            self.items.filter(
+                id__in=(
+                    i['id'] for i in
+                    self.items.values('dataset_index').annotate(id=Min('id'))
+                )).update(chosen=True)
+            self.export()
+
     def save_choices(self, match_choices):
-
-        # Save choices
-
         self.items.all().update(chosen=False)
         self.items.filter(
             id__in=match_choices.values(),
         ).update(chosen=True)
-        self.refresh_from_db()
 
+    def export(self):
         # Merge matches
 
         with self.dataset.file.open() as f:

@@ -8,17 +8,15 @@ from rest_framework.decorators import (api_view, parser_classes,
                                        renderer_classes)
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
-from rest_framework_csv.renderers import PaginatedCSVRenderer
+from rest_framework_csv.renderers import CSVRenderer
 
 
 @api_view(['GET'])
-@renderer_classes((PaginatedCSVRenderer,))
+@renderer_classes((CSVRenderer,))
 def match_items(request, id):
     match = get_object_or_404(Match, pk=id)
-    paginator = LinkHeaderPagination()
-    page = paginator.paginate_queryset(match.items.all(), request)
-    serializer = MatchItemSerializer(page, many=True)
-    return paginator.get_paginated_response(serializer.data)
+    serializer = MatchItemSerializer(match.items.all(), many=True)
+    return Response(serializer.data)
 
 
 @api_view(['POST'])
@@ -28,7 +26,7 @@ def match_save_choices(request, id):
     if serializer.is_valid():
         match = get_object_or_404(Match, pk=id)
         serializer.save(match=match)
-        return Response(serializer.data, status=200)
+        return Response(serializer.data)
     return Response(serializer.errors, status=400)
 
 
