@@ -103,6 +103,8 @@ class Match(models.Model):
         with self.dataset.file.open() as f:
             dataset_df = pd.read_csv(f, dtype=str)
 
+        dataset_df.reset_index(inplace=True)
+
         dataset_df.set_index(
             dataset_df
             .apply(
@@ -160,6 +162,9 @@ class Match(models.Model):
                       if (col not in front_cols) and (col not in mid_cols)]
         new_cols = front_cols + mid_cols + other_cols
         joined_df = joined_df[new_cols]
+
+        joined_df.sort_values(by='index', inplace=True)
+        joined_df.drop(['index'], axis=1, inplace=True)
 
         # Create matched dataset
 
