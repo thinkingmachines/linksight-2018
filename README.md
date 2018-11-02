@@ -83,7 +83,6 @@ to contribute, please send us an email at
 ### Testing
 
 ```sh
-gunzip -k data/clean-psgc.csv.gz
 venv/bin/python manage.py test
 ```
 
@@ -126,3 +125,16 @@ cd deploy && ENV=staging HOST=linksight-stg.thinkingmachin.es make deploy
 ```sh
 cd deploy && ENV=production HOST=linksight.thinkingmachin.es make deploy
 ```
+
+## PSGC
+
+The PSGC reference file is maintained in a [separate
+repo](https://github.com/thinkingmachines/psgc) and has been added to
+this repo as a git subtree. To pull latest changes, run:
+
+```
+git subtree pull --prefix data/psgc \
+    https://github.com/thinkingmachines/psgc.git \
+    master --squash
+```
+
