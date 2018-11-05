@@ -13,3 +13,4 @@ build/
 # Python
 venv/
 *.pyc
+docs/_build/
