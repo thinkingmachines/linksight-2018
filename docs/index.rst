@@ -16,6 +16,8 @@ iMatch Documentation
 .. toctree::
    :caption: API Documentation
 
+   api/packages.rst
+
 Indices and tables
 ==================
 
