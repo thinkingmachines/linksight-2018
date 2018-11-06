@@ -3,6 +3,7 @@
 
 # IntelliJ
 .idea/
+*.iml
 
 # Java
 .gradle/
