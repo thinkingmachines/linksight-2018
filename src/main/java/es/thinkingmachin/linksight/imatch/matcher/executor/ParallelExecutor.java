@@ -9,8 +9,16 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+/**
+ * This class serves as the task executor for parallel processing.
+ */
 public class ParallelExecutor implements Executor {
 
+    /**
+     * Executes threads in parallel.
+     * @param source the source data
+     * @param task the process to be run
+     */
     @Override
     public void execute(InputSource source, Consumer<Address> task) {
         List<Address> all = source.stream().collect(Collectors.toList());

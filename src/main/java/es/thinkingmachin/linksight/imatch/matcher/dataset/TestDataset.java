@@ -1,5 +1,8 @@
 package es.thinkingmachin.linksight.imatch.matcher.dataset;
 
+/**
+ * This class encapsulates the information about the test datasets.
+ */
 public class TestDataset extends Dataset {
 
     public final String correctPsgcField;
@@ -11,10 +14,17 @@ public class TestDataset extends Dataset {
         this.correctPsgcField = correctPsgcField;
     }
 
+    /**
+     * Checks if the test dataset has a correct psgc column
+     * @return true if a correct psgc column exists, false otherwise.
+     */
     public boolean hasCorrectField() {
         return correctPsgcField != null;
     }
 
+    /**
+     * This class instantiates test dataset objects to be processed.
+     */
     public static class BuiltIn {
 
         public static TestDataset FUZZY_200 = new TestDataset(

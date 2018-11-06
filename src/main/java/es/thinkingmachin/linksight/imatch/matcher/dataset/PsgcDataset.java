@@ -7,6 +7,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * This class encapsulates the information about the psgc dataset.
+ * It includes the path to where the CSV file is located, and the
+ * headers for the psgc, location, isOriginal, and interlevel columns.
+ */
 public class PsgcDataset {
 
     public final String csvPath;
@@ -23,6 +28,11 @@ public class PsgcDataset {
         this.levelField = levelField;
     }
 
+    /**
+     * Instantiates a CSV reader and returns a CSV parser.
+     * @return a new CSV parser
+     * @throws IOException
+     */
     public CsvParser getCsvParser() throws IOException {
         File file = new File(csvPath);
         CsvReader csvReader = new CsvReader();

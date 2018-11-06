@@ -10,6 +10,9 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+/**
+ * This class serves as the interface for all input files and sources.
+ */
 public interface InputSource extends Iterator<Address> {
 
     void open() throws IOException;

@@ -22,6 +22,12 @@ import static es.thinkingmachin.linksight.imatch.matcher.matching.DatasetMatchin
 
 public class Main {
 
+    /**
+     * The main method. Allows user to choose between different modes:
+     * server, test, explorer, and manual.
+     * @param args the command line arguments
+     * @throws Throwable if mode value is invalid.
+     */
     public static void main(String[] args) throws Throwable {
         CommandLine cli = getCliArgs(args);
         if (cli == null) return;
@@ -49,6 +55,12 @@ public class Main {
         }
     }
 
+    /**
+     * Gets command line arguments and passes it as command line options.
+     *
+     * @param args the command line arguments
+     * @return the list of atomic option and value tokens
+     */
     private static CommandLine getCliArgs(String[] args) {
         Options options = new Options();
         options.addRequiredOption("m", "mode", true, "Run mode: 'server', 'test', 'explorer', 'manual'")
@@ -64,6 +76,11 @@ public class Main {
         }
     }
 
+    /**
+     * Runs the server.
+     *
+     * @param ipcAddr the ipc path specified in the command line
+     */
     private static void runServer(String ipcAddr) {
         try {
             Server mainServer = new Server(ipcAddr);
@@ -73,6 +90,11 @@ public class Main {
         }
     }
 
+    /**
+     * Runs the test cases set by the program.
+     *
+     * @throws Throwable
+     */
     private static void runTests() throws Throwable {
         Server server = new Server(null);
         TestDataset[] tests = new TestDataset[]{SSS_CLEAN, HAPPY_PATH, FUZZY_200};
@@ -89,12 +111,25 @@ public class Main {
         }
     }
 
+    /**
+     * Runs the explorer mode of the program.
+     * Allows the user to explore and run queries on the Address Tree built by the program.
+     *
+     * @throws IOException
+     */
     private static void runExplorer() throws IOException {
         Server server = new Server(null);
         TreeExplorer treeExplorer = new TreeExplorer(server.reference);
         treeExplorer.launchRepl();
     }
 
+    /**
+     * Runs the program with the fields provided by the user.
+     *
+     * @param fields        the fields (barangay, municity, province) included in the dataset
+     * @param datasetPath   the path of the dataset file
+     * @throws Throwable
+     */
     private static void runManual(String fields, String datasetPath) throws Throwable {
         if (datasetPath == null || fields == null) {
             System.out.println("Usage: imatch -m manual -d /path/to/input.csv -f bgy,municity,province");
