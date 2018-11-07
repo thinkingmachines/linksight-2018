@@ -32,8 +32,8 @@ class MatcherTestBase():
         matcher = self.create_matcher(dataset_path)
         result = list(matcher.get_matches())
 
-        assert result[0]['matched_barangay'] == 'TEACHERS VILLAGE WEST'
-        assert result[1]['matched_barangay'] == 'TEACHERS VILLAGE EAST'
+        assert result[0]['code'] == '137404123'
+        assert result[1]['code'] == '137404122'
 
     def test_linksight_column_name_clash(self):
         '''
@@ -57,9 +57,9 @@ class MatcherTestBase():
         matcher = self.create_matcher(dataset_path, columns=columns)
         result = list(matcher.get_matches())
 
-        assert result[0]['matched_barangay'] == 'RADIWAN'
-        assert result[0]['matched_city_municipality'] == 'IVANA'
-        assert result[0]['matched_province'] == 'BATANES'
+        assert result[0]['matched_barangay'].upper() == 'RADIWAN'
+        assert result[0]['matched_city_municipality'].upper() == 'IVANA'
+        assert result[0]['matched_province'].upper() == 'BATANES'
 
     def test_nan_values_on_results(self):
         '''
@@ -98,9 +98,6 @@ class MatcherTestBase():
 
         expectations = {
             'expected_bgy_psgc': 'code',
-            'expected_pro': 'matched_province',
-            'expected_mun': 'matched_city_municipality',
-            'expected_bgy': 'matched_barangay'
         }
 
         for expectation, field in expectations.items():

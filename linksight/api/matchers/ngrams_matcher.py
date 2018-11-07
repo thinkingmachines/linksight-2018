@@ -4,10 +4,10 @@ import time
 from collections import Counter, OrderedDict
 from functools import lru_cache, partial
 
-import pandas as pd
-
 import jellyfish
+import pandas as pd
 from fuzzywuzzy import fuzz
+
 from linksight.api.matchers.base_matcher import BaseMatcher
 from linksight.api.matchers.search_tuple import create_search_tuple, to_index
 
