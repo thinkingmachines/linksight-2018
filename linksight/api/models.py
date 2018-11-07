@@ -97,12 +97,8 @@ class Match(models.Model):
             id__in=match_choices.values(),
         ).update(chosen=True)
 
-    def export(self):
-        # Merge matches
-
-        with self.dataset.file.open() as f:
-            dataset_df = pd.read_csv(f, dtype=str)
-
+    def merge_matches(self, dataset_df, matches_df):
+        dataset_df.reset_index(inplace=True)
         dataset_df.set_index(
             dataset_df
             .apply(
@@ -111,9 +107,6 @@ class Match(models.Model):
             .apply(to_index),
             inplace=True)
 
-        matches_df = pd.DataFrame(list(self.items.filter(
-            Q(match_type='exact') | Q(chosen=True)
-        ).values()))
         matches_df.set_index('search_tuple', inplace=True)
 
         matches_df.rename(columns={
@@ -146,8 +139,10 @@ class Match(models.Model):
         ):
             if source_col == matched_col:
                 front_cols.extend((matched_col,))
-            else:
+            elif source_col:
                 front_cols.extend((source_col, matched_col))
+            else:
+                joined_df.drop([matched_col], axis=1, inplace=True)
 
         mid_cols = [
             "psgc_linksight",
@@ -158,6 +153,21 @@ class Match(models.Model):
                       if (col not in front_cols) and (col not in mid_cols)]
         new_cols = front_cols + mid_cols + other_cols
         joined_df = joined_df[new_cols]
+
+        joined_df.sort_values(by='index', inplace=True)
+        joined_df.drop(['index'], axis=1, inplace=True)
+
+        return joined_df
+
+    def export(self):
+        with self.dataset.file.open() as f:
+            dataset_df = pd.read_csv(f, dtype=str)
+
+        matches_df = pd.DataFrame(list(self.items.filter(
+            Q(match_type='exact') | Q(chosen=True)
+        ).values()))
+
+        joined_df = self.merge_matches(dataset_df, matches_df)
 
         # Create matched dataset
 

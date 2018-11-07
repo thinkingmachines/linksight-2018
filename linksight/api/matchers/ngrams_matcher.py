@@ -52,7 +52,7 @@ class NgramsMatcher(BaseMatcher):
     @lru_cache()
     def load_reference(self):
         locations_df = pd.read_csv(self.reference,
-                                   dtype={'code': str})
+                                   dtype=str).fillna('')
         locations_df['loc_tuple'] = (locations_df['loc_tuple']
                                      .str.split(',')
                                      .apply(tuple))
@@ -212,7 +212,7 @@ class NgramsMatcher(BaseMatcher):
 
         columns = self.columns
 
-        dataset_df = pd.read_csv(self.dataset_file)
+        dataset_df = pd.read_csv(self.dataset_file, dtype=str).fillna('')
 
         # first, create search tuples for the dataset provided by the user
         dataset_df['search_tuple'] = dataset_df.apply(
