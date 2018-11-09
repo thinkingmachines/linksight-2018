@@ -1,7 +1,26 @@
 # Changelog
 
-## 2018-09-28
+## Sprint 8 / 2018-11-09
+- Document iMatch API
+- Move PSGC reference file to a separate repo
+- Fix bugs in exported dataset
 
+## Sprint 7 / 2018-10-26
+- Tests improvement
+- Run matchers in Celery workers
+- New matcher: iMatch
+- Migrate production to new deployment system
+- Expose API to public
+
+## Sprint 6 / 2018-10-12
+- Setup continuous integration
+- Create a list of all testing cases
+
+## Sprint 5 / 2018-10-05
+- Start this changelog
+- Automate staging server deployment
+
+## Sprint 4 / 2018-09-28
 - Standardize matchers
 - Create staging server
 - Upload dataset files to GCS
@@ -9,8 +28,7 @@
 - Switch to Google sign-in tied to an approve emails Google sheet
 - Add demo dataset
 
-## 2018-09-21
-
+## Sprint 3 / 2018-09-21
 - Improve user experience
   - CTA for home is now for login/register
   - Move upload to a login-required step
@@ -22,7 +40,7 @@
 
     **NGram Algorithm**
 
-    This search algorithm receives a combination of up to three strings–representing any complete set of subset of 
+    This search algorithm receives a combination of up to three strings–representing any complete set of subset of
     barangay, city or municipality, and province names–and finds either its exact match or top N closest matches from
     within a reference file of administrative territories in the Philippine Standard Geographic Code. The components
     of the search terms and the candidate terms must be sorted from lowest to highest administrative hierarchy.
@@ -50,8 +68,7 @@
     the top five (5) results are returned.
 
 
-## 2018-09-14
-
+## Sprint 2 / 2018-09-14
 - Add registration
 - Initial tests
 - Add file validation
@@ -67,8 +84,7 @@
 - Add Google Analytics
 - Add topbar "Alpha software" disclaimer
 
-## Prototype
-
+## Sprint 1 (Prototype)
 - Initial UI and matcher
 
     The initial matcher utilizes [`fuzzywuzzy`](https://github.com/seatgeek/fuzzywuzzy). Each row of the dataset is
