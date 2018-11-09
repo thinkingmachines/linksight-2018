@@ -14,6 +14,8 @@ TreeExplorer
 
 .. java:type:: public class TreeExplorer
 
+   This class consists of methods related to the Tree Explorer mode. The tree explorer allows the user to explore the reference address tree and run simple fuzzy matching search. The tree explorer also prints out the aliases for each node.
+
 Constructors
 ------------
 TreeExplorer
@@ -29,4 +31,6 @@ launchRepl
 
 .. java:method:: public void launchRepl()
    :outertype: TreeExplorer
+
+   Launches the tree explorer mode of the program.
 

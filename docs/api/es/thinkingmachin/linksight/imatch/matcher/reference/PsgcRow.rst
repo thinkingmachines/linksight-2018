@@ -10,6 +10,8 @@ PsgcRow
 
 .. java:type:: public class PsgcRow
 
+   This class encapsulates the information about each row in the PSGC dataset. It includes the psgc, location name, its interlevel, its line number in the CSV file, and the row in string format.
+
 Fields
 ------
 csvLineNo
@@ -61,4 +63,10 @@ fromCsvRow
 
 .. java:method:: public static PsgcRow fromCsvRow(CsvRow row, PsgcDataset dataset)
    :outertype: PsgcRow
+
+   Creates a new instance of a PSGC row based on the PSGC dataset
+
+   :param row: a row from the psgc dataset
+   :param dataset: the psgc dataset object
+   :return: an object containing data about each row in the psgc dataset
 

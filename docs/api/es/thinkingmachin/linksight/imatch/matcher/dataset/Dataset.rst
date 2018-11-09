@@ -16,7 +16,7 @@ Dataset
 
 .. java:type:: public class Dataset
 
-   This class encapsulates the information about the dataset file uploaded by the user. It includes the path to where the CSV file is located and the fields (barangay, municity, province) specified by the user that are included in the dataset.
+   This class encapsulates the information about the dataset uploaded by the user. It includes the path to where the CSV file is located and the fields (barangay, municity, province) specified by the user that are included in the dataset.
 
 Fields
 ------
@@ -50,6 +50,6 @@ getCsvParser
 
    Instantiates a CSV reader and returns a CSV parser.
 
-   :throws IOException:
+   :throws IOException: if file is invalid
    :return: a new CSV parser
 

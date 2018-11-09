@@ -12,6 +12,8 @@ AddressMatcher
 
 .. java:type:: public interface AddressMatcher
 
+   This class serves as the interface for getting the top matches for matching algorithms.
+
 Methods
 -------
 getTopMatches

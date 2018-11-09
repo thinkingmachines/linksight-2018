@@ -68,6 +68,6 @@ getCsvParser
 
    Instantiates a CSV reader and returns a CSV parser.
 
-   :throws IOException:
+   :throws IOException: if file is invalid
    :return: a new CSV parser
 

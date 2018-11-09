@@ -29,6 +29,8 @@ DatasetMatchingTask.MatchesType
 .. java:type:: public enum MatchesType
    :outertype: DatasetMatchingTask
 
+   Count of top matches that can be used.
+
 Enum Constants
 --------------
 MULTIPLE

@@ -12,6 +12,8 @@ OutputSink
 
 .. java:type:: public interface OutputSink
 
+   This class serves as the interface for all output files and sources.
+
 Methods
 -------
 addMatch

@@ -14,6 +14,8 @@ MatchingStats
 
 .. java:type:: public class MatchingStats
 
+   This class sets the benchmark statistics for the results of the matching algorithm. It categorizes the match based on benchmark values and counts the total number of matches under a certain benchmark.
+
 Fields
 ------
 brgyLevelCount
@@ -60,9 +62,15 @@ addNewMatch
 .. java:method:: public void addNewMatch(ReferenceMatch match)
    :outertype: MatchingStats
 
+   Categorizes the match based on its score and increments the corresponding benchmark.
+
+   :param match: the matched value
+
 printStats
 ^^^^^^^^^^
 
 .. java:method:: public void printStats()
    :outertype: MatchingStats
+
+   Prints the benchmarking statistics
 

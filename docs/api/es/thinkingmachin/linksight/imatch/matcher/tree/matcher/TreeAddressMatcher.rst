@@ -40,6 +40,8 @@ TreeAddressMatcher
 
 .. java:type:: public class TreeAddressMatcher implements AddressMatcher
 
+   This class performs the matching algorithm to the reference tree.
+
 Constructors
 ------------
 TreeAddressMatcher
@@ -55,4 +57,10 @@ getTopMatches
 
 .. java:method:: @NonNull @Override public List<ReferenceMatch> getTopMatches(Address address, int numMatches)
    :outertype: TreeAddressMatcher
+
+   Gets the top matches returned by the matching algorithm
+
+   :param address: the address to be processed
+   :param numMatches: the number of matches to be used
+   :return: a list of the top N matches
 

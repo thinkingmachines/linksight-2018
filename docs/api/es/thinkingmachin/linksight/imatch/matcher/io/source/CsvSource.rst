@@ -82,5 +82,5 @@ open
 
    Opens and starts the CSV parser
 
-   :throws IOException:
+   :throws IOException: if file is invalid
 

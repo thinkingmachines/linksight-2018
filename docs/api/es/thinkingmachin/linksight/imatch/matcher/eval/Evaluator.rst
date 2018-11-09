@@ -26,6 +26,8 @@ Evaluator
 
 .. java:type:: public class Evaluator
 
+   This class assesses the accuracy of the matching algorithm using test datasets.
+
 Methods
 -------
 evaluate
@@ -33,4 +35,10 @@ evaluate
 
 .. java:method:: public static void evaluate(List<ReferenceMatch> matchedAddresses, TestDataset testDataset) throws IOException
    :outertype: Evaluator
+
+   Evaluates the accuracy of the matching algorithm using a test dataset. It compares the score of the matched value to benchmarks (0.95 and 1.00).
+
+   :param matchedAddresses: a list of matched values
+   :param testDataset: the test dataset used for evaluation
+   :throws IOException: if file is invalid
 

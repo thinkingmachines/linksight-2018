@@ -58,6 +58,8 @@ TreeReference
 
 .. java:type:: public class TreeReference
 
+   This class encapsulates the information about the reference address tree. The contents of the tree is pulled from the PSGC dataset. It also initializes the entrypoint for the reference tree and the search indices of each node in the tree.
+
 Fields
 ------
 DEFAULT_PSGC_DATASET

@@ -28,6 +28,8 @@ DatasetMatchingTask
 
 .. java:type:: public class DatasetMatchingTask
 
+   This class executes the dataset matching job.
+
 Fields
 ------
 matchingStats
@@ -57,4 +59,9 @@ run
 
 .. java:method:: public void run(boolean verbose) throws Throwable
    :outertype: DatasetMatchingTask
+
+   Executes the matching task and prints out statistics.
+
+   :param verbose: true if statistics will be displayed, false otherwise
+   :throws Throwable:
 

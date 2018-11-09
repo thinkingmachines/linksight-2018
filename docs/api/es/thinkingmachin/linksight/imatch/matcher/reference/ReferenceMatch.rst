@@ -10,6 +10,8 @@ ReferenceMatch
 
 .. java:type:: public class ReferenceMatch
 
+   This class encapsulates the information about the matched value. It includes information about the score for the match and the list of scores for each interlevel.
+
 Fields
 ------
 match
@@ -45,4 +47,8 @@ toString
 
 .. java:method:: @Override public String toString()
    :outertype: ReferenceMatch
+
+   Converts to string the final score and the list of scores for each interlevel
+
+   :return: string of the final score and the list of scores for each interlevel
 
