@@ -12,6 +12,12 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * This class encapsulates information about the PreDict model.
+ * It consists of the PreDict model, the multi map of nodes and its values,
+ * and the customization settings for the PreDict model.
+ * @param <T>
+ */
 public class FuzzyStringMap<T> {
 
     public final PreDict preDict;
@@ -23,6 +29,10 @@ public class FuzzyStringMap<T> {
         this.strMultiMap = HashMultimap.create();
     }
 
+    /**
+     * Creates the PreDict model and sets its accuracy and customization settings
+     * @return the PreDict model
+     */
     private PreDict createPredictModel() {
         PreDictSettings settings = new PreDictSettings();
         settings.accuracyLevel(PreDict.AccuracyLevel.fast);
@@ -30,6 +40,12 @@ public class FuzzyStringMap<T> {
         return new PreDict(customization);
     }
 
+    /**
+     * Creates a key using the specified PreDict customization settings
+     * and adds the key-value pair to the multimap.
+     * @param key
+     * @param value
+     */
     public void put(String key, T value) {
         key = preDict.cleanIndexWord(key);
         strMultiMap.put(key, value);
@@ -41,6 +57,14 @@ public class FuzzyStringMap<T> {
         return strMultiMap.get(key);
     }
 
+    /**
+     * Searches the key using the predict model and returns a list of suggestions.
+     * Each key of the suggested items is looked up in the multi map, getting its
+     * values. Each value, together with the computed proximity in PreDict is added
+     * to a list called fuzzyPairs.
+     * @param key the subphrase to be searched using the PreDict model
+     * @return a set of values of the suggested items during the search and their corresponding proximity
+     */
     public Set<Pair<T, Double>> getFuzzy(String key) {
         List<SuggestItem> suggestions = preDict.lookup(key);
         Set<Pair<T, Double>> fuzzyPairs = new HashSet<>();

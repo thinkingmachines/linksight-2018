@@ -6,6 +6,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
 
+/**
+ * This class sets the benchmark statistics for the results of the matching algorithm.
+ * It categorizes the match based on benchmark values and counts the total number of matches
+ * under a certain benchmark.
+ */
 public class MatchingStats {
 
     public final LongAdder totalCount = new LongAdder();
@@ -15,6 +20,10 @@ public class MatchingStats {
     public final LongAdder score095Count = new LongAdder();
     public final LongAdder score100Count = new LongAdder();
 
+    /**
+     * Categorizes the match based on its score and increments the corresponding benchmark.
+     * @param match the matched value
+     */
     public void addNewMatch(ReferenceMatch match) {
         totalCount.increment();
         if (match == null) {
@@ -27,6 +36,9 @@ public class MatchingStats {
         }
     }
 
+    /**
+     * Prints the benchmarking statistics
+     */
     public void printStats() {
         System.out.println("Evaluation:");
         System.out.println("\tTotal: " + totalCount.longValue());
@@ -37,6 +49,11 @@ public class MatchingStats {
         printStat("Brgy Level", brgyLevelCount.longValue());
     }
 
+    /**
+     * Prints the statistics of a benchmark
+     * @param name  the title of the statistic
+     * @param count the number of matched values hitting the specified benchmark
+     */
     private void printStat(String name, long count) {
         System.out.println(String.format("\t%s: %d (%.3f%%)", name, count, count*100.0/totalCount.longValue()));
     }

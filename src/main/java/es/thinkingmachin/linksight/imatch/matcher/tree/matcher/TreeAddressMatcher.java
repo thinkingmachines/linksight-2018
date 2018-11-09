@@ -22,6 +22,9 @@ import java.util.stream.Collectors;
 
 import static es.thinkingmachin.linksight.imatch.matcher.matching.DatasetMatchingTask.MatchesType.SINGLE;
 
+/**
+ * This class performs the matching algorithm to the reference tree.
+ */
 public class TreeAddressMatcher implements AddressMatcher {
 
     private TreeReference reference;
@@ -31,6 +34,12 @@ public class TreeAddressMatcher implements AddressMatcher {
         doWarmUps();
     }
 
+    /**
+     * Runs the matching algorithm once.
+     * This would place the reference tree inside the cache which would
+     * make the speed consistent across all datasets.
+     * This method is called at the beginning of the program.
+     */
     private void doWarmUps() {
         CsvSource source = new CsvSource(TestDataset.BuiltIn.FUZZY_200);
         ListSink sink = new ListSink();
@@ -44,6 +53,12 @@ public class TreeAddressMatcher implements AddressMatcher {
         }
     }
 
+    /**
+     * Gets the top matches returned by the matching algorithm
+     * @param address       the address to be processed
+     * @param numMatches    the number of matches to be used
+     * @return a list of the top N matches
+     */
     @NonNull
     @Override
     public List<ReferenceMatch> getTopMatches(Address address, int numMatches) {
@@ -60,6 +75,14 @@ public class TreeAddressMatcher implements AddressMatcher {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Performs the matching algorithm using breadth-first search.
+     * It uses substrings from the search term and matches it with entries
+     * inside the reference tree using PreDict.
+     * @param searchStrings the substrings of the search term
+     * @param scoreFilter   the minimum score a match should achieve
+     * @return the final BFS queue entries
+     */
     private LinkedList<BfsTraversed> getCandidateMatches(List<String>[] searchStrings, double scoreFilter) {
         LinkedList<BfsTraversed> possibleMatches = new LinkedList<>();
         LinkedList<BfsTraversed> queue = new LinkedList<>();
@@ -121,6 +144,12 @@ public class TreeAddressMatcher implements AddressMatcher {
         return possibleMatches;
     }
 
+    /**
+     * Creates search strings to compare to in the fuzzy matching algorithm
+     * @param locValues     the source location by interlevel
+     * @param splitTerms    true if terms will be split by the specified delimiter
+     * @return a list of substrings
+     */
     @SuppressWarnings("unchecked")
     private List<String>[] createSearchStrings(String[] locValues, boolean splitTerms) {
         List<String>[] searchStrings = new List[locValues.length];

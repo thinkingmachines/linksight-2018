@@ -26,7 +26,7 @@ public class CsvSource implements InputSource {
 
     /**
      * Opens and starts the CSV parser
-     * @throws IOException
+     * @throws IOException if file is invalid
      */
     @Override
     public void open() throws IOException {

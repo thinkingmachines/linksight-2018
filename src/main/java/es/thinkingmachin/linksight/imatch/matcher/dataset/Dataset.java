@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * This class encapsulates the information about the dataset file
+ * This class encapsulates the information about the dataset
  * uploaded by the user. It includes the path to where the CSV file
  * is located and the fields (barangay, municity, province) specified
  * by the user that are included in the dataset.
@@ -26,7 +26,7 @@ public class Dataset {
     /**
      * Instantiates a CSV reader and returns a CSV parser.
      * @return a new CSV parser
-     * @throws IOException
+     * @throws IOException if file is invalid
      */
     public CsvParser getCsvParser() throws IOException {
         File file = new File(csvPath);

@@ -5,6 +5,12 @@ import java.util.Comparator;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+/**
+ * This class consists of methods related to the Tree Explorer mode.
+ * The tree explorer allows the user to explore the reference address
+ * tree and run simple fuzzy matching search. The tree explorer also
+ * prints out the aliases for each node.
+ */
 public class TreeExplorer {
 
     private AddressTreeNode curNode;
@@ -15,6 +21,9 @@ public class TreeExplorer {
         this.curNode = reference.entryPoint;
     }
 
+    /**
+     * Launches the tree explorer mode of the program.
+     */
     public void launchRepl() {
         System.out.println("TreeExplorer REPL");
         boolean exit = false;
@@ -65,6 +74,12 @@ public class TreeExplorer {
         System.out.println("Exiting REPL");
     }
 
+    /**
+     * Gets the node of the input term.
+     * This method is used when traversing (cd) inside the tree.
+     * @param terms the input location
+     * @return the node of the corresponding input location
+     */
     private AddressTreeNode getNode(String[] terms) {
         if (terms.length <= 1) {
             System.out.println("Usage: cd [term]");
@@ -87,6 +102,9 @@ public class TreeExplorer {
         return childNode;
     }
 
+    /**
+     * Layouts the interface for the tree explorer prompt.
+     */
     private void printPrompt() {
         StringBuilder sb = new StringBuilder();
         String ancestry = curNode.getAncestry().stream()

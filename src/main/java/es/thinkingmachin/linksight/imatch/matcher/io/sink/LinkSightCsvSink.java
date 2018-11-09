@@ -12,6 +12,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * This class encapsulates information about the CSV output file.
+ * It facilitates appending and writing the original data, the matched
+ * values, and the other statistics on a new csv file.
+ */
 public class LinkSightCsvSink implements OutputSink {
     private static String[] header = {
             "dataset_index",
@@ -32,6 +37,10 @@ public class LinkSightCsvSink implements OutputSink {
     private File outputFile;
     private int size;
 
+    /**
+     * Opens and starts the CSV writer
+     * @throws IOException if file is invalid
+     */
     @Override
     public void open() throws IOException {
         this.size = 0;
@@ -43,6 +52,10 @@ public class LinkSightCsvSink implements OutputSink {
         csvAppender.appendLine(header);
     }
 
+    /**
+     * Closes the CSV writer
+     * @return true if successful, false otherwise
+     */
     @Override
     public boolean close() {
         try {
@@ -53,6 +66,15 @@ public class LinkSightCsvSink implements OutputSink {
         }
     }
 
+    /**
+     * Writes the original location with its matched fields,
+     * together with the psgc, total score, match time, and match type
+     * @param index         row number of the address
+     * @param srcAddress    the source address in the input dataset
+     * @param matchTime     the total matching time
+     * @param match         the matched values
+     * @throws IOException if output file is invalid
+     */
     @Override
     public void addMatch(long index, Address srcAddress, double matchTime, ReferenceMatch match) throws IOException {
         size++;
@@ -97,20 +119,34 @@ public class LinkSightCsvSink implements OutputSink {
         csvAppender.endLine();
     }
 
+    /**
+     * @return the output file with the matched locations and psgc
+     */
     public File getOutputFile() {
         return outputFile;
     }
 
+    /**
+     * @return the number of rows in the output file
+     */
     @Override
     public int getSize() {
         return size;
     }
 
+    /**
+     * @return the path of the output file
+     */
     @Override
     public String getName() {
         return "[CSV] "+outputFile.getAbsolutePath();
     }
 
+    /**
+     * Iterates over the original location fields and appends its values
+     * @param address       an array of location names of an address by interlevel
+     * @throws IOException if output file is invalid
+     */
     private void writeAddressFields(String[] address) throws IOException {
         for (String term : address) {
             csvAppender.appendField(term);

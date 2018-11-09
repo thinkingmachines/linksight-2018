@@ -5,6 +5,9 @@ import es.thinkingmachin.linksight.imatch.matcher.reference.ReferenceMatch;
 
 import java.io.IOException;
 
+/**
+ * This class serves as the interface for all output files and sources.
+ */
 public interface OutputSink {
 
     void open() throws IOException;

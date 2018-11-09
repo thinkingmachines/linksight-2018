@@ -30,6 +30,12 @@ import java.util.stream.Collectors;
 
 import static es.thinkingmachin.linksight.imatch.matcher.matching.DatasetMatchingTask.MatchesType.SINGLE;
 
+/**
+ * This class encapsulates the information about the reference address tree.
+ * The contents of the tree is pulled from the PSGC dataset.
+ * It also initializes the entrypoint for the reference tree and the
+ * search indices of each node in the tree.
+ */
 public class TreeReference {
 
     public final AddressTreeNode root;
@@ -61,6 +67,11 @@ public class TreeReference {
         initialize();
     }
 
+    /**
+     * Creates a PSGC tree and initializes the entrypoint, the root,
+     * and the search indices for each node.
+     * @throws IOException if psgc file is invalid
+     */
     private void initialize() throws IOException {
         Stopwatch stopwatch = Stopwatch.createStarted();
 
@@ -88,6 +99,12 @@ public class TreeReference {
         System.out.println("Constructing tree reference took " + stopwatch.elapsed(TimeUnit.SECONDS) + " sec.");
     }
 
+    /**
+     * Creates an entry point to the reference address tree.
+     * The entry point serves as a second root where its children
+     * are all the provinces. The matching algorithm starts
+     * searching at the entry point.
+     */
     private void createEntryPoint() {
         for (AddressTreeNode node : allNodes.values()) {
             if (Psgc.getLevel(node.psgc) == 1) {    // Provinces
@@ -96,6 +113,11 @@ public class TreeReference {
         }
     }
 
+    /**
+     * Initializes an AddressTreeNode for a psgc row and adds it
+     * to a map of all the nodes in the reference tree
+     * @param row the psgc row
+     */
     private void addPsgcRow(PsgcRow row) {
         if (!allNodes.containsKey(row.psgc)) {  // Add new node
             long parentPsgc = Psgc.getParent(row.psgc);

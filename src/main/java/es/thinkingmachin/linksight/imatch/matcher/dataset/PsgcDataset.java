@@ -31,7 +31,7 @@ public class PsgcDataset {
     /**
      * Instantiates a CSV reader and returns a CSV parser.
      * @return a new CSV parser
-     * @throws IOException
+     * @throws IOException if file is invalid
      */
     public CsvParser getCsvParser() throws IOException {
         File file = new File(csvPath);

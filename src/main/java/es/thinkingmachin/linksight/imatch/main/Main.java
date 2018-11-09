@@ -57,7 +57,6 @@ public class Main {
 
     /**
      * Gets command line arguments and passes it as command line options.
-     *
      * @param args the command line arguments
      * @return the list of atomic option and value tokens
      */
@@ -78,7 +77,6 @@ public class Main {
 
     /**
      * Runs the server.
-     *
      * @param ipcAddr the ipc path specified in the command line
      */
     private static void runServer(String ipcAddr) {
@@ -92,7 +90,6 @@ public class Main {
 
     /**
      * Runs the test cases set by the program.
-     *
      * @throws Throwable
      */
     private static void runTests() throws Throwable {
@@ -114,8 +111,7 @@ public class Main {
     /**
      * Runs the explorer mode of the program.
      * Allows the user to explore and run queries on the Address Tree built by the program.
-     *
-     * @throws IOException
+     * @throws IOException if psgc dataset is invalid
      */
     private static void runExplorer() throws IOException {
         Server server = new Server(null);
@@ -125,7 +121,6 @@ public class Main {
 
     /**
      * Runs the program with the fields provided by the user.
-     *
      * @param fields        the fields (barangay, municity, province) included in the dataset
      * @param datasetPath   the path of the dataset file
      * @throws Throwable

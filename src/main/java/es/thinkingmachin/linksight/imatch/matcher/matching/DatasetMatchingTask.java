@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * This class executes the dataset matching job.
+ */
 public class DatasetMatchingTask {
 
     private final InputSource inputSource;
@@ -36,6 +39,11 @@ public class DatasetMatchingTask {
         run(true);
     }
 
+    /**
+     * Executes the matching task and prints out statistics.
+     * @param verbose true if statistics will be displayed, false otherwise
+     * @throws Throwable
+     */
     public void run(boolean verbose) throws Throwable {
         try {
             if (verbose) System.out.println("Starting matching: "+inputSource.getName());
@@ -61,11 +69,18 @@ public class DatasetMatchingTask {
         cleanup();
     }
 
+    /**
+     * Closes the input reader and output writer
+     */
     private void cleanup() {
         inputSource.close();
         outputSink.close();
     }
 
+    /**
+     * Runs the matching algorithm and computes for the matching statistics.
+     * @param address   the input location to be searched against the reference tree
+     */
     private void matchAddress(Address address) {
         long startTime = System.nanoTime();
         List<ReferenceMatch> matches = addressMatcher.getTopMatches(address, matchesType.numMatches);
@@ -84,6 +99,9 @@ public class DatasetMatchingTask {
         }
     }
 
+    /**
+     * Count of top matches that can be used.
+     */
     public enum MatchesType {
         SINGLE(1),
         MULTIPLE(3);

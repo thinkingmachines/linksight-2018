@@ -8,6 +8,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * This class encapsulates the information about each node in the address tree.
+ * It includes information on the psgc, the original term for the location,
+ * its aliases, its parent node, and children nodes.
+ */
 public class AddressTreeNode {
 
     // Node Properties
@@ -30,18 +35,34 @@ public class AddressTreeNode {
         this.parent = parent;
     }
 
+    /**
+     * Creates the root node of the reference tree
+     * @return the root node of the tree
+     */
     static AddressTreeNode createRoot() {
         return new AddressTreeNode(null, null);
     }
 
-    void addChild(AddressTreeNode node) {
-        children.add(node);
-    }
-
+    /**
+     * @return the original name for the location
+     */
     String getOrigTerm() {
         return origTerm;
     }
 
+    /**
+     * Adds a child to the current node
+     * @param node the child node
+     */
+    void addChild(AddressTreeNode node) {
+        children.add(node);
+    }
+
+    /**
+     * Creates a search index for the current node.
+     * The search index contains the aliases of all its children nodes.
+     * This method also initializes the address of the node.
+     */
     void createSearchIndex() {
         childIndex = new AddressTreeNodeIndex();
         children.forEach(child -> childIndex.indexChild(child));
@@ -51,6 +72,11 @@ public class AddressTreeNode {
         address = generateAddress();
     }
 
+    /**
+     * Adds an alias to the list of aliases
+     * @param alias         the alias of the location
+     * @param isOriginal    true if it is the original term, false otherwise
+     */
     void addAlias(String alias, boolean isOriginal) {
         if (isOriginal) {
             if (origTerm != null) {
@@ -62,6 +88,9 @@ public class AddressTreeNode {
         aliases.add(alias);
     }
 
+    /**
+     * @return the parent nodes of the node up to the root
+     */
     public List<AddressTreeNode> getAncestry() {
         AddressTreeNode node = this;
         LinkedList<AddressTreeNode> ancestry = new LinkedList<>();
@@ -72,6 +101,11 @@ public class AddressTreeNode {
         return ancestry;
     }
 
+    /**
+     * Generates the an array for the address of the node
+     * in the order of province, municity, and barangay
+     * @return an array of location that constitute the address (province, municity, bgy)
+     */
     private String[] generateAddress() {
         List<String> strings = getAncestry().stream()
                 .map(node -> node.origTerm)
@@ -82,6 +116,13 @@ public class AddressTreeNode {
         return strings.toArray(new String[]{});
     }
 
+    /**
+     * Checks if two nodes are equal.
+     * Equality is defined as having the same original name
+     * and the same psg code.
+     * @param o the node being compared
+     * @return true if they are equal, false otherwise
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -96,10 +137,18 @@ public class AddressTreeNode {
         return Objects.hash(origTerm, psgc);
     }
 
+    /**
+     * Checks if the node has children
+     * @return true if the node has children, false otherwise
+     */
     public boolean hasChildren() {
         return !children.isEmpty();
     }
 
+    /**
+     * Converts to string the address (province, municity, barangay) of the node
+     * @return the string representation of the node
+     */
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();

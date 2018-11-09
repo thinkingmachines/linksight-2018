@@ -12,7 +12,17 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+/**
+ * This class assesses the accuracy of the matching algorithm using test datasets.
+ */
 public class Evaluator {
+    /**
+     * Evaluates the accuracy of the matching algorithm using a test dataset.
+     * It compares the score of the matched value to benchmarks (0.95 and 1.00).
+     * @param matchedAddresses  a list of matched values
+     * @param testDataset       the test dataset used for evaluation
+     * @throws IOException if file is invalid
+     */
     public static void evaluate(List<ReferenceMatch> matchedAddresses, TestDataset testDataset) throws IOException {
         CsvParser csvParser = createCsvParser(testDataset.csvPath);
         CsvRow row;
@@ -65,10 +75,22 @@ public class Evaluator {
         printStat("Brgy Level", countBgyLevel, countTotal);
     }
 
+    /**
+     * Prints the statistics of the evaluation
+     * @param name  the statistic title
+     * @param count the total number of scores hitting the benchmark
+     * @param total the total number of scores
+     */
     private static void printStat(String name, int count, int total) {
         System.out.println(String.format("\t%s: %d (%.3f%%)", name, count, count*100.0/total));
     }
 
+    /**
+     * Creates a csv reader for the test dataset and parses it
+     * @param csvPath the path of the test dataset
+     * @return the csv parser for the test dataset
+     * @throws IOException if file is invalid
+     */
     private static CsvParser createCsvParser(String csvPath) throws IOException {
         File file = new File(csvPath);
         CsvReader csvReader = new CsvReader();
