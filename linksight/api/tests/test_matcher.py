@@ -139,7 +139,7 @@ class MatcherTestBase():
         print('\tDuration: {}'.format('%.2f' % duration))
         print('\tAccuracy: {}'.format('%.2f' % accuracy))
         assert accuracy > 0.85
-        assert duration < 180
+        assert duration < 250
 
 
 class NgramsMatcherTest(MatcherTestBase, TestCase):
