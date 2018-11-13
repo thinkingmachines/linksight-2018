@@ -6,6 +6,13 @@ import pandas as pd
 from linksight.api.matchers.search_tuple import create_search_tuple, to_index
 
 
+def is_match(actual, expected):
+    if isinstance(expected, str):
+        return actual == expected
+    else:  # Expect a collection
+        return actual in expected
+
+
 def get_accuracy(answer_key_file, matches, columns):
     answer_key = pd.read_csv(answer_key_file, dtype=str)
     answer_key.set_index(
@@ -22,14 +29,8 @@ def get_accuracy(answer_key_file, matches, columns):
         expected = answer_key.loc[search_tuple]['expected_PSGC']
         actual = match['code']
 
-        if isinstance(expected, str):
-            if actual != expected:
-                continue
-        else:
-            if actual not in expected:
-                continue
-
-        correct_matches_count += 1
+        if is_match(actual, expected):
+            correct_matches_count += 1
 
     print("Found {} correct matches out of {} records".format(correct_matches_count, len(answer_key)))
 
