@@ -29,6 +29,8 @@ services:
   worker:
     image: gcr.io/linksight-208514/python:${BUILD_ID}
     command: venv/bin/celery -A linksight worker -P gevent --loglevel INFO
+    volumes:
+    - imatch_comms:/imatch_vol
     network_mode: host
     depends_on:
     - db
@@ -56,6 +58,14 @@ services:
     - flower
     restart: unless-stopped
 
+  imatch:
+    image: gcr.io/linksight-208514/imatch:${BUILD_ID}
+    volumes:
+    - imatch_comms:/volume
+    network_mode: host
+    restart: unless-stopped
+
 volumes:
   db_data:
   redis_data:
+  imatch_comms:
