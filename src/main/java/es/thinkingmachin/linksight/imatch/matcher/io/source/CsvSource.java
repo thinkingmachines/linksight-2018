@@ -32,6 +32,7 @@ public class CsvSource implements InputSource {
     public void open() throws IOException {
         curCount = 0;
         this.parser = dataset.getCsvParser();
+        if (parser == null) throw new IOException("Cannot create CSV parser for dataset: "+dataset.csvPath);
         getNextRow();
     }
 
