@@ -61,7 +61,7 @@ Constructors
 Server
 ^^^^^^
 
-.. java:constructor:: public Server(String ipcPath) throws IOException
+.. java:constructor:: public Server(String port) throws IOException
    :outertype: Server
 
 Methods

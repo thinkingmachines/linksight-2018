@@ -3,6 +3,7 @@ package es.thinkingmachin.linksight.imatch.server.messaging;
 import com.google.common.base.Throwables;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import spark.ResponseTransformer;
 
 public class Response {
     public final Status status;
@@ -36,5 +37,14 @@ public class Response {
         DONE,
         @SerializedName("failed")
         FAILED,
+    }
+
+    public static class SparkResponseTransformer implements ResponseTransformer {
+        @Override
+        public String render(Object model) throws Exception {
+            Response res = (Response) model;
+            if (res == null) throw new Exception("Not a valid response object");
+            return res.toJson();
+        }
     }
 }
