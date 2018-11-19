@@ -12,7 +12,7 @@ datasets = {
 }
 
 ds = datasets["happy_path"]
-matcher = IMatchMatcher(ds["dataset_file"], ds["columns"])
+matcher = IMatchMatcher(ds["dataset_file"], ds["columns"], shared_dir='testing/shared')
 all_matches = list(matcher.get_matches)
 print("Matched {} rows.".format(len(all_matches)))
 print(dict(all_matches[0]))

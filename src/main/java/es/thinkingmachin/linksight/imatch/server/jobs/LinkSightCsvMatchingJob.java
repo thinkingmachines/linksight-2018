@@ -12,18 +12,20 @@ public class LinkSightCsvMatchingJob extends Job {
 
     protected AddressMatcher addressMatcher;
     protected Dataset dataset;
+    protected String outputDir;
 
-    public LinkSightCsvMatchingJob(String id, AddressMatcher addressMatcher, Dataset dataset) {
+    public LinkSightCsvMatchingJob(String id, AddressMatcher addressMatcher, Dataset dataset, String outputDir) {
         super(id);
         this.addressMatcher = addressMatcher;
         this.dataset = dataset;
+        this.outputDir = outputDir;
     }
 
     @Override
     public Response run() {
         try {
             CsvSource source = new CsvSource(dataset);
-            LinkSightCsvSink sink = new LinkSightCsvSink();
+            LinkSightCsvSink sink = new LinkSightCsvSink(outputDir);
             DatasetMatchingTask task = new DatasetMatchingTask(source, sink, new SeriesExecutor(), addressMatcher, DatasetMatchingTask.MatchesType.MULTIPLE);
             task.run();
             return Response.createSuccess(sink.getOutputFile().getAbsolutePath());

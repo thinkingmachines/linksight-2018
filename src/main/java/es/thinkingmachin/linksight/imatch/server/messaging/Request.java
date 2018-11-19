@@ -5,9 +5,9 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
 public class Request {
-    public Type type;
     public String id;
     public String csvPath;
+    public String outputDir;
     public String[] columns;
 
     public static Request fromJson(String json) {
@@ -16,13 +16,5 @@ public class Request {
         } catch (JsonSyntaxException e) {
             return null;
         }
-    }
-
-    public enum Type {
-        @SerializedName("submit_job")
-        SUBMIT_JOB,
-
-        @SerializedName("get_job_result")
-        GET_JOB_RESULT,
     }
 }

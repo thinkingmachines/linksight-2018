@@ -46,7 +46,7 @@ public class PsgcRow {
                 isOriginal = false;
                 break;
             default:
-                throw new Error("Unknown value for boolean: " + row.getField(dataset.isOrigField));
+                throw new IllegalArgumentException("Unknown value for boolean: " + row.getField(dataset.isOrigField));
         }
         return new PsgcRow(psgc, location, interlevel, isOriginal, row.getOriginalLineNumber(), row.toString());
     }

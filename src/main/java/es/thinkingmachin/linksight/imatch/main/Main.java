@@ -22,9 +22,12 @@ import static es.thinkingmachin.linksight.imatch.matcher.matching.DatasetMatchin
 
 public class Main {
 
+    private static final int DEFAULT_PORT = 8686;
+
     /**
      * The main method. Allows user to choose between different modes:
      * server, test, explorer, and manual.
+     *
      * @param args the command line arguments
      * @throws Throwable if mode value is invalid.
      */
@@ -33,13 +36,13 @@ public class Main {
         if (cli == null) return;
 
         String runMode = cli.getOptionValue("mode");
-        String ipcAddr = cli.getOptionValue("ipcaddr");
+        String port = cli.getOptionValue("port", String.valueOf(DEFAULT_PORT));
         String fields = cli.getOptionValue("fields");
         String dataset = cli.getOptionValue("dataset");
 
         switch (runMode) {
             case "server":
-                runServer(ipcAddr);
+                runServer(port);
                 break;
             case "test":
                 runTests();
@@ -57,39 +60,42 @@ public class Main {
 
     /**
      * Gets command line arguments and passes it as command line options.
+     *
      * @param args the command line arguments
      * @return the list of atomic option and value tokens
      */
     private static CommandLine getCliArgs(String[] args) {
         Options options = new Options();
         options.addRequiredOption("m", "mode", true, "Run mode: 'server', 'test', 'explorer', 'manual'")
-                .addOption("i", "ipcaddr", true, "[Server Mode] Path to the IPC address, should execute with ipc://")
+                .addOption("p", "port", true, "[Server Mode] Port to listen on. Default: " + DEFAULT_PORT)
                 .addOption("d", "dataset", true, "[Manual Mode] Path to the dataset to match")
                 .addOption("f", "fields", true, "[Manual Mode] Comma-separated names of location fields to be used for matching");
         CommandLineParser parser = new DefaultParser();
         try {
             return parser.parse(options, args);
         } catch (ParseException e) {
-            new HelpFormatter().printHelp("imatch -m server [-i ipc://addr]", options);
+            new HelpFormatter().printHelp("imatch -m server [-p port]", options);
             return null;
         }
     }
 
     /**
      * Runs the server.
-     * @param ipcAddr the ipc path specified in the command line
+     *
+     * @param port the server port specified in the command line
      */
-    private static void runServer(String ipcAddr) {
+    private static void runServer(String port) {
         try {
-            Server mainServer = new Server(ipcAddr);
+            Server mainServer = new Server(Integer.parseInt(port));
             mainServer.start();
-        } catch (IOException e) {
+        } catch (IOException | NumberFormatException e) {
             System.out.println(e.getMessage());
         }
     }
 
     /**
      * Runs the test cases set by the program.
+     *
      * @throws Throwable
      */
     private static void runTests() throws Throwable {
@@ -97,7 +103,7 @@ public class Main {
         TestDataset[] tests = new TestDataset[]{SSS_CLEAN, HAPPY_PATH, FUZZY_200};
         for (TestDataset test : tests) {
             System.out.println("┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄");
-            System.out.println("Test dataset: "+test.name);
+            System.out.println("Test dataset: " + test.name);
             CsvSource source = new CsvSource(test);
             ListSink sink = new ListSink();
             Executor executor = new SeriesExecutor();
@@ -111,6 +117,7 @@ public class Main {
     /**
      * Runs the explorer mode of the program.
      * Allows the user to explore and run queries on the Address Tree built by the program.
+     *
      * @throws IOException if psgc dataset is invalid
      */
     private static void runExplorer() throws IOException {
@@ -121,8 +128,9 @@ public class Main {
 
     /**
      * Runs the program with the fields provided by the user.
-     * @param fields        the fields (barangay, municity, province) included in the dataset
-     * @param datasetPath   the path of the dataset file
+     *
+     * @param fields      the fields (barangay, municity, province) included in the dataset
+     * @param datasetPath the path of the dataset file
      * @throws Throwable
      */
     private static void runManual(String fields, String datasetPath) throws Throwable {
