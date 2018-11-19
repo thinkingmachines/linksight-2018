@@ -36,6 +36,15 @@ public class LinkSightCsvSink implements OutputSink {
     private CsvAppender csvAppender;
     private File outputFile;
     private int size;
+    private String outputDir;
+
+    public LinkSightCsvSink() {
+        this("/volume/out/");
+    }
+
+    public LinkSightCsvSink(String outputDir) {
+        this.outputDir = outputDir;
+    }
 
     /**
      * Opens and starts the CSV writer
@@ -44,7 +53,7 @@ public class LinkSightCsvSink implements OutputSink {
     @Override
     public void open() throws IOException {
         this.size = 0;
-        Path tempDir = Paths.get("/volume/out/");
+        Path tempDir = Paths.get(outputDir);
         tempDir.toFile().mkdirs();
         this.outputFile = Files.createTempFile(tempDir, "imatch-out-", ".csv").toFile();
         CsvWriter writer = new CsvWriter();

@@ -56,8 +56,10 @@ public class Server {
         Spark.port(port);
 
         // Set up routes
-        Spark.post("/submit", this::onSubmitJob, new SparkResponseTransformer());
-        Spark.get("/jobresult/:id", this::onGetJobResult, new SparkResponseTransformer());
+        SparkResponseTransformer responseTransform = new SparkResponseTransformer();
+        Spark.get("/hi", this::onSayHi, responseTransform);
+        Spark.get("/jobresult/:id", this::onGetJobResult, responseTransform);
+        Spark.post("/submit", this::onSubmitJob, responseTransform);
         Spark.exception(Exception.class, this::onServerException);
 
         System.out.println("\nServer ready!");
@@ -70,12 +72,16 @@ public class Server {
         return Response.createFailed(e).toJson();
     }
 
+    private Response onSayHi(spark.Request req, spark.Response res) {
+        return Response.createSuccess("hello");
+    }
+
     private Response onSubmitJob(spark.Request req, spark.Response res) {
         Request request = Request.fromJson(req.body());
         if (request == null) throw new RuntimeException("Received malformed JSON:\n" + req.body());
         Dataset dataset = new Dataset(request.csvPath, request.columns);
         jobResults.remove(request.id);
-        jobQueue.onNext(new LinkSightCsvMatchingJob(request.id, addressMatcher, dataset));
+        jobQueue.onNext(new LinkSightCsvMatchingJob(request.id, addressMatcher, dataset, request.outputDir));
         return Response.createInProgress();
     }
 

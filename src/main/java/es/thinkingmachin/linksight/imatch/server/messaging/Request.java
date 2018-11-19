@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName;
 public class Request {
     public String id;
     public String csvPath;
+    public String outputDir;
     public String[] columns;
 
     public static Request fromJson(String json) {
