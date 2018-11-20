@@ -13,7 +13,7 @@ class BaseMatcher(abc.ABC):
         self.columns = columns
 
     @abc.abstractmethod
-    def get_matches():
+    def get_matches(self):
         """Should be a generator that yields a dictionary containing the following key-value pairs:
 
         dataset_index: the index of the client dataset row being processed
