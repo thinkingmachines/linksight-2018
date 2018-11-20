@@ -30,13 +30,17 @@ public class PsgcDataset {
 
     /**
      * Instantiates a CSV reader and returns a CSV parser.
+     *
      * @return a new CSV parser
-     * @throws IOException if file is invalid
      */
-    public CsvParser getCsvParser() throws IOException {
+    public CsvParser getCsvParser() {
         File file = new File(csvPath);
         CsvReader csvReader = new CsvReader();
         csvReader.setContainsHeader(true);
-        return csvReader.parse(file, StandardCharsets.UTF_8);
+        try {
+            return csvReader.parse(file, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException("PSGC dataset: " + csvPath + " not found");
+        }
     }
 }

@@ -5,5 +5,7 @@ COPY . .
 RUN gradle buildAll
 
 FROM openjdk:8u181-jdk-slim-stretch
+WORKDIR /app
+COPY data/ data/
 COPY --from=jar /home/gradle/project/build/libs/imatch-full-latest.jar .
 CMD java -ea -jar imatch-full-latest.jar -m server
