@@ -39,3 +39,6 @@ clean-psgc.csv
 # Terraform
 /deploy/.terraform/
 /deploy/*.tfplan
+
+# Mac
+.DS_Store
