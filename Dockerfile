@@ -6,4 +6,4 @@ RUN gradle buildAll
 
 FROM openjdk:8u181-jdk-slim-stretch
 COPY --from=jar /home/gradle/project/build/libs/imatch-full-latest.jar .
-CMD java -ea -Djava.library.path=/usr/local/lib/ -jar imatch-full-latest.jar -m server -i ipc:///volume/imatch_ipc
+CMD java -ea -jar imatch-full-latest.jar -m server
