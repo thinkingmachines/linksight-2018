@@ -61,7 +61,7 @@ services:
   imatch:
     image: gcr.io/linksight-208514/imatch:${BUILD_ID}
     volumes:
-    - imatch_comms:/volume
+    - imatch_comms:/imatch_vol
     network_mode: host
     restart: unless-stopped
 
