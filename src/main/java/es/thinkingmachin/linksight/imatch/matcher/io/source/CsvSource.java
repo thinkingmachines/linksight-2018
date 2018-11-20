@@ -45,7 +45,7 @@ public class CsvSource implements InputSource {
         try {
             parser.close();
             return true;
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             return false;
         }
     }
