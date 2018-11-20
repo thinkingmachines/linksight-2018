@@ -48,7 +48,7 @@ class IMatchMatcher(BaseMatcher):
                 return response
             if status == "failed":
                 raise ValueError(response["content"])
-            raise ValueError("Unknown status: " + status)
+            raise ValueError("Unknown status: {}".format(status))
 
     def _create_job_request(self):
         return {
@@ -62,7 +62,6 @@ class IMatchMatcher(BaseMatcher):
     def _get_url(self, path):
         return urljoin(self.endpoint, path)
 
-    @property
     def get_matches(self):
         # Check if server alive
         requests.get(self._get_url("hi")).raise_for_status()
@@ -74,9 +73,6 @@ class IMatchMatcher(BaseMatcher):
         # Submit job
         r = requests.post(self._get_url("submit"), json=self._create_job_request())
         r.raise_for_status()
-        response = r.json()
-        if not response["status"] != 'accepted':
-            raise ValueError("Job request not accepted by server")
 
         # Wait for result
         job_result = self._wait_for_job()
