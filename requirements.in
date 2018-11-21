@@ -1,4 +1,4 @@
-celery[gevent,redis]
+celery[gevent]
 coveralls
 django
 django-cors-headers
@@ -19,5 +19,6 @@ psycopg2-binary
 python-magic
 raven
 recordlinkage
+redis<3
 social-auth-app-django
 tornado<5

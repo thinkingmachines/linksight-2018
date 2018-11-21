@@ -11,7 +11,7 @@ babel==2.6.0              # via flower
 backcall==0.1.0           # via ipython
 billiard==3.5.0.4         # via celery
 cachetools==3.0.0         # via google-auth
-celery[gevent,redis]==4.2.1
+celery[gevent]==4.2.1
 certifi==2018.10.15       # via requests
 chardet==3.0.4            # via requests
 coverage==4.5.2           # via coveralls
@@ -73,7 +73,7 @@ python3-openid==3.1.0     # via social-auth-core
 pytz==2018.7              # via babel, celery, django, django-silk, flower, google-api-core, pandas
 raven==6.9.0
 recordlinkage==0.12
-redis==3.0.1              # via celery
+redis==2.10.6
 requests-oauthlib==1.0.0  # via social-auth-core
 requests==2.20.1          # via coveralls, django-silk, google-api-core, requests-oauthlib, social-auth-core
 rsa==4.0                  # via google-auth
