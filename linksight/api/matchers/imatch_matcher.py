@@ -1,7 +1,7 @@
 import hashlib
 import time
-from os import path, makedirs
-from shutil import copyfile, rmtree
+from os import makedirs, path
+from shutil import copyfileobj, rmtree
 from urllib.parse import urljoin
 
 import pandas as pd
@@ -19,8 +19,10 @@ DEFAULT_SHARED_DIR = "/imatch_vol/data/"
 # noinspection PyCompatibility
 class IMatchMatcher(BaseMatcher):
 
-    def __init__(self, dataset_file, columns, endpoint=DEFAULT_ENDPOINT, shared_dir=DEFAULT_SHARED_DIR):
+    def __init__(self, dataset_file, columns, endpoint=DEFAULT_ENDPOINT,
+                 shared_dir=DEFAULT_SHARED_DIR):
         super().__init__(dataset_file, columns)
+        self.dataset_file = dataset_file
         if type(dataset_file) == str:
             self.dataset_path = dataset_file
         else:
@@ -56,7 +58,7 @@ class IMatchMatcher(BaseMatcher):
             "id": self.id,
             "csvPath": self.input_path,
             "outputDir": self.shared_dir,
-            "columns": self.columns,
+            "columns": list(self.columns.values()),
         }
 
     def _get_url(self, path):
@@ -68,10 +70,12 @@ class IMatchMatcher(BaseMatcher):
 
         # Copy input CSV to shared volume
         makedirs(self.shared_dir)
-        copyfile(self.dataset_path, self.input_path)
+        with open(self.input_path, 'wb') as f:
+            copyfileobj(self.dataset_file, f)
 
         # Submit job
-        r = requests.post(self._get_url("submit"), json=self._create_job_request())
+        r = requests.post(self._get_url("submit"),
+                          json=self._create_job_request())
         r.raise_for_status()
 
         # Wait for result
@@ -79,9 +83,11 @@ class IMatchMatcher(BaseMatcher):
 
         # Process result
         out_path = job_result["content"]
-        df = pd.read_csv(out_path, keep_default_na=False)
+        df = pd.read_csv(out_path, keep_default_na=False, dtype=str)
+        df['total_score'] = df['total_score'].apply(lambda s: float(s) * 100)
         for row in df.itertuples(index=False):
             yield row._asdict()
 
         # Cleanup
         rmtree(self.shared_dir)
+
