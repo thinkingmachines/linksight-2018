@@ -2,15 +2,13 @@ import json
 import os.path
 import uuid
 from collections import OrderedDict
-from functools import partial
 
 import pandas as pd
-
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import Min, Q
-from linksight.api.matchers.search_tuple import create_search_tuple, to_index
+
 from linksight.api.tasks import match_dataset
 
 
@@ -99,15 +97,7 @@ class Match(models.Model):
 
     def merge_matches(self, dataset_df, matches_df):
         dataset_df.reset_index(inplace=True)
-        dataset_df.set_index(
-            dataset_df
-            .apply(
-                partial(create_search_tuple, columns=self.loc_columns),
-                axis=1)
-            .apply(to_index),
-            inplace=True)
-
-        matches_df.set_index('search_tuple', inplace=True)
+        matches_df.set_index('dataset_index', inplace=True)
 
         matches_df.rename(columns={
             'matched_barangay': 'bgy_linksight',

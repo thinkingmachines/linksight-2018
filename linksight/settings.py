@@ -26,11 +26,13 @@ env = environ.Env(
     EMAIL_HOST_PASSWORD=(str, None),
     EMAIL_HOST_USER=(str, None),
     EMAIL_PORT=(int, 25),
-    HOST=(str, 'http://localhost:3000'),
-    LOGIN_REDIRECT_URL=(str, 'http://localhost:3000/upload'),
-    SENTRY_DSN=(str, None),
     GOOGLE_OAUTH2_KEY=(str, None),
     GOOGLE_OAUTH2_SECRET=(str, None),
+    HOST=(str, 'http://localhost:3000'),
+    IMATCH_ENDPOINT=(str, 'http://localhost:8686'),
+    IMATCH_SHARED_DIR=(str, '/tmp/imatch'),
+    LOGIN_REDIRECT_URL=(str, 'http://localhost:3000/upload'),
+    SENTRY_DSN=(str, None),
 )
 env.read_env('.env')
 
@@ -260,4 +262,9 @@ APPROVED_EMAILS_ROW_KEY = env('APPROVED_EMAILS_ROW_KEY')
 CELERY_BROKER_URL = env('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND')
 CELERY_TASK_TIME_LIMIT = 360
+
+# IMatch
+
+IMATCH_ENDPOINT = env('IMATCH_ENDPOINT')
+IMATCH_SHARED_DIR = env('IMATCH_SHARED_DIR')
 
