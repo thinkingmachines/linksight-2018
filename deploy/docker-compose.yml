@@ -35,6 +35,8 @@ services:
     depends_on:
     - db
     - redis
+    environment:
+      IMATCH_SHARED_DIR: /imatch_vol/data/
     restart: unless-stopped
 
   flower:
