@@ -77,7 +77,7 @@ class Upload extends React.Component {
                 name='file'
                 maxFileSize='5MB'
                 server={{
-                  url: `${window.API_HOST}/api/datasets/`,
+                  url: `${window.API_HOST}/api/datasets`,
                   process: {
                     withCredentials: true,
                     onerror: JSON.parse
