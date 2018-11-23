@@ -23,18 +23,24 @@ def get_accuracy(answer_key_file, matches, columns):
         .apply(to_index),
         inplace=True)
 
-    correct_matches_count = 0
+    matched_rows = []
     for match in matches:
         search_tuple = match['search_tuple']
-        expected = answer_key.loc[search_tuple]['expected_PSGC']
+        expected = answer_key.at[search_tuple, 'expected_PSGC']
         actual = match['code']
 
         if is_match(actual, expected):
-            correct_matches_count += 1
+            matched_rows.append(search_tuple)
 
-    print("Found {} correct matches out of {} records".format(correct_matches_count, len(answer_key)))
+    no_matches = answer_key[~answer_key.index.isin(matched_rows)].to_csv(index=False)
 
-    return correct_matches_count / len(answer_key)
+    matches_count = len(matched_rows)
+    if matches_count < len(answer_key):
+        print("Inputs with no matches: {}\n".format(no_matches))
+
+    print("Found {} correct matches out of {} records\n".format(matches_count, len(answer_key)))
+
+    return matches_count / len(answer_key)
 
 
 def get_stats(matcher, columns):
