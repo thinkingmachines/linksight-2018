@@ -64,8 +64,8 @@ public class TreeAddressMatcher implements AddressMatcher {
     public List<ReferenceMatch> getTopMatches(Address address, int numMatches) {
         if (address.terms.length == 0) return Collections.emptyList();
 
-        List<BfsTraversed> candidates = getCandidateMatches(createSearchStrings(address.terms, false), 0.95);
-        if (candidates.isEmpty()) candidates = getCandidateMatches(createSearchStrings(address.terms, true), 0);
+        List<BfsTraversed> candidates = getCandidateMatches(createSearchStrings(address.terms, false), 0.95, reference.entryPoint);
+        if (candidates.isEmpty()) candidates = getCandidateMatches(createSearchStrings(address.terms, true), 0, reference.muniCityEntryPoint);
 
         List<BfsTraversed> bestN = Ordering.from(BfsTraversed.createComparator())
                 .greatestOf(candidates, numMatches);
@@ -83,10 +83,10 @@ public class TreeAddressMatcher implements AddressMatcher {
      * @param scoreFilter   the minimum score a match should achieve
      * @return the final BFS queue entries
      */
-    private LinkedList<BfsTraversed> getCandidateMatches(List<String>[] searchStrings, double scoreFilter) {
+    private LinkedList<BfsTraversed> getCandidateMatches(List<String>[] searchStrings, double scoreFilter, AddressTreeNode entryPoint) {
         LinkedList<BfsTraversed> possibleMatches = new LinkedList<>();
         LinkedList<BfsTraversed> queue = new LinkedList<>();
-        queue.add(new BfsTraversed(reference.entryPoint, 0, null, searchStrings));
+        queue.add(new BfsTraversed(entryPoint, 0, null, searchStrings));
 
         // BFS
         BfsTraversed curNode;

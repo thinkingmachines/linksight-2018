@@ -39,7 +39,7 @@ import static es.thinkingmachin.linksight.imatch.matcher.matching.DatasetMatchin
 public class TreeReference {
 
     public final AddressTreeNode root;
-    public final AddressTreeNode entryPoint;
+    public final AddressTreeNode entryPoint, muniCityEntryPoint;
 
     private final PsgcDataset[] psgcDatasets;
     private final HashMap<Long, AddressTreeNode> allNodes = new HashMap<>();
@@ -64,6 +64,7 @@ public class TreeReference {
         this.psgcDatasets = psgcDatasets;
         this.root = AddressTreeNode.createRoot();
         this.entryPoint = AddressTreeNode.createRoot();
+        this.muniCityEntryPoint = AddressTreeNode.createRoot();
         initialize();
     }
 
@@ -93,6 +94,7 @@ public class TreeReference {
         System.out.println("Creating search indices...");
         root.createSearchIndex();
         entryPoint.createSearchIndex();
+        muniCityEntryPoint.createSearchIndex();
         allNodes.values().forEach(AddressTreeNode::createSearchIndex);
 
         stopwatch.stop();
@@ -109,6 +111,9 @@ public class TreeReference {
         for (AddressTreeNode node : allNodes.values()) {
             if (Psgc.getLevel(node.psgc) == 1) {    // Provinces
                 entryPoint.addChild(node);
+            }
+            if (Psgc.getLevel(node.psgc) == 2) {    // Cities and municipalities
+                muniCityEntryPoint.addChild(node);
             }
         }
     }
