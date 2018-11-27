@@ -19,7 +19,7 @@ services:
     restart: unless-stopped
 
   api:
-    image: gcr.io/linksight-208514/python:${BUILD_ID}
+    image: gcr.io/linksight-208514/api:${BUILD_ID}
     network_mode: host
     depends_on:
     - db
@@ -27,8 +27,8 @@ services:
     restart: unless-stopped
 
   worker:
-    image: gcr.io/linksight-208514/python:${BUILD_ID}
-    command: venv/bin/celery -A linksight worker -P gevent --loglevel INFO
+    image: gcr.io/linksight-208514/api:${BUILD_ID}
+    command: venv/bin/celery -A api worker -P gevent --loglevel INFO
     volumes:
     - imatch_comms:/imatch_vol
     network_mode: host
@@ -40,8 +40,8 @@ services:
     restart: unless-stopped
 
   flower:
-    image: gcr.io/linksight-208514/python:${BUILD_ID}
-    command: venv/bin/flower -A linksight --conf=linksight/flower.py --address=0.0.0.0 --url_prefix=flower
+    image: gcr.io/linksight-208514/api:${BUILD_ID}
+    command: venv/bin/flower -A api --conf=flower.py --address=0.0.0.0 --url_prefix=flower
     network_mode: host
     expose:
     - 5555

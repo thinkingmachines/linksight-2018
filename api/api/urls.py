@@ -1,0 +1,13 @@
+from api import views
+from django.urls import path
+
+urlpatterns = [
+    path('users/<id>', views.user.user_detail),
+    path('users/<id>/tokens', views.user.user_tokens),
+    path('datasets', views.dataset.dataset_list),
+    path('datasets/<uuid:id>/preview', views.dataset.dataset_preview),
+    path('datasets/<uuid:id>/match', views.dataset.dataset_match),
+    path('matches/<uuid:id>/items', views.match.match_items),
+    path('matches/<uuid:id>/save-choices', views.match.match_save_choices),
+    path('matches/<uuid:id>/preview', views.match.match_preview),
+]

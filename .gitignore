@@ -1,44 +1,45 @@
-# Python
+# api
+
+/api/clean-psgc.csv
+/api/.coverage
+/api/htmlcov/
+
+# web
+
+/app/node_modules
+/app/coverage
+/app/build
+
+## secrets
+/deploy/**/cleartext/
+
+# misc
+
+## python
 __pycache__/
-/venv/
+venv/
 
-# Django
-/media/
-/static/
-
-# Node
-/app/node_modules/
-/app/coverage/
-/app/build/
+## npm
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Secrets
-*.env
-/**/cleartext/
+## config
+*.env*
 
-# PyCharm
+## mac
+.DS_Store
+
+## pycharm
 /.idea/
 
-# Jupyter
+## jupyter
 .ipynb_checkpoints
 
-# Testing
-clean-psgc.csv
-/.coverage
-/htmlcov/
+## ansible
+*.retry
+hosts.yml
 
-# Google Cloud
-/service-account-key.json
-
-# Ansible
-/deploy/*.retry
-/deploy/hosts.yml
-
-# Terraform
-/deploy/.terraform/
-/deploy/*.tfplan
-
-# Mac
-.DS_Store
+## terraform
+.terraform/
+*.tfplan

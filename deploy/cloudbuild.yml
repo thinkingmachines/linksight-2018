@@ -1,7 +1,7 @@
 # Build config
 
 images:
-- 'gcr.io/$PROJECT_ID/python:$TAG_NAME'
+- 'gcr.io/$PROJECT_ID/api:$TAG_NAME'
 - 'gcr.io/$PROJECT_ID/node:$TAG_NAME'
 - 'gcr.io/$PROJECT_ID/nginx:$TAG_NAME'
 - 'gcr.io/$PROJECT_ID/imatch:$TAG_NAME'
@@ -19,10 +19,10 @@ steps:
 # Pull images for faster builds
 
 - name: 'gcr.io/cloud-builders/docker'
-  id: pull-python
+  id: pull-api
   waitFor: ['-']
   entrypoint: bash
-  args: ['-c', 'docker pull gcr.io/$PROJECT_ID/python:$TAG_NAME || true']
+  args: ['-c', 'docker pull gcr.io/$PROJECT_ID/api:$TAG_NAME || true']
 
 - name: 'gcr.io/cloud-builders/docker'
   id: pull-node
@@ -51,7 +51,7 @@ steps:
   - kms
   - decrypt
   - '--ciphertext-file=deploy/secrets/$TAG_NAME/env.enc'
-  - --plaintext-file=.env
+  - --plaintext-file=api/.env
   - --location=global
   - --keyring=linksight
   - --key=linksight
@@ -59,15 +59,14 @@ steps:
 # Build images
 
 - name: 'gcr.io/cloud-builders/docker'
-  id: build-python
-  waitFor: ['decrypt-env', 'pull-python']
+  id: build-api
+  waitFor: ['decrypt-env', 'pull-api']
   args:
   - build
-  - -f=deploy/Dockerfile.python
-  - '-t=gcr.io/$PROJECT_ID/python:$TAG_NAME'
-  - '-t=gcr.io/$PROJECT_ID/python:$BUILD_ID'
-  - '--cache-from=gcr.io/$PROJECT_ID/python:$TAG_NAME'
-  - .
+  - '-t=gcr.io/$PROJECT_ID/api:$TAG_NAME'
+  - '-t=gcr.io/$PROJECT_ID/api:$BUILD_ID'
+  - '--cache-from=gcr.io/$PROJECT_ID/api:$TAG_NAME'
+  - api
 
 - name: 'gcr.io/cloud-builders/docker'
   id: build-node
@@ -84,7 +83,7 @@ steps:
 
 - name: 'gcr.io/cloud-builders/docker'
   id: build-nginx
-  waitFor: ['pull-nginx', 'build-python', 'build-node']
+  waitFor: ['pull-nginx', 'build-api', 'build-node']
   args:
   - build
   - -f=deploy/Dockerfile.nginx
@@ -93,8 +92,6 @@ steps:
   - '--cache-from=gcr.io/$PROJECT_ID/nginx:$TAG_NAME'
   - --build-arg
   - 'NODE_IMAGE=gcr.io/linksight-208514/node:${BUILD_ID}'
-  - --build-arg
-  - 'PYTHON_IMAGE=gcr.io/linksight-208514/python:${BUILD_ID}'
   - --build-arg
   - 'TAG_NAME=${TAG_NAME}'
   - .
@@ -112,9 +109,9 @@ steps:
 # Push images to GCR
 
 - name: 'gcr.io/cloud-builders/docker'
-  id: push-python
-  waitFor: ['build-python']
-  args: ['push', 'gcr.io/$PROJECT_ID/python:$BUILD_ID']
+  id: push-api
+  waitFor: ['build-api']
+  args: ['push', 'gcr.io/$PROJECT_ID/api:$BUILD_ID']
 
 - name: 'gcr.io/cloud-builders/docker'
   id: push-node
@@ -173,7 +170,7 @@ steps:
 
 - name: 'docker/compose:1.22.0'
   id: compose-pull
-  waitFor: ['push-imatch', 'push-python', 'push-nginx', 'decrypt-ca', 'decrypt-cert', 'decrypt-key']
+  waitFor: ['push-imatch', 'push-api', 'push-nginx', 'decrypt-ca', 'decrypt-cert', 'decrypt-key']
   args: ['-p', 'linksight', '-f', 'deploy/docker-compose.yml', 'pull']
   env:
   - 'DOCKER_HOST=$_HOST:2376'

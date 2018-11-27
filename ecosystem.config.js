@@ -9,6 +9,7 @@ module.exports = {
     },
     {
       name: 'api',
+      cwd: 'api',
       script: 'manage.py',
       args: 'runserver',
       interpreter: 'venv/bin/python',
@@ -16,15 +17,17 @@ module.exports = {
     },
     {
       name: 'worker',
+      cwd: 'api',
       script: 'venv/bin/celery',
-      args: '-A linksight worker -P gevent --loglevel INFO',
+      args: '-A api worker -P gevent --loglevel INFO',
       interpreter: 'venv/bin/python',
       autorestart: false
     },
     {
       name: 'flower',
+      cwd: 'api',
       script: 'venv/bin/flower',
-      args: 'venv/bin/flower -A linksight --conf=linksight/flower.py',
+      args: 'venv/bin/flower -A api --conf=flower.py',
       interpreter: 'venv/bin/python',
       autorestart: false
     }
