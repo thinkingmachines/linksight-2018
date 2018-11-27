@@ -99,17 +99,9 @@ steps:
   - 'TAG_NAME=${TAG_NAME}'
   - .
 
-- name: 'gcr.io/cloud-builders/git'
-  id: clone-imatch
-  waitFor: ['-']
-  args:
-  - clone
-  - https://source.developers.google.com/p/linksight-208514/r/github-thinkingmachines-imatch
-  - imatch
-
 - name: 'gcr.io/cloud-builders/docker'
   id: build-imatch
-  waitFor: ['clone-imatch', 'pull-imatch']
+  waitFor: ['pull-imatch']
   args:
   - build
   - '-t=gcr.io/$PROJECT_ID/imatch:$TAG_NAME'
