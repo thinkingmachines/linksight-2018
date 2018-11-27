@@ -1,0 +1,7 @@
+.. highlight:: shell
+
+============
+Installation
+============
+
+WIP

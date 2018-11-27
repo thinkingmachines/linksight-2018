@@ -1,0 +1,17 @@
+# Mac OS
+.DS_Store
+
+# IntelliJ
+.idea/
+*.iml
+
+# Java
+.gradle/
+out/
+hs_err_pid*.log
+build/
+
+# Python
+venv/
+*.pyc
+docs/_build/

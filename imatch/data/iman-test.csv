@@ -1,0 +1,7 @@
+"source_brgy","expected_brgy","source_municity","expected_municity","source_prov","expected_prov","expected_psgc","expected_match_type"
+"","","BASCO (Capital)","BASCO","Batanes","BATANES","20901000","Ambiguous"
+"","","","","Batanes","BATANES","20900000","Ambiguous"
+"","","","","manila","MANILA","130000000","Exact"
+"","","manila","manila","","","130000000","Exact"
+"","","metro manila","manila","","","130000000","Ambiguous"
+"","","","","metro manila","MANILA","130000000","Ambiguous"
