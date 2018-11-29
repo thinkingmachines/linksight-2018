@@ -7,6 +7,7 @@ from django.test import TestCase
 
 from linksight.api import profiling
 from linksight.api.matchers.ngrams_matcher import NgramsMatcher
+from linksight.api.tests.util import test_timeout
 
 CLEAN_FILE = 'data/tests/clean.csv'
 MESSY_FILE = 'data/tests/messy.csv'
@@ -120,26 +121,30 @@ class MatcherTestBase():
         return self.matcher_class(dataset, columns or self.columns)
 
     def test_clean_stats(self):
-        matcher = self.create_matcher(CLEAN_FILE)
-        stats = profiling.get_stats(matcher, self.columns)
-        accuracy = stats['accuracy']
-        duration = stats['duration']
-        print('Clean:')
-        print('\tDuration: {}'.format('%.2f' % duration))
-        print('\tAccuracy: {}'.format('%.2f' % accuracy))
-        assert accuracy > 0.85
-        assert duration < 15
+        time_limit = 15
+        with test_timeout(time_limit):
+            matcher = self.create_matcher(CLEAN_FILE)
+            stats = profiling.get_stats(matcher, self.columns)
+            accuracy = stats['accuracy']
+            duration = stats['duration']
+            print('Clean:')
+            print('\tAccuracy: {}'.format('%.2f' % accuracy))
+            print('\tDuration: {}'.format('%.2f' % duration))
+            assert accuracy > 0.85
+            assert duration < time_limit
 
     def test_messy_stats(self):
-        matcher = self.create_matcher(MESSY_FILE)
-        stats = profiling.get_stats(matcher, self.columns)
-        accuracy = stats['accuracy']
-        duration = stats['duration']
-        print('Messy:')
-        print('\tDuration: {}'.format('%.2f' % duration))
-        print('\tAccuracy: {}'.format('%.2f' % accuracy))
-        assert accuracy > 0.85
-        assert duration < 250
+        time_limit = 250
+        with test_timeout(time_limit):
+            matcher = self.create_matcher(MESSY_FILE)
+            stats = profiling.get_stats(matcher, self.columns)
+            accuracy = stats['accuracy']
+            duration = stats['duration']
+            print('Messy:')
+            print('\tAccuracy: {}'.format('%.2f' % accuracy))
+            print('\tDuration: {}'.format('%.2f' % duration))
+            assert accuracy > 0.85
+            assert duration < time_limit
 
 
 class NgramsMatcherTest(MatcherTestBase, TestCase):
