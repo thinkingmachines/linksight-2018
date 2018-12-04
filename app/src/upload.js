@@ -21,9 +21,7 @@ import UploadWidget from './components/upload-widget'
 class Upload extends React.Component {
   constructor (props) {
     super(props)
-    this.state = {
-      datasetId: null
-    }
+    this.state = {datasetId: null}
   }
   handleProcessFile (err, file) {
     if (err) {
@@ -54,8 +52,9 @@ class Upload extends React.Component {
     if (this.state.datasetId) {
       return <Redirect push to={`/datasets/${this.state.datasetId}/preview`} />
     }
+
     return (
-      <Page>
+      <Page restricted>
         <Sidebar>
           <ol className='steps'>
             <li className='current'>
