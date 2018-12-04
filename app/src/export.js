@@ -74,13 +74,13 @@ class Export extends React.Component {
   }
   render () {
     if (!this.state.preview) {
-      return null
+      return <Page restricted />
     }
     if (this.state.isExported) {
       return <Redirect push to={`/feedback`} />
     }
     return (
-      <Page>
+      <Page restricted>
         <Sidebar
           backButton={
             <Button className='btn -back' onClick={this.props.history.goBack}>Back</Button>

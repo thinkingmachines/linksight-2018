@@ -125,13 +125,13 @@ class Check extends React.Component {
   }
   render () {
     if (!this.state.matchItems) {
-      return null
+      return <Page restricted />
     }
     if (this.state.isSaved) {
       return <Redirect push to={`/matches/${this.props.match.params.id}/export`} />
     }
     return (
-      <Page>
+      <Page restricted>
         <Sidebar
           backButton={
             <Button className='btn -back' onClick={this.props.history.goBack}>Back</Button>

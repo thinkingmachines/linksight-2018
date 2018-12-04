@@ -106,13 +106,13 @@ class Preview extends React.Component {
   }
   render () {
     if (!this.state.preview) {
-      return null
+      return <Page restricted />
     }
     if (this.state.matchId) {
       return <Redirect push to={`/matches/${this.state.matchId}/check`} />
     }
     return (
-      <Page>
+      <Page restricted>
         <Sidebar
           backButton={
             <Button

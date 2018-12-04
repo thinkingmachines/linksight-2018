@@ -30,7 +30,7 @@ class Feedback extends React.Component {
       return <Redirect push to={`/upload`} />
     }
     return (
-      <Page>
+      <Page restricted>
         <Sidebar
           button={
             <Button className='btn' onClick={this.uploadNewDataset.bind(this)}>Upload new dataset</Button>
