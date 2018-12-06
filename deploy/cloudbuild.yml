@@ -104,7 +104,7 @@ steps:
   waitFor: ['-']
   args:
   - clone
-  - https://source.developers.google.com/p/linksight-208514/r/github-thinkingmachines-imatch
+  - https://source.developers.google.com/p/linksight-208514/r/github_thinkingmachines_imatch
   - imatch
 
 - name: 'gcr.io/cloud-builders/docker'
