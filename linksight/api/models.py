@@ -2,7 +2,6 @@ import json
 import os.path
 import uuid
 from collections import OrderedDict
-from itertools import dropwhile
 
 import pandas as pd
 from django.conf import settings
