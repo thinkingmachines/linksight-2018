@@ -2,6 +2,7 @@ import json
 import os.path
 import uuid
 from collections import OrderedDict
+from itertools import dropwhile
 
 import pandas as pd
 from django.conf import settings
@@ -121,18 +122,27 @@ class Match(models.Model):
 
         # Order columns
 
-        front_cols = []
-        for source_col, matched_col in (
+        match_cols = [
             (self.source_bgy_col, 'bgy_linksight'),
             (self.source_municity_col, 'municity_linksight'),
             (self.source_prov_col, 'prov_linksight'),
-        ):
+        ]
+
+        for source_col, matched_col in match_cols:
+            if not source_col:
+                match_cols.remove((source_col, matched_col))
+                joined_df.drop(matched_col, axis=1, errors='ignore', inplace=True)
+            else:
+                break
+
+        front_cols = []
+        for source_col, matched_col in match_cols:
             if source_col == matched_col:
                 front_cols.extend((matched_col,))
             elif source_col:
                 front_cols.extend((source_col, matched_col))
             else:
-                joined_df.drop([matched_col], axis=1, inplace=True)
+                front_cols.extend((matched_col,))
 
         mid_cols = [
             "psgc_linksight",

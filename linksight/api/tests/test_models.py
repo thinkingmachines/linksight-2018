@@ -68,3 +68,34 @@ class ModelsTestCase(TestCase):
 
         joined_df = match.merge_matches(dataset_df, matches_df)
         assert 'bgy_linksight' not in joined_df.columns
+
+    def test_always_display_interlevels_higher_than_given(self):
+        match = Match(source_bgy_col="bgy",
+                      source_municity_col="mun",
+                      source_prov_col="")
+
+        data = {"bgy": ["Sabang"],
+                "mun": ["Dasmarinas"],
+                "prov": ["Cavite"]}
+
+        dataset_df = pd.DataFrame(data=data)
+
+        matches = {
+            "dataset_index": [0],
+            "search_tuple": ["dasmarinas,cavite,municity"],
+            "source_province": ["Cavite"],
+            "source_city_municipality": ["Dasmarinas"],
+            "source_barangay": ["Sabang"],
+            "match_time": [0],
+            "matched_province": ["Cavite"],
+            "matched_city_municipality": ["Dasmarinas"],
+            "matched_barangay": [""],
+            "code": ["100000000"],
+            "total_score": [100],
+            "match_type": ["exact"]
+        }
+
+        matches_df = pd.DataFrame(data=matches)
+
+        joined_df = match.merge_matches(dataset_df, matches_df)
+        assert 'prov_linksight' in joined_df.columns
