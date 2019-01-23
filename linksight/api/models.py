@@ -97,7 +97,11 @@ class Match(models.Model):
 
     def merge_matches(self, dataset_df, matches_df):
         dataset_df.reset_index(inplace=True)
-        matches_df.set_index('dataset_index', inplace=True)
+        
+        # Make indices consistent with dataset_df
+        matches_df.reset_index(inplace=True)
+        matches_df.drop('dataset_index', axis=1, inplace=True)
+        matches_df.set_index('index', inplace=True)
 
         matches_df.rename(columns={
             'matched_barangay': 'bgy_linksight',
