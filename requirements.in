@@ -1,6 +1,6 @@
 celery[gevent]
 coveralls
-django==2.1.5
+django==2.1.7
 django-cors-headers
 django-environ
 django-registration-redux
